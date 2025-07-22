@@ -1,0 +1,645 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} - Smart Farm Watcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --primary-light: #81c784;
+            --secondary-color: #667eea;
+            --accent-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            background: url('{% static "img/farm-white-bg.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "img/farm-white-bg.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(3px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            margin-right: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 0;
+            position: relative;
+            margin: 0 10px;
+            border-radius: 10px;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: white;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            text-align: center;
+        }
+
+        .sidebar-user {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-details small {
+            opacity: 0.7;
+            font-size: 12px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .page-title {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .breadcrumb-nav {
+            background: none;
+            padding: 0;
+            margin: 5px 0 0 0;
+        }
+
+        .breadcrumb-nav .breadcrumb-item {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .breadcrumb-nav .breadcrumb-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Mobile Toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1055;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .toast-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast-body {
+            padding: 10px 20px 15px;
+            color: #495057;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .toast-success .toast-icon {
+            background: var(--success-color);
+        }
+
+        .toast-error .toast-icon {
+            background: var(--danger-color);
+        }
+
+        .toast-warning .toast-icon {
+            background: var(--warning-color);
+        }
+
+        .toast-info .toast-icon {
+            background: var(--info-color);
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #6c757d;
+            margin-left: auto;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #495057;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .toast-success::before {
+            background: var(--success-color);
+        }
+
+        .toast-error::before {
+            background: var(--danger-color);
+        }
+
+        .toast-warning::before {
+            background: var(--warning-color);
+        }
+
+        .toast-info::before {
+            background: var(--info-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .main-content {
+                padding: 20px;
+                margin-top: 60px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .toast-container {
+                top: 80px;
+                right: 15px;
+                left: 15px;
+                max-width: none;
+            }
+        }
+
+        /* Additional Base Styles */
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- Mobile Sidebar Toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="toast toast-{{ message.tags }} show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <div class="toast-icon">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-times"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation"></i>
+                            {% elif message.tags == 'info' %}
+                                <i class="fas fa-info"></i>
+                            {% else %}
+                                <i class="fas fa-bell"></i>
+                            {% endif %}
+                        </div>
+                        <div class="toast-title">
+                            {% if message.tags == 'success' %}
+                                Success
+                            {% elif message.tags == 'error' %}
+                                Error
+                            {% elif message.tags == 'warning' %}
+                                Warning
+                            {% elif message.tags == 'info' %}
+                                Info
+                            {% else %}
+                                Notification
+                            {% endif %}
+                        </div>
+                        <button type="button" class="toast-close" data-bs-dismiss="toast" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <a href="{% url 'dashboard' %}" class="sidebar-brand">
+                <i class="fas fa-seedling"></i>
+                <span>Smart Farm Watcher</span>
+            </a>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- Projects -->
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_projects %}{% endblock %}" href="{% url 'project_management:project_list' %}">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Projects</span>
+                    </a>
+                </li>
+
+                <!-- Clients -->
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_clients %}{% endblock %}" href="{% url 'client_management:client_list' %}">
+                        <i class="fas fa-users"></i>
+                        <span>Clients</span>
+                    </a>
+                </li>
+
+                <!-- Latest Detection -->
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_latest_detection %}{% endblock %}" href="{% url 'detection_management:dashboard' %}">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Latest Detection</span>
+                    </a>
+                </li>
+
+                <!-- Detections History -->
+                <li class="nav-item">
+                    <a class="nav-link {% block nav_detections_history %}{% endblock %}" href="{% url 'detection_management:detection_history' %}">
+                        <i class="fas fa-history"></i>
+                        <span>Detections History</span>
+                    </a>
+                </li>
+
+                {% block extra_nav %}{% endblock %}
+            </ul>
+        </nav>
+
+        <!-- User Section -->
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="User Avatar">
+                    {% else %}
+                        <i class="fas fa-user"></i>
+                    {% endif %}
+                </div>
+                <div class="user-details">
+                    <h6>{{ user.get_full_name|default:user.username }}</h6>
+                    <small>{{ user.user_type|title|default:"User" }}</small>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="btn logout-btn">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+        <div class="main-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Toast functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss toasts after 5 seconds
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(function(toast) {
+                setTimeout(function() {
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.hide();
+                }, 5000);
+            });
+        });
+
+        // Global function to show toast messages dynamically
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const iconMap = {
+                success: 'fas fa-check',
+                error: 'fas fa-times',
+                warning: 'fas fa-exclamation',
+                info: 'fas fa-info'
+            };
+            
+            const titleMap = {
+                success: 'Success',
+                error: 'Error',
+                warning: 'Warning',
+                info: 'Info'
+            };
+
+            const toastHtml = `
+                <div class="toast toast-${type} show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <div class="toast-icon">
+                            <i class="${iconMap[type] || 'fas fa-bell'}"></i>
+                        </div>
+                        <div class="toast-title">${titleMap[type] || 'Notification'}</div>
+                        <button type="button" class="toast-close" data-bs-dismiss="toast" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="toast-body">${message}</div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            // Auto-dismiss after 5 seconds
+            const newToast = toastContainer.lastElementChild;
+            setTimeout(() => {
+                const bsToast = new bootstrap.Toast(newToast);
+                bsToast.hide();
+            }, 5000);
+        }
+
+        {% block extra_js %}{% endblock %}
+    </script>
+</body>
+</html>

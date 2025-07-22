@@ -1,0 +1,410 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm Watcher - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('{% static "img/farm-bg.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "img/farm-bg.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(3px);
+            z-index: -2;
+        }
+
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-container {
+            padding: 40px 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group .form-control {
+            padding-left: 50px;
+        }
+        
+        .input-group-text {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            z-index: 3;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .forgot-password a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .signup-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .login-animation {
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 3;
+        }
+        
+        .password-toggle:hover {
+            color: #4CAF50;
+        }
+        
+        .welcome-message {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-message i {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card login-animation">
+            <div class="card-header">
+                <h2><i class="fas fa-seedling"></i> Smart Farm Watcher</h2>
+                <p>Sign in to your account</p>
+            </div>
+            
+            <div class="form-container">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                            <div class="welcome-message">
+                                <i class="fas fa-check-circle"></i>{{ message }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post" id="login-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="form-label">Username or Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            {{ form.username }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            {{ form.password }}
+                            <button type="button" class="password-toggle" id="password-toggle">
+                                <i class="fas fa-eye" id="password-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                
+                <div class="signup-link">
+                    <p>Don't have an account? <a href="{% url 'signup' %}">Create one here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.querySelector('#id_password');
+            const passwordToggle = document.querySelector('#password-toggle');
+            const passwordIcon = document.querySelector('#password-icon');
+            const loginForm = document.querySelector('#login-form');
+            const loginBtn = document.querySelector('#login-btn');
+            const usernameInput = document.querySelector('#id_username');
+
+            // Password toggle functionality
+            if (passwordToggle && passwordInput) {
+                passwordToggle.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    if (type === 'text') {
+                        passwordIcon.classList.remove('fa-eye');
+                        passwordIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordIcon.classList.remove('fa-eye-slash');
+                        passwordIcon.classList.add('fa-eye');
+                    }
+                });
+            }
+
+            // Form validation and submission
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    const username = usernameInput.value.trim();
+                    const password = passwordInput.value;
+                    
+                    if (!username || !password) {
+                        e.preventDefault();
+                        showAlert('Please fill in all fields.', 'danger');
+                        return;
+                    }
+                    
+                    // Show loading state
+                    loginBtn.disabled = true;
+                    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    
+                    // Re-enable button after 5 seconds as fallback
+                    setTimeout(() => {
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                    }, 5000);
+                });
+            }
+
+            // Auto-focus username field
+            if (usernameInput) {
+                usernameInput.focus();
+            }
+
+            // Enter key handling
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') {
+                    if (document.activeElement === usernameInput) {
+                        passwordInput.focus();
+                    } else if (document.activeElement === passwordInput) {
+                        loginForm.submit();
+                    }
+                }
+            });
+
+            // Input animations
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            function showAlert(message, type) {
+                const existingAlert = document.querySelector('.alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                const formContainer = document.querySelector('.form-container');
+                formContainer.insertBefore(alertDiv, loginForm);
+                
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                    const alert = new bootstrap.Alert(alertDiv);
+                    alert.close();
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

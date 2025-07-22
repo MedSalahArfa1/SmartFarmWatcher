@@ -1,0 +1,531 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block title %}Detection History{% endblock %}
+{% block nav_detections_history %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+        :root {
+            --fire-color: #ff5722;
+            --person-color: #2196F3;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .page-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .detections-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .table {
+            margin: 0;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 15px;
+        }
+        
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .detection-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .detection-thumbnail:hover {
+            transform: scale(1.1);
+        }
+        
+        .detection-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+        }
+        
+        .detection-badge.fire {
+            background: var(--fire-color);
+        }
+        
+        .detection-badge.person {
+            background: var(--person-color);
+        }
+        
+        .confidence-bar {
+            width: 100px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .confidence-fill.fire {
+            background: var(--fire-color);
+        }
+        
+        .confidence-fill.person {
+            background: var(--person-color);
+        }
+        
+        .camera-info {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        
+        .project-info {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .false-positive-badge {
+            background: #ffc107;
+            color: #212529;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+        
+        .pagination {
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .pagination .page-link {
+            color: var(--primary-color);
+            border-color: #dee2e6;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .filter-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        /* Modal styles */
+        .modal-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .table-responsive {
+                font-size: 14px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .confidence-bar {
+                width: 60px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="main-container">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1><i class="fas fa-history"></i> Detection History</h1>
+                        <p>Complete history of all AI detections from your farm cameras</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-light btn-lg" onclick="location.reload()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="search-section">
+                <form method="get" class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search by project, camera..." 
+                               value="{{ search_query }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Detection Type</label>
+                        <select name="detection_type" class="form-select">
+                            <option value="">All Types</option>
+                            <option value="fire" {% if detection_type == 'fire' %}selected{% endif %}>Fire</option>
+                            <option value="person" {% if detection_type == 'person' %}selected{% endif %}>Person</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="valid" {% if status == 'valid' %}selected{% endif %}>Valid</option>
+                            <option value="false_positive" {% if status == 'false_positive' %}selected{% endif %}>False Positive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Date Range</label>
+                        <select name="date_range" class="form-select">
+                            <option value="">All Time</option>
+                            <option value="today" {% if date_range == 'today' %}selected{% endif %}>Today</option>
+                            <option value="week" {% if date_range == 'week' %}selected{% endif %}>This Week</option>
+                            <option value="month" {% if date_range == 'month' %}selected{% endif %}>This Month</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        {% if search_query or detection_type or status or date_range %}
+                        <a href="{% url 'detection_management:detection_history' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Active Filters Display -->
+            {% if search_query or detection_type or status or date_range %}
+            <div class="mb-3">
+                <small class="text-muted">Active filters:</small>
+                {% if search_query %}
+                    <span class="filter-badge">Search: {{ search_query }}</span>
+                {% endif %}
+                {% if detection_type %}
+                    <span class="filter-badge">Type: {{ detection_type|capfirst }}</span>
+                {% endif %}
+                {% if status %}
+                    <span class="filter-badge">Status: {{ status|capfirst }}</span>
+                {% endif %}
+                {% if date_range %}
+                    <span class="filter-badge">Date: {{ date_range|capfirst }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Detections Table -->
+            <div class="detections-table">
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Detection Type</th>
+                                <th>Camera & Project</th>
+                                <th>Confidence</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detection in page_obj %}
+                            <tr>
+                                <td>
+                                    {% if detection.image_annotated %}
+                                    <img src="{{ detection.image_annotated.url }}" 
+                                         alt="Detection" 
+                                         class="detection-thumbnail"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#imageModal"
+                                         data-image-src="{{ detection.image_annotated.url }}"
+                                         data-detection-id="{{ detection.id }}">
+                                    {% else %}
+                                    <div class="detection-thumbnail bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="detection-badge {{ detection.detection_type.name }}">
+                                        {% if detection.detection_type.name == 'fire' %}
+                                            <i class="fas fa-fire"></i>
+                                        {% elif detection.detection_type.name == 'person' %}
+                                            <i class="fas fa-user"></i>
+                                        {% endif %}
+                                        {{ detection.detection_type.name|capfirst }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="camera-info">Camera #{{ detection.camera.id }}</div>
+                                    <div class="project-info">
+                                        <i class="fas fa-project-diagram"></i> {{ detection.camera.project.name }}
+                                        {% if detection.camera.farm_boundary %}
+                                        <br><i class="fas fa-vector-square"></i> Boundary #{{ detection.camera.farm_boundary.id }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>{{ detection.confidence_percentage|floatformat:2 }}%</div>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill {{ detection.detection_type.name }}" 
+                                             style="width: {{ detection.confidence_percentage|floatformat:0 }}%"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>{{ detection.detected_at|date:"M d, Y" }}</div>
+                                    <div class="text-muted">{{ detection.detected_at|time:"H:i" }}</div>
+                                    <small class="text-muted">{{ detection.detected_at|timesince }} ago</small>
+                                </td>
+                                <td>
+                                    {% if detection.is_false_positive %}
+                                        <span class="false-positive-badge">False Positive</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Valid</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#imageModal"
+                                                data-image-src="{{ detection.image_annotated.url }}"
+                                                data-detection-id="{{ detection.id }}"
+                                                title="View Image">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm toggle-false-positive" 
+                                                data-detection-id="{{ detection.id }}"
+                                                data-is-false="{{ detection.is_false_positive }}"
+                                                title="{% if detection.is_false_positive %}Mark as Valid{% else %}Mark as False Positive{% endif %}">
+                                            <i class="fas fa-flag"></i>
+                                        </button>
+                                        {% if detection.image_original %}
+                                        <a href="{{ detection.image_original.url }}" 
+                                           target="_blank" 
+                                           class="btn btn-outline-secondary btn-sm" 
+                                           title="Download Original">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Detection history pagination">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if detection_type %}&detection_type={{ detection_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if detection_type %}&detection_type={{ detection_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}">Previous</a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if detection_type %}&detection_type={{ detection_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if detection_type %}&detection_type={{ detection_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if detection_type %}&detection_type={{ detection_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}">Last</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+                {% else %}
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No Detections Found</h3>
+                    {% if search_query or detection_type or status or date_range %}
+                    <p>No detections match your search criteria.</p>
+                    <a href="{% url 'detection_management:detection_history' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </a>
+                    {% else %}
+                    <p>No AI detections have been recorded yet.</p>
+                    <a href="{% url 'detection_management:detection_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt"></i> View Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Detection Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Detection Image" class="modal-image">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a id="downloadLink" href="" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle false positive toggle
+    document.querySelectorAll('.toggle-false-positive').forEach(button => {
+        button.addEventListener('click', function() {
+            const detectionId = this.dataset.detectionId;
+            const isFalse = this.dataset.isFalse === 'true';
+            
+            fetch(`/detection/mark-false-positive/${detectionId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Detection status updated successfully', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showToast('Error updating detection status', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error updating detection status', 'error');
+            });
+        });
+    });
+
+    // Handle image modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const downloadLink = document.getElementById('downloadLink');
+        
+        imageModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const imageSrc = button.getAttribute('data-image-src');
+            const detectionId = button.getAttribute('data-detection-id');
+            
+            modalImage.src = imageSrc;
+            downloadLink.href = imageSrc;
+        });
+    });
+
+    // Auto-submit form when filters change
+    document.querySelectorAll('select[name="detection_type"], select[name="status"], select[name="date_range"]').forEach(select => {
+        select.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+</script>
+{% endblock %}

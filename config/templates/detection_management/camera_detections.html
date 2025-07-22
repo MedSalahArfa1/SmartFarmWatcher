@@ -1,0 +1,385 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block title %}Camera #{{ camera.id }} Detections{% endblock %}
+
+{% block nav_latest_detection %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --fire-color: #ff5722;
+        --person-color: #2196F3;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #45a049 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .page-header h1 {
+        margin: 0 0 10px 0;
+        font-size: 2.2rem;
+        font-weight: 600;
+    }
+    
+    .detection-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    
+    .detection-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .detection-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+    
+    .detection-info {
+        padding: 20px;
+    }
+    
+    .detection-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .detection-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        color: white;
+    }
+    
+    .detection-badge.fire {
+        background: var(--fire-color);
+    }
+    
+    .detection-badge.person {
+        background: var(--person-color);
+    }
+    
+    .confidence-bar {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    
+    .confidence-fill.fire {
+        background: var(--fire-color);
+    }
+    
+    .confidence-fill.person {
+        background: var(--person-color);
+    }
+    
+    .camera-info {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+    
+    .back-link {
+        color: white;
+        text-decoration: none;
+        opacity: 0.9;
+        transition: opacity 0.3s;
+    }
+    
+    .back-link:hover {
+        color: white;
+        opacity: 1;
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+        .detection-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .detection-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .timeline {
+            padding-left: 0;
+        }
+        
+        .timeline::before {
+            display: none;
+        }
+        
+        .timeline-item::before {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <a href="{% url 'detection_management:dashboard' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1><i class="fas fa-video"></i> Camera #{{ camera.id }} Detections</h1>
+            <p class="mb-0">{{ camera.project.name }} - 
+                {% if camera.farm_boundary %}Farm Boundary #{{ camera.farm_boundary.id }}{% endif %}
+            </p>
+        </div>
+        <div>
+            <button class="btn btn-light" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Camera Information -->
+<div class="camera-info">
+    <h3><i class="fas fa-info-circle"></i> Camera Information</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Camera ID:</strong> {{ camera.id }}</p>
+            <p><strong>Project:</strong> {{ camera.project.name }}</p>
+            {% if camera.farm_boundary %}
+            <p><strong>Farm Boundary:</strong> Farm Boundary #{{ camera.farm_boundary.id }}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <p><strong>Camera Type:</strong> {{ camera.get_camera_type_display }}</p>
+            {% if camera.get_connection_string %}
+            <p><strong>Connection:</strong> <code>{{ camera.get_connection_string }}</code></p>
+            {% endif %}
+            <p><strong>Status:</strong> 
+                {% if camera.is_within_farm_boundary %}
+                    <span class="badge bg-success">Inside Boundary</span>
+                {% else %}
+                    <span class="badge bg-warning">Outside Boundary</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Detections Timeline -->
+<div class="mb-4">
+    <h3><i class="fas fa-clock"></i> Detection History</h3>
+    <p class="text-muted">All AI detections from this camera, newest first</p>
+</div>
+
+{% if detections %}
+<div class="timeline">
+    {% for detection in detections %}
+    <div class="timeline-item">
+        <div class="detection-card">
+            {% if detection.image_annotated %}
+            <img src="{{ detection.image_annotated.url }}" 
+                 alt="Detection #{{ detection.id }}" 
+                 class="detection-image">
+            {% endif %}
+            
+            <div class="detection-info">
+                <div class="detection-header">
+                    <div>
+                        <h5>Detection #{{ detection.id }}</h5>
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> {{ detection.detected_at|date:"M d, Y H:i:s" }}
+                        </small>
+                    </div>
+                    <span class="detection-badge {{ detection.detection_type.name }}">
+                        {% if detection.detection_type.name == 'fire' %}
+                            <i class="fas fa-fire"></i>
+                        {% elif detection.detection_type.name == 'person' %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                        {{ detection.detection_type.name|capfirst }}
+                    </span>
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted">Confidence: {{ detection.confidence_percentage|floatformat:0 }}%</small>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill {{ detection.detection_type.name }}" 
+                             style="width: {{ detection.confidence_percentage|floatformat:0 }}%"></div>
+                    </div>
+                </div>
+                
+                {% if detection.bounding_boxes %}
+                <div class="mb-2">
+                    <small class="text-muted">
+                        <i class="fas fa-square"></i> {{ detection.bounding_boxes|length }} object{{ detection.bounding_boxes|length|pluralize }} detected
+                    </small>
+                </div>
+                {% endif %}
+                
+                {% if detection.is_false_positive %}
+                <div class="alert alert-warning alert-sm py-2 mb-2">
+                    <i class="fas fa-exclamation-triangle"></i> Marked as False Positive
+                </div>
+                {% endif %}
+                
+                {% if detection.notes %}
+                <div class="mb-2">
+                    <small><strong>Notes:</strong> {{ detection.notes }}</small>
+                </div>
+                {% endif %}
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-warning btn-sm toggle-false-positive" 
+                            data-detection-id="{{ detection.id }}"
+                            data-is-false="{{ detection.is_false_positive }}">
+                        <i class="fas fa-flag"></i> 
+                        {% if detection.is_false_positive %}Un-flag{% else %}False Positive{% endif %}
+                    </button>
+                    {% if detection.image_original %}
+                    <a href="{{ detection.image_original.url }}" target="_blank" 
+                       class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-download"></i> Original Image
+                    </a>
+                    {% endif %}
+                    {% if detection.image_annotated %}
+                    <a href="{{ detection.image_annotated.url }}" target="_blank" 
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye"></i> View Full Size
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+    <i class="fas fa-search"></i>
+    <h3>No Detections Found</h3>
+    <p>No AI detections have been recorded from this camera yet.</p>
+    <div class="mt-3">
+        <a href="{% url 'detection_management:detection_dashboard' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle false positive toggle
+    document.querySelectorAll('.toggle-false-positive').forEach(button => {
+        button.addEventListener('click', function() {
+            const detectionId = this.dataset.detectionId;
+            const isFalse = this.dataset.isFalse === 'true';
+            
+            fetch(`/detection/mark-false-positive/${detectionId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showToast === 'function') {
+                        showToast('Detection status updated successfully', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        location.reload(); // Refresh to update UI
+                    }
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast('Error updating detection status', 'error');
+                    } else {
+                        alert('Error updating detection status');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('Error updating detection status', 'error');
+                } else {
+                    alert('Error updating detection status');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

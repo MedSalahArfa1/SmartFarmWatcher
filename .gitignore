@@ -1,0 +1,6 @@
+media/
+migrations/
+__pycache__/
+venv/
+
+serviceAccountKey.json

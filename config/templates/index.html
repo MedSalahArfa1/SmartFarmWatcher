@@ -1,0 +1,802 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm Watcher - AI-Powered Farm Monitoring</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --primary-light: #81c784;
+            --secondary-color: #667eea;
+            --accent-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --dark-color: #2c3e50;
+            --light-gray: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            padding: 15px 0;
+        }
+
+        .navbar.scrolled {
+            padding: 10px 0;
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: var(--dark-color) !important;
+            margin: 0 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('{% static "img/farm-bg.jpg" %}') center/cover;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .hero-stat p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { top: 60%; left: 85%; animation-delay: 2s; }
+        .floating-icon:nth-child(3) { top: 30%; left: 80%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--light-gray);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 25px;
+        }
+
+        .feature-icon.ai { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .feature-icon.monitor { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .feature-icon.alert { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .feature-icon.analytics { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .feature-card p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        /* Technology Section */
+        .technology {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            position: relative;
+        }
+
+        .technology::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1586771107445-d3ca888129ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
+            opacity: 0.1;
+        }
+
+        .tech-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tech-item i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .tech-item h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .btn-light {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-light:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 50px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-light);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .feature-card {
+                padding: 30px 20px;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-seedling"></i>
+                Smart Farm Watcher
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#technology">Technology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#stats">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+                {% if user.is_authenticated %}
+                    <a href="/auth/dashboard/" class="btn btn-primary ms-3">Dashboard</a>
+                {% else %}
+                    <a href="/auth/login/" class="btn btn-primary ms-3">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-elements">
+            <i class="fas fa-seedling floating-icon" style="font-size: 4rem;"></i>
+            <i class="fas fa-video floating-icon" style="font-size: 3rem;"></i>
+            <i class="fas fa-shield-alt floating-icon" style="font-size: 3.5rem;"></i>
+        </div>
+        
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content fade-in">
+                        <h1>AI-Powered Farm Monitoring & Security</h1>
+                        <p>Protect your agricultural investments with cutting-edge artificial intelligence. Monitor crops, detect threats, and secure your farm 24/7 with Smart Farm Watcher.</p>
+                        
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a href="auth/login/" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket"></i> Start Monitoring
+                            </a>
+                            <a href="#features" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-play"></i> Learn More
+                            </a>
+                        </div>
+
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <h3>99.9%</h3>
+                                <p>Uptime</p>
+                            </div>
+                            <div class="hero-stat">
+                                <h3>24/7</h3>
+                                <p>Monitoring</p>
+                            </div>
+                            <div class="hero-stat">
+                                <h3>AI</h3>
+                                <p>Powered</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title fade-in">
+                <h2>Comprehensive Farm Protection</h2>
+                <p>Our AI-driven platform provides complete monitoring solutions for modern agriculture, combining advanced technology with user-friendly interfaces.</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon ai">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4>AI Detection</h4>
+                        <p>Advanced machine learning algorithms detect fire, intruders, and anomalies in real-time with 95%+ accuracy.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon monitor">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h4>Live Monitoring</h4>
+                        <p>Monitor multiple camera feeds simultaneously with intelligent boundary detection and automated alerts.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon alert">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h4>Instant Alerts</h4>
+                        <p>Receive immediate notifications via multiple channels when threats are detected on your property.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon analytics">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Analytics Dashboard</h4>
+                        <p>Comprehensive reporting and analytics to track incidents, patterns, and system performance over time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="technology" id="technology">
+        <div class="container">
+            <div class="tech-content">
+                <div class="section-title fade-in">
+                    <h2>Powered by Advanced Technology</h2>
+                    <p>Built with cutting-edge AI and modern web technologies to deliver reliable, scalable farm monitoring solutions.</p>
+                </div>
+
+                <div class="tech-grid">
+                    <div class="tech-item fade-in">
+                        <i class="fas fa-robot"></i>
+                        <h5>Machine Learning</h5>
+                        <p>Deep neural networks trained on agricultural environments</p>
+                    </div>
+                    
+                    <div class="tech-item fade-in">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h5>GIS Mapping</h5>
+                        <p>Interactive maps with precise boundary detection</p>
+                    </div>
+                    
+                    <div class="tech-item fade-in">
+                        <i class="fas fa-cloud"></i>
+                        <h5>Cloud Infrastructure</h5>
+                        <p>Scalable, secure cloud-based architecture</p>
+                    </div>
+                    
+                    <div class="tech-item fade-in">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h5>Mobile Ready</h5>
+                        <p>Responsive design for all devices and platforms</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats" id="stats">
+        <div class="container">
+            <div class="section-title fade-in">
+                <h2>Trusted by Farmers Worldwide</h2>
+                <p>Join thousands of agricultural professionals who trust Smart Farm Watcher to protect their investments.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item fade-in">
+                    <span class="stat-number">500+</span>
+                    <div class="stat-label">Farms Protected</div>
+                </div>
+                
+                <div class="stat-item fade-in">
+                    <span class="stat-number">10K+</span>
+                    <div class="stat-label">Cameras Monitored</div>
+                </div>
+                
+                <div class="stat-item fade-in">
+                    <span class="stat-number">95%</span>
+                    <div class="stat-label">Detection Accuracy</div>
+                </div>
+                
+                <div class="stat-item fade-in">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Support Available</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>Smart Farm Watcher</h5>
+                    <p>AI-powered farm monitoring and security solutions for modern agriculture. Protecting your investments with cutting-edge technology.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Features</h5>
+                    <a href="#features">AI Detection</a>
+                    <a href="#features">Live Monitoring</a>
+                    <a href="#features">Instant Alerts</a>
+                    <a href="#features">Analytics Dashboard</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Company</h5>
+                    <a href="#stats">About Us</a>
+                    <a href="#technology">Technology</a>
+                    <a href="#contact">Contact</a>
+                    <a href="/privacy/">Privacy Policy</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Get Started</h5>
+                    <a href="/login/">Login</a>
+                    <a href="/register/">Sign Up</a>
+                    <a href="/demo/">Request Demo</a>
+                    <a href="/support/">Support</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Smart Farm Watcher</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Counter animation for stats
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const startTime = performance.now();
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const current = Math.floor(progress * target);
+                element.textContent = current + (element.dataset.suffix || '');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+
+        // Animate counters when they come into view
+        const statsObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const number = entry.target.querySelector('.stat-number');
+                    const value = number.textContent.replace(/[^0-9]/g, '');
+                    const suffix = number.textContent.replace(/[0-9]/g, '');
+                    number.dataset.suffix = suffix;
+                    animateCounter(number, parseInt(value));
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-item').forEach(item => {
+            statsObserver.observe(item);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm Watcher - Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('{% static "img/farm-bg.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "img/farm-bg.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(3px);
+            z-index: -2;
+        }
+
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        } 
+        
+        .signup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .signup-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .role-selector {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .role-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 0;
+        }
+        
+        .role-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .role-btn:hover {
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+        }
+        
+        .role-btn.active {
+            border-color: #4CAF50;
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .role-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .access-code-validation {
+            margin-top: 5px;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .access-code-validation.valid {
+            color: #28a745;
+            display: block;
+        }
+        
+        .access-code-validation.invalid {
+            color: #dc3545;
+            display: block;
+        }
+        
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-label {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .file-upload-label:hover {
+            border-color: #4CAF50;
+            background: #f0f8f0;
+        }
+        
+        .file-upload-label i {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .login-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .row {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        
+        .row .col-md-6 {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-card">
+            <div class="card-header">
+                <h2><i class="fas fa-seedling"></i> Smart Farm Watcher</h2>
+                <p>Create your account to start monitoring your farm</p>
+            </div>
+            
+            <div class="role-selector">
+                <div class="role-buttons">
+                    <div class="role-btn" data-role="supervisor">
+                        <i class="fas fa-user-tie"></i>
+                        <div>Supervisor</div>
+                        <small>Manage farms and clients</small>
+                    </div>
+                    <div class="role-btn" data-role="client">
+                        <i class="fas fa-user"></i>
+                        <div>Client</div>
+                        <small>Monitor your farm</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <!-- Supervisor Form -->
+                <form method="post" enctype="multipart/form-data" class="form-section" id="supervisor-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_type" value="supervisor">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                {{ supervisor_form.first_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                {{ supervisor_form.last_name }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        {{ supervisor_form.username }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        {{ supervisor_form.email }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                {{ supervisor_form.phone_number }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                {{ supervisor_form.gender }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        {{ supervisor_form.password1 }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        {{ supervisor_form.password2 }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Profile Picture</label>
+                        <div class="file-upload-wrapper">
+                            {{ supervisor_form.profile_picture }}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Create Supervisor Account
+                    </button>
+                </form>
+                
+                <!-- Client Form -->
+                <form method="post" enctype="multipart/form-data" class="form-section" id="client-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_type" value="client">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                {{ client_form.first_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                {{ client_form.last_name }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        {{ client_form.username }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        {{ client_form.email }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                {{ client_form.phone_number }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                {{ client_form.gender }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Project Access Code</label>
+                        {{ client_form.access_code }}
+                        <div class="access-code-validation" id="code-validation">
+                            <i class="fas fa-spinner fa-spin"></i> Validating...
+                        </div>
+                        <small class="form-text text-muted">Enter the 12-character code provided by your supervisor</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        {{ client_form.password1 }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        {{ client_form.password2 }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Profile Picture</label>
+                        <div class="file-upload-wrapper">
+                            {{ client_form.profile_picture }}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="client-submit-btn" disabled>
+                        <i class="fas fa-user-plus"></i> Create Client Account
+                    </button>
+                </form>
+                
+                <div class="login-link">
+                    <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleButtons = document.querySelectorAll('.role-btn');
+            const formSections = document.querySelectorAll('.form-section');
+            const accessCodeInput = document.querySelector('#id_access_code');
+            const codeValidation = document.querySelector('#code-validation');
+            const clientSubmitBtn = document.querySelector('#client-submit-btn');
+            let validationTimeout;
+            let isCodeValid = false;
+
+            // Role selection functionality
+            roleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const role = this.dataset.role;
+                    
+                    // Update active button
+                    roleButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding form
+                    formSections.forEach(section => section.classList.remove('active'));
+                    document.querySelector(`#${role}-form`).classList.add('active');
+                });
+            });
+
+            // Access code validation for client form
+            if (accessCodeInput) {
+                accessCodeInput.addEventListener('input', function() {
+                    const code = this.value.trim().toUpperCase();
+                    this.value = code; // Auto-uppercase
+                    
+                    clearTimeout(validationTimeout);
+                    
+                    if (code.length === 0) {
+                        hideValidation();
+                        updateSubmitButton(false);
+                        return;
+                    }
+                    
+                    if (code.length < 12) {
+                        showValidation('invalid', '<i class="fas fa-times"></i> Access code must be 12 characters');
+                        updateSubmitButton(false);
+                        return;
+                    }
+                    
+                    if (code.length === 12) {
+                        showValidation('validating', '<i class="fas fa-spinner fa-spin"></i> Validating...');
+                        
+                        validationTimeout = setTimeout(() => {
+                            validateAccessCode(code);
+                        }, 500);
+                    }
+                });
+            }
+
+            function validateAccessCode(code) {
+                fetch('{% url "validate_access_code" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ access_code: code })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valid) {
+                        showValidation('valid', `<i class="fas fa-check"></i> ${data.message}`);
+                        updateSubmitButton(true);
+                        isCodeValid = true;
+                    } else {
+                        showValidation('invalid', `<i class="fas fa-times"></i> ${data.message}`);
+                        updateSubmitButton(false);
+                        isCodeValid = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showValidation('invalid', '<i class="fas fa-times"></i> Error validating code. Please try again.');
+                    updateSubmitButton(false);
+                    isCodeValid = false;
+                });
+            }
+
+            function showValidation(type, message) {
+                codeValidation.className = `access-code-validation ${type}`;
+                codeValidation.innerHTML = message;
+                codeValidation.style.display = 'block';
+            }
+
+            function hideValidation() {
+                codeValidation.style.display = 'none';
+                isCodeValid = false;
+            }
+
+            function updateSubmitButton(enabled) {
+                if (clientSubmitBtn) {
+                    clientSubmitBtn.disabled = !enabled;
+                    if (enabled) {
+                        clientSubmitBtn.classList.remove('btn-secondary');
+                        clientSubmitBtn.classList.add('btn-primary');
+                    } else {
+                        clientSubmitBtn.classList.remove('btn-primary');
+                        clientSubmitBtn.classList.add('btn-secondary');
+                    }
+                }
+            }
+
+            // File upload preview functionality
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    const label = this.previousElementSibling;
+                    
+                    if (file) {
+                        if (file.type.startsWith('image/')) {
+                            label.innerHTML = `
+                                <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                                <div>${file.name}</div>
+                                <small>Click to change image</small>
+                            `;
+                        } else {
+                            label.innerHTML = `
+                                <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                                <div>Please select an image file</div>
+                                <small>JPG, PNG, GIF only</small>
+                            `;
+                        }
+                    }
+                });
+            });
+
+            // Form validation before submit
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (form.id === 'client-form' && !isCodeValid) {
+                        e.preventDefault();
+                        showValidation('invalid', '<i class="fas fa-times"></i> Please enter a valid access code');
+                        return false;
+                    }
+                });
+            });
+
+            // Auto-focus functionality
+            const activeSection = document.querySelector('.form-section.active');
+            if (activeSection) {
+                const firstInput = activeSection.querySelector('input[type="text"], input[type="email"]');
+                if (firstInput) {
+                    setTimeout(() => firstInput.focus(), 300);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
