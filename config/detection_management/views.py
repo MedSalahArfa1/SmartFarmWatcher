@@ -187,15 +187,69 @@ def receive_image(request):
     print("\n=== NEW IMAGE RECEIVED ===")
     
     try:
-        # Get camera ID from request
-        camera_id = request.POST.get('camera_id')
+        # Get camera identifier from request - support both methods
+        camera_id = request.POST.get('camera_id')  # Direct ID (backward compatibility)
+        ip_port = request.POST.get('ip_port')      # For IP cameras: "192.168.1.100:8080"
+        cellular_id = request.POST.get('cellular_identifier')  # For cellular cameras
+        
         print(f"Camera ID: {camera_id}")
+        print(f"IP:Port: {ip_port}")
+        print(f"Cellular ID: {cellular_id}")
         
-        if not camera_id:
-            return JsonResponse({'error': 'Camera ID required'}, status=400)
+        camera = None
         
-        camera = get_object_or_404(Camera, id=camera_id)
-        print(f"Camera found: {camera}")
+        # Try to find camera by different methods
+        if camera_id:
+            # Direct camera ID lookup (existing method)
+            camera = get_object_or_404(Camera, id=camera_id)
+            print(f"Camera found by ID: {camera}")
+            
+        elif ip_port:
+            # IP camera lookup by IP:port combination
+            try:
+                ip_address, port = ip_port.split(':')
+                port = int(port)
+                camera = get_object_or_404(
+                    Camera, 
+                    camera_type='ip',
+                    ip_address=ip_address,
+                    port=port,
+                    is_active=True
+                )
+                print(f"IP Camera found: {camera} at {ip_address}:{port}")
+            except ValueError:
+                return JsonResponse({
+                    'error': 'Invalid IP:port format. Expected format: "192.168.1.100:8080"'
+                }, status=400)
+            except Camera.DoesNotExist:
+                return JsonResponse({
+                    'error': f'No active IP camera found with address {ip_port}'
+                }, status=404)
+                
+        elif cellular_id:
+            # Cellular camera lookup by identifier
+            try:
+                camera = get_object_or_404(
+                    Camera,
+                    camera_type='cellular',
+                    cellular_identifier=cellular_id,
+                    is_active=True
+                )
+                print(f"Cellular Camera found: {camera} with ID {cellular_id}")
+            except Camera.DoesNotExist:
+                return JsonResponse({
+                    'error': f'No active cellular camera found with identifier {cellular_id}'
+                }, status=404)
+        else:
+            return JsonResponse({
+                'error': 'Camera identifier required. Provide one of: camera_id, ip_port, or cellular_identifier'
+            }, status=400)
+        
+        # Verify camera is active
+        if not camera.is_active:
+            return JsonResponse({
+                'error': f'Camera {camera.id} is not active'
+            }, status=400)
         
         # Get image from request
         image_file = request.FILES.get('image')
@@ -277,12 +331,15 @@ def receive_image(request):
             print("❌ Person model not loaded")
         
         print(f"\n=== FINAL RESULT ===")
+        print(f"Camera: {camera}")
         print(f"Total detections created: {len(detections_created)}")
         
         return JsonResponse({
             'success': True,
+            'camera_id': camera.id,
+            'camera_type': camera.camera_type,
             'detections_created': detections_created,
-            'message': f'Processed {len(detections_created)} detections'
+            'message': f'Processed {len(detections_created)} detections for {camera.get_camera_type_display()}'
         })
         
     except Exception as e:

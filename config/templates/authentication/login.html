@@ -15,7 +15,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-
         body::before {
             content: '';
             position: fixed;
@@ -28,7 +27,6 @@
             filter: blur(3px);
             z-index: -2;
         }
-
 
         body::after {
             content: '';
@@ -79,7 +77,7 @@
         
         .card-header h2 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             position: relative;
             z-index: 1;
@@ -91,9 +89,16 @@
             position: relative;
             z-index: 1;
         }
+
+        .login-logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
         
         .form-container {
             padding: 40px 30px;
+            background: #f8f9fa; /* Add gray background like signup page */
         }
         
         .form-group {
@@ -112,12 +117,14 @@
             padding: 15px;
             font-size: 16px;
             transition: all 0.3s ease;
+            background: white; /* Ensure form controls remain white */
         }
         
         .form-control:focus {
             border-color: #4CAF50;
             box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
             transform: translateY(-2px);
+            background: white; /* Keep white on focus */
         }
         
         .input-group {
@@ -179,6 +186,13 @@
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #e9ecef;
+            background: white; /* Add white background to separate from form area */
+            margin-left: -30px;
+            margin-right: -30px;
+            margin-bottom: -30px;
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-bottom: 30px;
         }
         
         .signup-link a {
@@ -246,7 +260,10 @@
     <div class="login-container">
         <div class="login-card login-animation">
             <div class="card-header">
-                <h2><i class="fas fa-seedling"></i> Smart Farm Watcher</h2>
+                <h2>
+                    <img src="{% static 'img/SFW_LogoW.png' %}" alt="Smart Farm Watcher Logo" class="login-logo">
+                    Smart Farm Watcher
+                </h2>
                 <p>Sign in to your account</p>
             </div>
             

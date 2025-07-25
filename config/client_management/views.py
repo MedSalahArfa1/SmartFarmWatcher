@@ -196,7 +196,7 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
     """Create a new client."""
     model = User
     template_name = 'client_management/add_client.html'
-    fields = ['username', 'email', 'first_name', 'last_name', 'phone']
+    fields = ['username', 'email', 'first_name', 'last_name', 'phone_number']
     success_url = reverse_lazy('client_management:client_list')
     
     def form_valid(self, form):
@@ -209,7 +209,7 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     """Update an existing client."""
     model = User
     template_name = 'client_management/edit_client.html'
-    fields = ['username', 'email', 'first_name', 'last_name', 'phone', 'is_active']
+    fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'is_active']
     success_url = reverse_lazy('client_management:client_list')
     
     def get_queryset(self):

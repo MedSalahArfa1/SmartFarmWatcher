@@ -20,9 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # GDAL
-#GDAL_LIBRARY_PATH = r'C:\GDAL\gdal302.dll'
-#os.environ['GDAL_LIBRARY_PATH'] = r'C:\GDAL\gdal302.dll'
-#GEOS_LIBRARY_PATH=r'C:\GDAL\geos_c.dll'
 GDAL_LIBRARY_PATH = 'GDAL/gdal302.dll'
 GEOS_LIBRARY_PATH = 'GDAL/geos_c.dll'
 
@@ -35,7 +32,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','10.0.2.2', 'localhost', '192.168.1.12', '192.168.1.40']
+ALLOWED_HOSTS = ['127.0.0.1','10.0.2.2', 'localhost', '192.168.1.16']
+
+CORS_ALLOWED_ORIGINS = ['http://192.168.1.4:8000']
 
 
 # Application definition
@@ -52,7 +51,6 @@ INSTALLED_APPS = [
     'project_management',
     'django.contrib.gis',
     'leaflet',
-    'django_extensions',
     'detection_management',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -60,6 +58,11 @@ INSTALLED_APPS = [
     'channels',
     'notification_management',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += [
+        'django_extensions',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -222,9 +225,21 @@ SIMPLE_JWT = {
 
 ASGI_APPLICATION = 'config.asgi.application'
 
-# For development without Redis:
+"""
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
+}
+"""
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [config('REDIS_URL')],
+            'capacity': 1500,  # How many messages can be queued
+            'expiry': 60,      # How long messages are kept (seconds)
+        },
+    },
 }

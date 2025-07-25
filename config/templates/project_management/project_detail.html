@@ -5,436 +5,544 @@
 {% block nav_projects %}active{% endblock %}
 
 {% block extra_css %}
+
 <style>
 .main-container {
-            padding: 30px 0;
-        }
-        
-        .project-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .project-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
-            font-weight: 600;
-        }
-        
-        .project-meta {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0.9;
-        }
-        
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .info-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .info-card i {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-        
-        .info-card h3 {
-            margin: 0 0 5px 0;
-            font-size: 2rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .info-card p {
-            margin: 0;
-            color: #6c757d;
-            font-weight: 500;
-        }
-        
-        .map-section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-        
-        .map-header {
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-            background: #f8f9fa;
-        }
-        
-        .map-header h3 {
-            margin: 0;
-            color: #2c3e50;
-        }
-        
-        #project-map {
-            height: 600px;
-            width: 100%;
-        }
-        
-        .details-section {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .detail-group {
-            margin-bottom: 25px;
-        }
-        
-        .detail-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
-        }
-        
-        .detail-value {
-            color: #6c757d;
-            line-height: 1.6;
-        }
-        
-        .access-code {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px dashed #dee2e6;
-            text-align: center;
-            margin: 15px 0;
-        }
-        
-        .access-code code {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            background: none;
-            padding: 0;
-        }
-        
-        .camera-popup {
-            text-align: center;
-        }
-        
-        .camera-popup h6 {
-            margin: 0 0 5px 0;
-            color: #2c3e50;
-        }
-        
-        .camera-popup .badge {
-            margin: 2px;
-        }
-        
-        .back-link {
-            color: white;
-            text-decoration: none;
-            opacity: 0.9;
-            transition: opacity 0.3s;
-        }
-        
-        .back-link:hover {
-            color: white;
-            opacity: 1;
-        }
-        
-        @media (max-width: 768px) {
-            .project-meta {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .info-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            #project-map {
-                height: 400px;
-            }
-        }
-    </style>
+    padding: 30px 0;
+}
+
+.project-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.project-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.project-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.9;
+}
+
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.info-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.info-card h3 {
+    margin: 0 0 5px 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.info-card p {
+    margin: 0;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.map-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.map-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.map-header h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+/* CRITICAL: Map container styling with proper z-index */
+#project-map {
+    height: 600px !important;
+    width: 100% !important;
+    position: relative;
+    z-index: -1;
+    background: #f8f9fa;
+}
+
+/* Camera marker styling to match your icons */
+.camera-marker {
+    background: none !important;
+    border: none !important;
+}
+
+/* Fix for Leaflet controls in your dashboard */
+.leaflet-control-container {
+    position: relative;
+    z-index: 1000;
+}
+
+.leaflet-tile-pane {
+    z-index: 200;
+}
+
+.leaflet-overlay-pane {
+    z-index: 400;
+}
+
+.leaflet-shadow-pane {
+    z-index: 500;
+}
+
+.leaflet-marker-pane {
+    z-index: 600;
+}
+
+.leaflet-tooltip-pane {
+    z-index: 650;
+}
+
+.leaflet-popup-pane {
+    z-index: 700;
+}
+
+.details-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.detail-group {
+    margin-bottom: 25px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.detail-value {
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.access-code {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.access-code code {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    background: none;
+    padding: 0;
+}
+
+.camera-popup {
+    text-align: center;
+}
+
+.camera-popup h6 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.camera-popup .badge {
+    margin: 2px;
+}
+
+.back-link {
+    color: white;
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity 0.3s;
+}
+
+.back-link:hover {
+    color: white;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .project-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .info-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    #project-map {
+        height: 400px;
+    }
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="main-container">
-        <div class="container">
-            <!-- Project Header -->
-            <div class="project-header">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <a href="{% url 'project_management:project_list' %}" class="back-link">
-                            <i class="fas fa-arrow-left"></i> Back to Projects
-                        </a>
-                        <h1>{{ project.name }}</h1>
-                        {% if project.description %}
-                        <p>{{ project.description }}</p>
-                        {% endif %}
-                        <div class="project-meta">
-                            {% if project.location_city %}
-                            <div class="meta-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{{ project.location_city }}</span>
-                            </div>
-                            {% endif %}
-                            {% if project.contact_person %}
-                            <div class="meta-item">
-                                <i class="fas fa-user"></i>
-                                <span>{{ project.contact_person }}</span>
-                            </div>
-                            {% endif %}
-                            {% if project.contact_phone %}
-                            <div class="meta-item">
-                                <i class="fas fa-phone"></i>
-                                <span>{{ project.contact_phone }}</span>
-                            </div>
-                            {% endif %}
-                            <div class="meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>Created {{ project.created_at|date:"M d, Y" }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="badge {% if project.is_active %}bg-success{% else %}bg-danger{% endif %} fs-6">
-                            {% if project.is_active %}
-                                <i class="fas fa-check"></i> Active
-                            {% else %}
-                                <i class="fas fa-pause"></i> Inactive
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Statistics Cards -->
-            <div class="info-cards">
-                <div class="info-card">
-                    <i class="fas fa-vector-square"></i>
-                    <h3>{{ project_stats.total_boundaries }}</h3>
-                    <p>Farm Boundaries</p>
-                </div>
-                <div class="info-card">
-                    <i class="fas fa-video"></i>
-                    <h3>{{ project_stats.total_cameras }}</h3>
-                    <p>Security Cameras</p>
-                </div>
-                <div class="info-card">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                    <h3>{{ project_stats.total_area }}</h3>
-                    <p>Total Area (ha)</p>
-                </div>
-                <div class="info-card">
-                    <i class="fas fa-key"></i>
-                    <div class="access-code">
-                        <small>Access Code</small><br>
-                        <code>{{ project.access_code }}</code>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interactive Map -->
-            <div class="map-section">
-                <div class="map-header">
-                    <h3><i class="fas fa-map"></i> Farm Map & Camera Locations</h3>
-                    <p class="mb-0 text-muted">
-                        <span class="badge bg-success me-2">Green Areas</span> Farm Boundaries
-                        <span class="badge bg-primary me-2">Blue Markers</span> Cameras Inside Boundary
-                        <span class="badge bg-warning me-2">Orange Markers</span> Cameras Outside Boundary
-                    </p>
-                </div>
-                <div id="project-map"></div>
-            </div>
-
-            <!-- Project Details -->
-            <div class="details-section">
-                <h3 class="mb-4"><i class="fas fa-info-circle"></i> Project Details</h3>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="detail-group">
-                            <div class="detail-label">Project Name</div>
-                            <div class="detail-value">{{ project.name }}</div>
-                        </div>
-                        
-                        {% if project.description %}
-                        <div class="detail-group">
-                            <div class="detail-label">Description</div>
-                            <div class="detail-value">{{ project.description }}</div>
-                        </div>
-                        {% endif %}
-                        
+        <div class="project-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <a href="{% url 'project_management:project_list' %}" class="back-link">
+                        <i class="fas fa-arrow-left"></i> Back to Projects
+                    </a>
+                    <h1>{{ project.name }}</h1>
+                    {% if project.description %}
+                    <p>{{ project.description }}</p>
+                    {% endif %}
+                    <div class="project-meta">
                         {% if project.location_city %}
-                        <div class="detail-group">
-                            <div class="detail-label">Location</div>
-                            <div class="detail-value">{{ project.location_city }}</div>
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ project.location_city }}</span>
                         </div>
                         {% endif %}
-                    </div>
-                    
-                    <div class="col-md-6">
                         {% if project.contact_person %}
-                        <div class="detail-group">
-                            <div class="detail-label">Contact Person</div>
-                            <div class="detail-value">{{ project.contact_person }}</div>
+                        <div class="meta-item">
+                            <i class="fas fa-user"></i>
+                            <span>{{ project.contact_person }}</span>
                         </div>
                         {% endif %}
-                        
                         {% if project.contact_phone %}
-                        <div class="detail-group">
-                            <div class="detail-label">Contact Phone</div>
-                            <div class="detail-value">{{ project.contact_phone }}</div>
+                        <div class="meta-item">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ project.contact_phone }}</span>
                         </div>
                         {% endif %}
-                        
-                        <div class="detail-group">
-                            <div class="detail-label">Created</div>
-                            <div class="detail-value">{{ project.created_at|date:"F d, Y" }} at {{ project.created_at|time:"H:i" }}</div>
-                        </div>
-                        
-                        <div class="detail-group">
-                            <div class="detail-label">Last Updated</div>
-                            <div class="detail-value">{{ project.updated_at|date:"F d, Y" }} at {{ project.updated_at|time:"H:i" }}</div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Created {{ project.created_at|date:"M d, Y" }}</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Farm Boundaries List -->
-                {% if farm_boundaries %}
-                <div class="mt-4">
-                    <h5><i class="fas fa-vector-square"></i> Farm Boundaries</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Description</th>
-                                    <th>Area (ha)</th>
-                                    <th>Cameras</th>
-                                    <th>Created</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for boundary in farm_boundaries %}
-                                <tr>
-                                    <td>Farm Boundary #{{ boundary.id }}</td>
-                                    <td>{{ boundary.description|default:"No description" }}</td>
-                                    <td>{{ boundary.area_hectares|floatformat:2 }}</td>
-                                    <td>{{ boundary.get_cameras_count }}</td>
-                                    <td>{{ boundary.created_at|date:"M d, Y" }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div>
+                    <span class="badge {% if project.is_active %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                        {% if project.is_active %}
+                            <i class="fas fa-check"></i> Active
+                        {% else %}
+                            <i class="fas fa-pause"></i> Inactive
+                        {% endif %}
+                    </span>
                 </div>
-                {% endif %}
-
-                <!-- Cameras List -->
-                {% if cameras %}
-                <div class="mt-4">
-                    <h5><i class="fas fa-video"></i> Security Cameras</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Type</th>
-                                    <th>Connection</th>
-                                    <th>Farm Boundary</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for camera in cameras %}
-                                <tr>
-                                    <td>Camera #{{ camera.id }}</td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ camera.get_camera_type_display }}</span>
-                                    </td>
-                                    <td>
-                                        {% if camera.get_connection_string %}
-                                            <code>{{ camera.get_connection_string }}</code>
-                                        {% else %}
-                                            <span class="text-muted">Not configured</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>Farm Boundary #{{ camera.farm_boundary.id }}</td>
-                                    <td>
-                                        {% if camera.is_within_farm_boundary %}
-                                            <span class="badge bg-success">Inside Boundary</span>
-                                        {% else %}
-                                            <span class="badge bg-warning">Outside Boundary</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ camera.created_at|date:"M d, Y" }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
-    </div>
+
+        <!-- Statistics Cards -->
+        <div class="info-cards">
+            <div class="info-card">
+                <i class="fas fa-vector-square"></i>
+                <h3>{{ project_stats.total_boundaries }}</h3>
+                <p>Farm Boundaries</p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-video"></i>
+                <h3>{{ project_stats.total_cameras }}</h3>
+                <p>Security Cameras</p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-expand-arrows-alt"></i>
+                <h3>{{ project_stats.total_area }}</h3>
+                <p>Total Area (ha)</p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-key"></i>
+                <div class="access-code">
+                    <small>Access Code</small><br>
+                    <code>{{ project.access_code }}</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Map -->
+        <div class="map-section">
+            <div class="map-header">
+                <h3><i class="fas fa-map"></i> Farm Map & Camera Locations</h3>
+                <p class="mb-0 text-muted">
+                    <span class="badge bg-success me-2">Green Areas</span> Farm Boundaries
+                    <span class="badge bg-primary me-2">Blue Markers</span> Cameras Inside Boundary
+                    <span class="badge bg-warning me-2">Orange Markers</span> Cameras Outside Boundary
+                </p>
+            </div>
+            <div id="project-map"></div>
+        </div>
+
+        <!-- Project Details -->
+        <div class="details-section">
+            <h3 class="mb-4"><i class="fas fa-info-circle"></i> Project Details</h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    
+                    
+                    {% if project.description %}
+                    <div class="detail-group">
+                        <div class="detail-label">Description</div>
+                        <div class="detail-value">{{ project.description }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    
+                </div>
+                
+                <div class="col-md-6">
+                    {% if project.contact_person %}
+                    <div class="detail-group">
+                        <div class="detail-label">Contact Person</div>
+                        <div class="detail-value">{{ project.contact_person }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if project.contact_phone %}
+                    <div class="detail-group">
+                        <div class="detail-label">Contact Phone</div>
+                        <div class="detail-value">{{ project.contact_phone }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Farm Boundaries List -->
+            {% if farm_boundaries %}
+            <div class="mt-4">
+                <h5><i class="fas fa-vector-square"></i> Farm Boundaries</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Description</th>
+                                <th>Area (ha)</th>
+                                <th>Cameras</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for boundary in farm_boundaries %}
+                            <tr>
+                                <td>Farm Boundary #{{ boundary.id }}</td>
+                                <td>{{ boundary.description|default:"No description" }}</td>
+                                <td>{{ boundary.area_hectares|floatformat:2 }}</td>
+                                <td>{{ boundary.get_cameras_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Cameras List -->
+            {% if cameras %}
+            <div class="mt-4">
+                <h5><i class="fas fa-video"></i> Security Cameras</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Connection</th>
+                                <th>Farm Boundary</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for camera in cameras %}
+                            <tr>
+                                <td>Camera #{{ camera.id }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ camera.get_camera_type_display }}</span>
+                                </td>
+                                <td>
+                                    {% if camera.get_connection_string %}
+                                        <code>{{ camera.get_connection_string }}</code>
+                                    {% else %}
+                                        <span class="text-muted">Not configured</span>
+                                    {% endif %}
+                                </td>
+                                <td>Farm Boundary #{{ camera.farm_boundary.id }}</td>
+                                <td>
+                                    {% if camera.is_within_farm_boundary %}
+                                        <span class="badge bg-success">Inside Boundary</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Outside Boundary</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
 {% endblock %}
 
 {% block extra_js %}
-<!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <script>
-        let projectMap;
+
+
+<script>
+console.log('=== PROJECT MAP INITIALIZATION ===');
+
+let projectMap;
+
+// Get data from Django with safe parsing
+let boundariesData, camerasData, mapCenter;
+
+try {
+    boundariesData = {{ boundaries_data|safe }} || [];
+    camerasData = {{ cameras_data|safe }} || [];
+    mapCenter = {{ map_center|safe }} || [36.8065, 10.1815];
+} catch (e) {
+    console.error('Error parsing Django data:', e);
+    boundariesData = [];
+    camerasData = [];
+    mapCenter = [36.8065, 10.1815];
+}
+
+console.log('Parsed data:');
+console.log('- Boundaries:', boundariesData);
+console.log('- Cameras:', camerasData);
+console.log('- Map Center:', mapCenter);
+
+// Camera icon function matching your style
+function getCameraIcon(isInside = true, selected = false) {
+    let backgroundColor;
+    if (selected) {
+        backgroundColor = '#ff6b6b';
+    } else if (isInside) {
+        backgroundColor = '#2196F3';
+    } else {
+        backgroundColor = '#ff9800';
+    }
+
+    return L.divIcon({
+        className: 'camera-marker',
+        html: `<div style="
+            background: ${backgroundColor};
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        "><i class="fas fa-video"></i></div>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+    });
+}
+
+// Wait for everything to load
+window.addEventListener('load', function() {
+    console.log('Window loaded, initializing map...');
+    setTimeout(function() {
+        initializeProjectMap();
+    }, 1000);
+});
+
+function initializeProjectMap() {
+    try {
+        console.log('Starting map initialization...');
         
-        // Data from Django
-        const boundariesData = {{ boundaries_data|safe }};
-        const camerasData = {{ cameras_data|safe }};
-        const mapCenter = {{ map_center|safe }};
+        // Check container
+        const container = document.getElementById('project-map');
+        if (!container) {
+            console.error('❌ Map container not found!');
+            return;
+        }
+        console.log('✅ Map container found');
         
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeProjectMap();
-        });
+        // Check Leaflet
+        if (typeof L === 'undefined') {
+            console.error('❌ Leaflet not loaded!');
+            return;
+        }
+        console.log('✅ Leaflet loaded');
         
-        function initializeProjectMap() {
-            // Initialize map
-            projectMap = L.map('project-map').setView(mapCenter, 14);
+        // Validate center
+        let center = [36.8065, 10.1815]; // Tunis default
+        if (mapCenter && Array.isArray(mapCenter) && mapCenter.length === 2 && 
+            !isNaN(mapCenter[0]) && !isNaN(mapCenter[1])) {
+            center = mapCenter;
+        }
+        console.log('✅ Using center:', center);
+        
+        // Create map - matching your project creation map style
+        projectMap = L.map('project-map').setView(center, 13);
+        console.log('✅ Map object created');
+        
+        // Add satellite tile layer (same as your project creation)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri'
+        }).addTo(projectMap);
+        console.log('✅ Satellite tile layer added');
+        
+        // Force resize
+        setTimeout(function() {
+            projectMap.invalidateSize();
+            console.log('✅ Map size invalidated');
+        }, 100);
+        
+        console.log('✅ Basic map initialized successfully');
+        
+        // Add farm boundaries with your styling
+        if (boundariesData && Array.isArray(boundariesData) && boundariesData.length > 0) {
+            console.log('Adding farm boundaries...');
+            const boundaryLayers = [];
             
-            // Add satellite tile layer
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri'
-            }).addTo(projectMap);
-            
-            console.log('Loading boundaries:', boundariesData);
-            console.log('Loading cameras:', camerasData);
-            
-            // Add farm boundaries
-            if (boundariesData && boundariesData.length > 0) {
-                boundariesData.forEach(boundary => {
-                    try {
+            boundariesData.forEach(function(boundary, index) {
+                try {
+                    if (boundary && boundary.geometry) {
                         const boundaryLayer = L.geoJSON(boundary.geometry, {
                             style: {
                                 color: '#4CAF50',
@@ -444,97 +552,139 @@
                             }
                         }).addTo(projectMap);
                         
-                        // Add popup to boundary
-                        boundaryLayer.bindPopup(`
-                            <div class="text-center">
-                                <h6>Farm Boundary #${boundary.id}</h6>
-                                <p><strong>Area:</strong> ${boundary.area_hectares} hectares</p>
-                                ${boundary.description ? `<p><strong>Description:</strong> ${boundary.description}</p>` : ''}
-                                <small>Created: ${new Date(boundary.created_at).toLocaleDateString()}</small>
-                            </div>
-                        `);
+                        boundaryLayers.push(boundaryLayer);
                         
-                    } catch (e) {
-                        console.error('Error loading boundary:', boundary.id, e);
+                        // Add popup with detailed info
+                        const popupContent = 
+                            '<div style="text-align: center;">' +
+                            '<h6>Farm Boundary #' + (boundary.id || index + 1) + '</h6>' +
+                            '<p><strong>Area:</strong> ' + (boundary.area_hectares || 'N/A') + ' hectares</p>' +
+                            (boundary.description ? '<p><strong>Description:</strong> ' + boundary.description + '</p>' : '') +
+                            '<small>Created: ' + (boundary.created_at ? new Date(boundary.created_at).toLocaleDateString() : 'N/A') + '</small>' +
+                            '</div>';
+                        
+                        boundaryLayer.bindPopup(popupContent);
+                        console.log('✅ Added boundary #' + (boundary.id || index + 1));
                     }
-                });
-                
-                // Fit map to boundaries
+                } catch (e) {
+                    console.error('❌ Error loading boundary:', e);
+                }
+            });
+            
+            // Fit map to boundaries
+            if (boundaryLayers.length > 0) {
                 try {
-                    const group = new L.featureGroup(
-                        boundariesData.map(b => L.geoJSON(b.geometry))
-                    );
+                    const group = new L.featureGroup(boundaryLayers);
                     projectMap.fitBounds(group.getBounds(), {
                         padding: [20, 20]
                     });
+                    console.log('✅ Map fitted to boundaries');
                 } catch (e) {
-                    console.error('Error fitting bounds:', e);
+                    console.error('❌ Error fitting bounds:', e);
                 }
             }
-            
-            // Add camera markers
-            if (camerasData && camerasData.length > 0) {
-                camerasData.forEach(camera => {
-                    try {
+        } else {
+            console.log('No valid boundaries data available');
+        }
+        
+        // Add camera markers with your exact styling
+        if (camerasData && Array.isArray(camerasData) && camerasData.length > 0) {
+            console.log('Adding camera markers...');
+            camerasData.forEach(function(camera, index) {
+                try {
+                    if (camera && !isNaN(camera.latitude) && !isNaN(camera.longitude)) {
                         const isInside = camera.is_within_boundary;
-                        const markerColor = isInside ? '#2196F3' : '#ff9800';
-                        
-                        const cameraIcon = L.divIcon({
-                            className: 'camera-marker',
-                            html: `<div style="
-                                background: ${markerColor};
-                                width: 25px;
-                                height: 25px;
-                                border-radius: 50%;
-                                border: 3px solid white;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                color: white;
-                                font-size: 12px;
-                                cursor: pointer;
-                            "><i class="fas fa-video"></i></div>`,
-                            iconSize: [31, 31],
-                            iconAnchor: [15, 15]
-                        });
+                        const cameraIcon = getCameraIcon(isInside, false);
                         
                         const marker = L.marker([camera.latitude, camera.longitude], {
                             icon: cameraIcon
                         }).addTo(projectMap);
                         
-                        // Add popup to camera
-                        marker.bindPopup(`
-                            <div class="camera-popup">
-                                <h6>Camera #${camera.id}</h6>
-                                <p><span class="badge bg-secondary">${camera.camera_type.toUpperCase()}</span></p>
-                                ${camera.connection_info ? `<p><code>${camera.connection_info}</code></p>` : ''}
-                                <p>
-                                    <span class="badge ${isInside ? 'bg-success' : 'bg-warning'}">
-                                        ${isInside ? 'Inside Boundary' : 'Outside Boundary'}
-                                    </span>
-                                </p>
-                                ${camera.description ? `<p><small>${camera.description}</small></p>` : ''}
-                                <small>Farm Boundary #${camera.farm_boundary_id}</small><br>
-                                <small>Created: ${new Date(camera.created_at).toLocaleDateString()}</small>
-                            </div>
-                        `);
+                        // Create connection info matching your format
+                        let connectionInfo = '';
+                        if (camera.camera_type === 'ip') {
+                            connectionInfo = `${camera.ip_address || ''}:${camera.port || ''}`;
+                        } else if (camera.camera_type === 'cellular') {
+                            connectionInfo = camera.cellular_identifier || '';
+                        }
                         
-                    } catch (e) {
-                        console.error('Error loading camera:', camera.id, e);
+                        // Add popup with detailed camera info
+                        const popupContent = 
+                            '<div class="camera-popup">' +
+                            '<h6>Camera #' + (camera.id || index + 1) + '</h6>' +
+                            '<p><span class="badge bg-secondary">' + (camera.camera_type || 'Unknown').toUpperCase() + '</span></p>' +
+                            (connectionInfo ? '<p><code>' + connectionInfo + '</code></p>' : '') +
+                            '<p>' +
+                            '<span class="badge ' + (isInside ? 'bg-success' : 'bg-warning') + '">' +
+                            (isInside ? 'Inside Boundary' : 'Outside Boundary') +
+                            '</span>' +
+                            '</p>' +
+                            (camera.description ? '<p><small>' + camera.description + '</small></p>' : '') +
+                            '<small>Farm Boundary #' + (camera.farm_boundary_id || 'N/A') + '</small><br>' +
+                            '<small>Created: ' + (camera.created_at ? new Date(camera.created_at).toLocaleDateString() : 'N/A') + '</small>' +
+                            '</div>';
+                        
+                        marker.bindPopup(popupContent);
+                        console.log('✅ Added camera #' + (camera.id || index + 1));
                     }
-                });
-            }
-            
-            // Add scale control
-            L.control.scale().addTo(projectMap);
+                } catch (e) {
+                    console.error('❌ Error loading camera:', e);
+                }
+            });
+        } else {
+            console.log('No valid cameras data available');
         }
-    </script>
-    
-    <!-- CSRF Token for AJAX requests -->
-    {% csrf_token %}
-    <script>
-        // Get CSRF token for AJAX requests
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    </script>
+        
+        // Add scale control
+        L.control.scale().addTo(projectMap);
+        
+        // Final resize and completion
+        setTimeout(function() {
+            projectMap.invalidateSize();
+            console.log('✅ Final map resize completed');
+            console.log('=== MAP INITIALIZATION SUCCESS ===');
+        }, 500);
+        
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR:', error);
+        
+        // Show error in map container
+        const container = document.getElementById('project-map');
+        if (container) {
+            container.innerHTML = 
+                '<div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #666; flex-direction: column;">' +
+                '<i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px; color: #dc3545;"></i>' +
+                '<h5>Map Loading Failed</h5>' +
+                '<p>Check console for details</p>' +
+                '<button onclick="location.reload()" class="btn btn-primary btn-sm">Reload Page</button>' +
+                '</div>';
+        }
+    }
+}
+
+// Handle resize
+window.addEventListener('resize', function() {
+    if (projectMap) {
+        setTimeout(function() {
+            projectMap.invalidateSize();
+        }, 100);
+    }
+});
+
+// Debug helper
+window.debugProjectMap = function() {
+    console.log('=== PROJECT MAP DEBUG INFO ===');
+    console.log('Map object:', projectMap);
+    console.log('Container:', document.getElementById('project-map'));
+    console.log('Leaflet:', typeof L !== 'undefined' ? 'Loaded' : 'Not loaded');
+    console.log('Data:', { boundariesData, camerasData, mapCenter });
+};
+
+console.log('Project map script loaded. Call debugProjectMap() in console for debug info.');
+</script>
+
+{% csrf_token %}
+<script>
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+</script>
 {% endblock %}

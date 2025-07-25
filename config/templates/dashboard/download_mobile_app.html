@@ -1,0 +1,607 @@
+
+
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% load static %}
+
+{% block title %}Download Mobile App - Smart Farm Watcher{% endblock %}
+
+{% block nav_download_app %}active{% endblock %}
+
+{% block extra_css%}
+<style>
+/* Main Content */
+        .main-content {
+            padding: 100px 30px 30px;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #6c757d;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Mobile App Invitation Card */
+        .mobile-app-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 25px;
+            padding: 60px 40px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .mobile-app-card::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .mobile-app-card::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .phone-mockup {
+            width: 160px;
+            height: 300px;
+            background: #333;
+            border-radius: 35px;
+            margin: 0 auto 40px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+
+        .phone-screen {
+            width: 140px;
+            height: 280px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 25px;
+            margin: 20px auto 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        .phone-screen i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .phone-screen small {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .app-description {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            z-index: 2;
+            position: relative;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            z-index: 2;
+            position: relative;
+        }
+
+        .download-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+        }
+
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-btn i {
+            font-size: 2rem;
+        }
+
+        .download-btn-text {
+            text-align: left;
+        }
+
+        .download-btn-small {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .download-btn-large {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Coming Soon Badge */
+        .coming-soon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffc107;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 3;
+            letter-spacing: 1px;
+        }
+
+        /* Features Section */
+        .features-section {
+            margin: 80px 0;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .features-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .features-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* Back to Dashboard Button */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+            color: white;
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1055;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .toast-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast-body {
+            padding: 10px 20px 15px;
+            color: #495057;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .toast-info .toast-icon {
+            background: var(--info-color);
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #6c757d;
+            margin-left: auto;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #495057;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .user-profile {
+                gap: 10px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .main-content {
+                padding: 80px 20px 20px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-btn {
+                width: 250px;
+                justify-content: center;
+            }
+
+            .phone-mockup {
+                width: 140px;
+                height: 280px;
+            }
+
+            .phone-screen {
+                width: 120px;
+                height: 240px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1rem;
+            }
+
+            .toast-container {
+                top: 70px;
+                right: 15px;
+                left: 15px;
+                max-width: none;
+            }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+    
+            <div class="mobile-app-card">
+                
+                <div class="phone-mockup">
+                    
+                </div>
+                
+                <h2 class="app-title">Get the Mobile App</h2>
+                <p class="app-description">
+                    Monitor your farm security on the go! Receive instant notifications 
+                    and manage alerts directly from your smartphone.
+                </p>
+                
+                <div class="download-buttons">
+                    <a href="#" class="download-btn">
+                        <i class="fab fa-android"></i>
+                        <div class="download-btn-text">
+                            <div class="download-btn-small">Get it for</div>
+                            <div class="download-btn-large">Android</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <div class="features-header">
+                    <h2 class="features-title">Powerful Features</h2>
+                    <p class="features-subtitle">
+                        Discover all the amazing features that make Smart Farm Watcher the ultimate 
+                        farm security and monitoring solution for modern farmers.
+                    </p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h5 class="feature-title">Real-time Alerts</h5>
+                        <p class="feature-description">
+                            Get instant push notifications when potential threats are detected on your farm. 
+                            Our AI-powered system ensures you're always aware of what's happening, 
+                            even when you're miles away from your property.
+                        </p>
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h5 class="feature-title">Detection History</h5>
+                        <p class="feature-description">
+                            Browse through comprehensive historical detection data, view past incidents, 
+                            and analyze security patterns over time. Export reports and track 
+                            long-term trends to optimize your security strategy.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5 class="feature-title">Secure Access</h5>
+                        <p class="feature-description">
+                            Enjoy secure, encrypted access to your farm monitoring system 
+                            with advanced authentication and unique project code. 
+                            Your data and privacy are protected with enterprise-grade security.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+    <script>
+        // Toast functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss toasts after 5 seconds
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(function(toast) {
+                setTimeout(function() {
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.hide();
+                }, 5000);
+            });
+        });
+
+        // Global function to show toast messages dynamically
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toastHtml = `
+                <div class="toast toast-${type} show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <div class="toast-icon">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="toast-title">Info</div>
+                        <button type="button" class="toast-close" data-bs-dismiss="toast" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="toast-body">${message}</div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            // Auto-dismiss after 5 seconds
+            const newToast = toastContainer.lastElementChild;
+            setTimeout(() => {
+                const bsToast = new bootstrap.Toast(newToast);
+                bsToast.hide();
+            }, 5000);
+        }
+
+        function showComingSoon(platform) {
+            showToast(`${platform} app is coming soon! We'll notify you when it's available.`, 'info');
+        }
+
+        // Add animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.feature-card, .mobile-app-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 150);
+            });
+
+            // Animate phone mockup
+            const phone = document.querySelector('.phone-mockup');
+            if (phone) {
+                setTimeout(() => {
+                    phone.style.transform = 'rotateY(15deg) rotateX(10deg)';
+                    phone.style.transition = 'transform 2s ease-in-out';
+                }, 1000);
+            }
+
+            // Hero title animation
+            const heroTitle = document.querySelector('.hero-title');
+            if (heroTitle) {
+                heroTitle.style.opacity = '0';
+                heroTitle.style.transform = 'translateY(50px)';
+                setTimeout(() => {
+                    heroTitle.style.transition = 'opacity 1s ease, transform 1s ease';
+                    heroTitle.style.opacity = '1';
+                    heroTitle.style.transform = 'translateY(0)';
+                }, 200);
+            }
+        });
+    </script>
+{% endblock %}

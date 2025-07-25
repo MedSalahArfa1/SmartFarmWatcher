@@ -15,7 +15,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-
         body::before {
             content: '';
             position: fixed;
@@ -28,7 +27,6 @@
             filter: blur(3px);
             z-index: -2;
         }
-
 
         body::after {
             content: '';
@@ -58,6 +56,22 @@
             max-width: 500px;
         }
         
+        /* Add the animation class and keyframes */
+        .signup-animation {
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .card-header {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
@@ -79,7 +93,7 @@
         
         .card-header h2 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             position: relative;
             z-index: 1;
@@ -91,11 +105,17 @@
             position: relative;
             z-index: 1;
         }
+
+        .signup-logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
         
         .role-selector {
-            padding: 30px;
+            padding: 30px 30px 0 30px; /* Remove bottom padding */
             background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            /* Remove border-bottom */
         }
         
         .role-buttons {
@@ -135,6 +155,7 @@
         
         .form-container {
             padding: 30px;
+            background: #f8f9fa; /* Match the role selector background */
         }
         
         .form-group {
@@ -240,6 +261,13 @@
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #e9ecef;
+            background: white; /* Add white background to separate from form area */
+            margin-left: -30px;
+            margin-right: -30px;
+            margin-bottom: -30px;
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-bottom: 30px;
         }
         
         .login-link a {
@@ -270,9 +298,9 @@
 </head>
 <body>
     <div class="signup-container">
-        <div class="signup-card">
+        <div class="signup-card signup-animation">
             <div class="card-header">
-                <h2><i class="fas fa-seedling"></i> Smart Farm Watcher</h2>
+                <h2><img src="{% static 'img/SFW_LogoW.png' %}" alt="Smart Farm Watcher Logo" class="signup-logo">Smart Farm Watcher</h2>
                 <p>Create your account to start monitoring your farm</p>
             </div>
             

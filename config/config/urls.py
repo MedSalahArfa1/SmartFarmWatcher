@@ -27,6 +27,7 @@ urlpatterns = [
     path('detection/', include('detection_management.urls')),
     path('clients/', include('client_management.urls')),
     path('api/', include('notification_management.urls')),
+    path('dashboard/', include('dashboard.urls')),
 ]
 
 if settings.DEBUG:

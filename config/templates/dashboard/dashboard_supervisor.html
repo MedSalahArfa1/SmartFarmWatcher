@@ -550,12 +550,6 @@
                 </div>
             </div>
             {% endif %}
-            
-            <div class="project-actions">
-                <button class="btn btn-primary btn-sm" onclick="goToProject('{{ latest_project.slug }}')">
-                    <i class="fas fa-eye"></i> View Details
-                </button>
-            </div>
         </div>
         {% else %}
         <div class="empty-state">
@@ -636,11 +630,7 @@
             </div>
             {% endif %}
             
-            <div class="project-actions">
-                <button class="btn btn-primary btn-sm" onclick="viewDetectionDetails('{{ latest_detection.id }}')">
-                    <i class="fas fa-eye"></i> View Details
-                </button>
-            </div>
+            
         </div>
         {% else %}
         <div class="empty-state">

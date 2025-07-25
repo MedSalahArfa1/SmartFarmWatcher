@@ -1,0 +1,823 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block title %}Farm Monitor - Mobile App{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    /* Stats Cards */
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-color);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .stat-icon.projects { background: linear-gradient(135deg, var(--info-color), #138496); }
+    .stat-icon.cameras { background: linear-gradient(135deg, var(--warning-color), #e0a800); }
+    .stat-icon.alerts { background: linear-gradient(135deg, var(--danger-color), #c82333); }
+    .stat-icon.detections { background: linear-gradient(135deg, var(--success-color), #1e7e34); }
+
+    .stat-number {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+    }
+
+    .welcome-card {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 35px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-card::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    /* Mobile App Invitation Card */
+    .mobile-app-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .mobile-app-card::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        left: -100px;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .mobile-app-card::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        right: -80px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+    }
+
+    .phone-mockup {
+        width: 120px;
+        height: 240px;
+        background: #333;
+        border-radius: 25px;
+        margin: 0 auto 30px;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 2;
+    }
+
+    .phone-screen {
+        width: 100px;
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border-radius: 15px;
+        margin: 20px auto 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+    }
+
+    .phone-screen i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .download-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+        z-index: 2;
+        position: relative;
+    }
+
+    .download-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 15px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .download-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .download-btn i {
+        font-size: 1.5rem;
+    }
+
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 20px;
+    }
+
+    .feature-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .feature-description {
+        color: #6c757d;
+        line-height: 1.6;
+    }
+
+    /* Quick Stats Overview */
+    .quick-stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        text-align: center;
+    }
+
+    .quick-stat-item {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .quick-stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+
+    .quick-stat-label {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Coming Soon Badge */
+    .coming-soon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #ffc107;
+        color: #333;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        z-index: 3;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .download-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .download-btn {
+            width: 200px;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 100px;
+            height: 200px;
+        }
+
+        .phone-screen {
+            width: 80px;
+            height: 160px;
+        }
+    }
+
+    /* Project and Detection Cards */
+.project-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    height: 490px;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.project-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover::after {
+    opacity: 1;
+}
+
+.detection-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    height: 490px;
+}
+
+.detection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.detection-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(135deg, #ff5722, #e64a19);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.detection-card:hover::after {
+    opacity: 1;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.project-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    text-decoration: none;
+}
+
+.project-name:hover {
+    color: var(--primary-color);
+}
+
+.project-status {
+    padding: 6px 15px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.project-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 10px;
+}
+
+.stat-item .number {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.stat-item .label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.click-hint {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--primary-color);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover .click-hint,
+.detection-card:hover .click-hint {
+    opacity: 1;
+}
+
+/* Detection specific styles */
+.detection-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.detection-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.detection-badge.fire {
+    background: #ff5722;
+}
+
+.detection-badge.person {
+    background: #2196F3;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.confidence-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.confidence-fill.fire {
+    background: #ff5722;
+}
+
+.confidence-fill.person {
+    background: #2196F3;
+}
+
+.detection-meta {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 30px;
+    color: #6c757d;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design for Project/Detection Cards */
+@media (max-width: 768px) {
+    .project-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="welcome-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="mb-2">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
+            <p class="mb-0 opacity-75">
+                Monitor your farm security and get real-time alerts on your mobile device.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-flex align-items-center justify-content-md-end">
+                <i class="fas fa-tachometer-alt fa-3x opacity-50"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon projects">
+                <i class="fas fa-project-diagram"></i>
+            </div>
+            <h3 class="stat-number">{{ latest_project.total_detections|default:0 }}</h3>
+            <p class="stat-label">Total Detections</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon cameras">
+                <i class="fas fa-video"></i>
+            </div>
+            <h3 class="stat-number">{{ camera_count|default:0 }}</h3>
+            <p class="stat-label">Active Cameras</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon alerts">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="stat-number">{{ alert_count|default:0 }}</h3>
+            <p class="stat-label">Recent Alerts</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon detections">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3 class="stat-number">{{ detection_count|default:0 }}</h3>
+            <p class="stat-label">Today's Detections</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Latest Project -->
+    <div class="col-lg-6 mb-4">
+        <div class="section-header">
+            <h4 class="section-title">Latest Project</h4>
+            
+        </div>
+        
+        {% if latest_project %}
+        <div class="project-card">
+            
+            
+            <div class="project-header">
+                <div>
+                    <h5 class="project-name">{{ latest_project.name }}</h5>
+                    <small class="text-muted">
+                        <i class="fas fa-map-marker-alt"></i> {{ latest_project.location_city|default:"Location not set" }}
+                    </small>
+                </div>
+                <span class="project-status {% if latest_project.is_active %}status-active{% else %}status-inactive{% endif %}">
+                    {% if latest_project.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </div>
+            
+            <p class="text-muted mb-3">{{ latest_project.description|default:"No description available." }}</p>
+            
+            <!-- Project Statistics -->
+            <div class="project-stats">
+                <div class="stat-item">
+                    <div class="number">{{ latest_project.total_boundaries|default:0 }}</div>
+                    <div class="label">Boundaries</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ latest_project.total_cameras|default:0 }}</div>
+                    <div class="label">Cameras</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ latest_project.total_detections|default:0 }}</div>
+                    <div class="label">Detections</div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <small class="text-muted">Created:</small><br>
+                    <strong>{{ latest_project.created_at|date:"M d, Y" }}</strong>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Role:</small><br>
+                    <strong>
+                        {% for role in user.project_roles.all %}
+                            {% if role.project == latest_project %}
+                                {{ role.get_role_display }}
+                            {% endif %}
+                        {% endfor %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-project-diagram"></i>
+            <h5>No Projects Yet</h5>
+            <p>Contact your supervisor to get access to a project.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Latest Detection -->
+    <div class="col-lg-6 mb-4">
+        <div class="section-header">
+            <h4 class="section-title">Latest Detection</h4>
+            
+        </div>
+        
+        {% if latest_detection %}
+        <div class="detection-card">
+            
+            {% if latest_detection.image_annotated %}
+            <img src="{{ latest_detection.image_annotated.url }}" 
+                 alt="Detection from Camera #{{ latest_detection.camera.id }}" 
+                 class="detection-image">
+            {% endif %}
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Camera #{{ latest_detection.camera.id }}</h5>
+                <span class="detection-badge {{ latest_detection.detection_type.name }}">
+                    {% if latest_detection.detection_type.name == 'fire' %}
+                        <i class="fas fa-fire"></i>
+                    {% elif latest_detection.detection_type.name == 'person' %}
+                        <i class="fas fa-user"></i>
+                    {% endif %}
+                    {{ latest_detection.detection_type.name|capfirst }}
+                </span>
+            </div>
+            
+            <div class="detection-meta">
+                <i class="fas fa-map-marker-alt"></i> {{ latest_detection.camera.project.name }}
+                {% if latest_detection.camera.farm_boundary %}
+                - Farm Boundary #{{ latest_detection.camera.farm_boundary.id }}
+                {% endif %}
+            </div>
+            
+            <div class="detection-meta">
+                <i class="fas fa-clock"></i> {{ latest_detection.detected_at|date:"M d, Y H:i" }}
+                <small class="text-muted">({{ latest_detection.detected_at|timesince }} ago)</small>
+            </div>
+            
+            <div class="mb-3">
+                <small class="text-muted">Confidence: {{ latest_detection.confidence_percentage|floatformat:2 }}%</small>
+                <div class="confidence-bar">
+                    <div class="confidence-fill {{ latest_detection.detection_type.name }}" 
+                         style="width: {{ latest_detection.confidence_percentage|floatformat:0 }}%"></div>
+                </div>
+            </div>
+            
+            {% if latest_detection.is_false_positive %}
+            <div class="alert alert-warning alert-sm py-2">
+                <i class="fas fa-exclamation-triangle"></i> Marked as False Positive
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-shield-alt"></i>
+            <h5>No Detections Yet</h5>
+            <p>No AI detections have been recorded from your cameras yet.</p>
+            <a href="{% url 'detection_management:dashboard' %}" class="btn btn-primary">
+                <i class="fas fa-tachometer-alt"></i> View Detection Dashboard
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+    
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+    // Add animation on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.stat-card, .feature-card, .mobile-app-card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+
+        // Animate phone mockup
+        const phone = document.querySelector('.phone-mockup');
+        if (phone) {
+            setTimeout(() => {
+                phone.style.transform = 'rotateY(10deg) rotateX(5deg)';
+                phone.style.transition = 'transform 2s ease-in-out';
+            }, 1000);
+        }
+    });
+</script>
+{% endblock %}

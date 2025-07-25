@@ -160,7 +160,7 @@ def dashboard_view(request):
     else:
         # For clients, get projects they have access to
         user_projects = Project.objects.filter(
-            projectrole__user=request.user,
+            user_roles__user=request.user,
             is_active=True
         ).distinct()
     
@@ -218,7 +218,12 @@ def dashboard_view(request):
         'alert_count': alert_count,
     }
     
-    return render(request, 'dashboard/dashboard.html', context)
+    # Route clients to mobile app invitation page
+    if request.user.user_type == 'client':
+        return render(request, 'dashboard/dashboard_client.html', context)
+    else:
+        # Supervisors get the regular dashboard
+        return render(request, 'dashboard/dashboard_supervisor.html', context)
 
 # AJAX view for validating access codes
 def validate_access_code(request):
