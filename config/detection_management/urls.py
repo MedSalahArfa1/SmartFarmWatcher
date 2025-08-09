@@ -20,6 +20,6 @@ urlpatterns = [
     # Detection history and filtering
     path('history/', views.detection_history, name='detection_history'),
 
-    # Export functionality
-    path('export/', views.export_detections, name='export_detections'),
+    # Detection detail view
+    path('<int:detection_id>/', views.detection_detail_view, name='detection_detail'),
 ]

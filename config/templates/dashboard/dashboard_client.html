@@ -25,14 +25,44 @@
         overflow: hidden;
     }
 
-    .stat-card::before {
+    .stat-card.projects::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 4px;
-        background: var(--primary-color);
+        background: linear-gradient(135deg, var(--info-color), #138496);
+    }
+
+    .stat-card.cameras::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, var(--warning-color), #e0a800);
+    }
+
+    .stat-card.alerts::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, var(--danger-color), #c82333);
+    }
+
+    .stat-card.detections::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, var(--success-color), #1e7e34);
     }
 
     .stat-card:hover {
@@ -325,272 +355,357 @@
         }
     }
 
-    /* Project and Detection Cards */
-.project-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    height: 490px;
-}
+    /* Project and Detection Cards - Centered and styled */
+    .project-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        height: 450px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
 
-.project-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 4px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
+    .project-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
 
-.project-card:hover::after {
-    opacity: 1;
-}
+    .project-card:hover::after {
+        opacity: 1;
+    }
 
-.detection-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    height: 490px;
-}
+    .detection-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        height: 450px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
-.detection-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
+    .detection-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
 
-.detection-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 4px;
-    background: linear-gradient(135deg, #ff5722, #e64a19);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
+    /* Dynamic detection card side color based on detection type */
+    .detection-card.fire::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(135deg, #ff5722, #e64a19);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
 
-.detection-card:hover::after {
-    opacity: 1;
-}
+    .detection-card.person::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(135deg, #2196F3, #1976D2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
 
-.project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
+    .detection-card:hover::after {
+        opacity: 1;
+    }
 
-.project-name {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0;
-    text-decoration: none;
-}
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
 
-.project-name:hover {
-    color: var(--primary-color);
-}
+    .project-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        text-decoration: none;
+    }
 
-.project-status {
-    padding: 6px 15px;
-    border-radius: 25px;
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-}
+    .project-name:hover {
+        color: var(--primary-color);
+    }
 
-.status-active {
-    background: #d4edda;
-    color: #155724;
-}
+    .project-status {
+        padding: 6px 15px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
 
-.status-inactive {
-    background: #f8d7da;
-    color: #721c24;
-}
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
 
-.project-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-top: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-}
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
 
-.stat-item {
-    text-align: center;
-    padding: 10px;
-}
-
-.stat-item .number {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-
-.stat-item .label {
-    font-size: 12px;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.click-hint {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(76, 175, 80, 0.1);
-    color: var(--primary-color);
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 11px;
-    font-weight: 500;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.project-card:hover .click-hint,
-.detection-card:hover .click-hint {
-    opacity: 1;
-}
-
-/* Detection specific styles */
-.detection-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 15px;
-}
-
-.detection-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    color: white;
-    margin-bottom: 10px;
-    display: inline-block;
-}
-
-.detection-badge.fire {
-    background: #ff5722;
-}
-
-.detection-badge.person {
-    background: #2196F3;
-}
-
-.confidence-bar {
-    width: 100%;
-    height: 8px;
-    background: #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 15px;
-}
-
-.confidence-fill {
-    height: 100%;
-    transition: width 0.3s ease;
-}
-
-.confidence-fill.fire {
-    background: #ff5722;
-}
-
-.confidence-fill.person {
-    background: #2196F3;
-}
-
-.detection-meta {
-    font-size: 14px;
-    color: #6c757d;
-    margin-bottom: 10px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 30px;
-    color: #6c757d;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: 15px;
-    opacity: 0.5;
-}
-
-.btn-outline-primary {
-    border: 2px solid var(--primary-color);
-    color: var(--primary-color);
-    background: transparent;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-primary:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
-}
-
-/* Responsive Design for Project/Detection Cards */
-@media (max-width: 768px) {
     .project-stats {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-top: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .stat-item .number {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+
+    .stat-item .label {
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .click-hint {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Project click hint - primary color */
+    .project-card .click-hint {
+        background: rgba(76, 175, 80, 0.1);
+        color: var(--primary-color);
+    }
+
+    /* Detection click hint - dynamic color based on detection type */
+    .detection-card.fire .click-hint {
+        background: rgba(255, 87, 34, 0.1);
+        color: #ff5722;
+    }
+
+    .detection-card.person .click-hint {
+        background: rgba(33, 150, 243, 0.1);
+        color: #2196F3;
+    }
+
+    .project-card:hover .click-hint,
+    .detection-card:hover .click-hint {
+        opacity: 1;
+    }
+
+    /* Detection specific styles */
+    .detection-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 15px;
+    }
+
+    .detection-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        color: white;
+        margin-bottom: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .detection-badge.fire {
+        background: #ff5722;
+    }
+
+    .detection-badge.person {
+        background: #2196F3;
+    }
+
+    /* False positive flag styling */
+    .false-positive-flag {
+        color: #ffc107;
+        font-size: 14px;
+        margin-left: 8px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    .confidence-bar {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .confidence-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+        min-width: 2px;
+        max-width: 100%;
+    }
+
+    .confidence-fill.fire {
+        background: #ff5722;
+    }
+
+    .confidence-fill.person {
+        background: #2196F3;
+    }
+
+    .detection-meta {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    /* Direct section headers - no background boxes */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 0;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        display: flex;
+        align-items: center;
         gap: 10px;
     }
-}
+
+    .section-title i {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 30px;
+        color: #6c757d;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        background: transparent;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Card content centering */
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+    /* Responsive Design for Project/Detection Cards */
+    @media (max-width: 768px) {
+        .project-stats {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .section-header .btn {
+            align-self: stretch;
+            text-align: center;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -615,7 +730,7 @@
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="stat-card">
+        <div class="stat-card projects">
             <div class="stat-icon projects">
                 <i class="fas fa-project-diagram"></i>
             </div>
@@ -624,7 +739,7 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="stat-card">
+        <div class="stat-card cameras">
             <div class="stat-icon cameras">
                 <i class="fas fa-video"></i>
             </div>
@@ -633,7 +748,7 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="stat-card">
+        <div class="stat-card alerts">
             <div class="stat-icon alerts">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
@@ -642,7 +757,7 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="stat-card">
+        <div class="stat-card detections">
             <div class="stat-icon detections">
                 <i class="fas fa-eye"></i>
             </div>
@@ -656,58 +771,64 @@
     <!-- Latest Project -->
     <div class="col-lg-6 mb-4">
         <div class="section-header">
-            <h4 class="section-title">Latest Project</h4>
-            
+            <h4 class="section-title">
+                <i class="fas fa-project-diagram"></i>
+                Latest Project
+            </h4>
         </div>
         
         {% if latest_project %}
-        <div class="project-card">
-            
-            
-            <div class="project-header">
-                <div>
-                    <h5 class="project-name">{{ latest_project.name }}</h5>
-                    <small class="text-muted">
-                        <i class="fas fa-map-marker-alt"></i> {{ latest_project.location_city|default:"Location not set" }}
-                    </small>
-                </div>
-                <span class="project-status {% if latest_project.is_active %}status-active{% else %}status-inactive{% endif %}">
-                    {% if latest_project.is_active %}Active{% else %}Inactive{% endif %}
-                </span>
+        <div class="project-card" onclick="goToProject('{{ latest_project.slug }}')">
+            <div class="click-hint">
+                <i class="fas fa-mouse-pointer"></i> Click to view
             </div>
             
-            <p class="text-muted mb-3">{{ latest_project.description|default:"No description available." }}</p>
-            
-            <!-- Project Statistics -->
-            <div class="project-stats">
-                <div class="stat-item">
-                    <div class="number">{{ latest_project.total_boundaries|default:0 }}</div>
-                    <div class="label">Boundaries</div>
+            <div class="card-content">
+                <div class="project-header">
+                    <div>
+                        <h5 class="project-name">{{ latest_project.name }}</h5>
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> {{ latest_project.location_city|default:"Location not set" }}
+                        </small>
+                    </div>
+                    <span class="project-status {% if latest_project.is_active %}status-active{% else %}status-inactive{% endif %}">
+                        {% if latest_project.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
                 </div>
-                <div class="stat-item">
-                    <div class="number">{{ latest_project.total_cameras|default:0 }}</div>
-                    <div class="label">Cameras</div>
+                
+                <p class="text-muted mb-3">{{ latest_project.description|default:"No description available." }}</p>
+                
+                <!-- Project Statistics -->
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="number">{{ latest_project.total_boundaries|default:0 }}</div>
+                        <div class="label">Boundaries</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number">{{ latest_project.total_cameras|default:0 }}</div>
+                        <div class="label">Cameras</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number">{{ latest_project.total_detections|default:0 }}</div>
+                        <div class="label">Detections</div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="number">{{ latest_project.total_detections|default:0 }}</div>
-                    <div class="label">Detections</div>
-                </div>
-            </div>
-            
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <small class="text-muted">Created:</small><br>
-                    <strong>{{ latest_project.created_at|date:"M d, Y" }}</strong>
-                </div>
-                <div class="col-md-6">
-                    <small class="text-muted">Role:</small><br>
-                    <strong>
-                        {% for role in user.project_roles.all %}
-                            {% if role.project == latest_project %}
-                                {{ role.get_role_display }}
-                            {% endif %}
-                        {% endfor %}
-                    </strong>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Created:</small><br>
+                        <strong>{{ latest_project.created_at|date:"M d, Y" }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Role:</small><br>
+                        <strong>
+                            {% for role in user.project_roles.all %}
+                                {% if role.project == latest_project %}
+                                    {{ role.get_role_display }}
+                                {% endif %}
+                            {% endfor %}
+                        </strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -723,56 +844,62 @@
     <!-- Latest Detection -->
     <div class="col-lg-6 mb-4">
         <div class="section-header">
-            <h4 class="section-title">Latest Detection</h4>
-            
+            <h4 class="section-title">
+                <i class="fas fa-shield-alt"></i>
+                Latest Detection
+            </h4>
         </div>
         
         {% if latest_detection %}
-        <div class="detection-card">
-            
-            {% if latest_detection.image_annotated %}
-            <img src="{{ latest_detection.image_annotated.url }}" 
-                 alt="Detection from Camera #{{ latest_detection.camera.id }}" 
-                 class="detection-image">
-            {% endif %}
-            
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">Camera #{{ latest_detection.camera.id }}</h5>
-                <span class="detection-badge {{ latest_detection.detection_type.name }}">
-                    {% if latest_detection.detection_type.name == 'fire' %}
-                        <i class="fas fa-fire"></i>
-                    {% elif latest_detection.detection_type.name == 'person' %}
-                        <i class="fas fa-user"></i>
-                    {% endif %}
-                    {{ latest_detection.detection_type.name|capfirst }}
-                </span>
+        <div class="detection-card {{ latest_detection.detection_type.name }}" onclick="viewDetectionDetails('{{ latest_detection.id }}')">
+            <div class="click-hint">
+                <i class="fas fa-mouse-pointer"></i> Click to view
             </div>
             
-            <div class="detection-meta">
-                <i class="fas fa-map-marker-alt"></i> {{ latest_detection.camera.project.name }}
-                {% if latest_detection.camera.farm_boundary %}
-                - Farm Boundary #{{ latest_detection.camera.farm_boundary.id }}
+            <div class="card-content">
+                {% if latest_detection.image_annotated %}
+                <img src="{{ latest_detection.image_annotated.url }}" 
+                     alt="Detection from Camera #{{ latest_detection.camera.id }}" 
+                     class="detection-image">
                 {% endif %}
-            </div>
-            
-            <div class="detection-meta">
-                <i class="fas fa-clock"></i> {{ latest_detection.detected_at|date:"M d, Y H:i" }}
-                <small class="text-muted">({{ latest_detection.detected_at|timesince }} ago)</small>
-            </div>
-            
-            <div class="mb-3">
-                <small class="text-muted">Confidence: {{ latest_detection.confidence_percentage|floatformat:2 }}%</small>
-                <div class="confidence-bar">
-                    <div class="confidence-fill {{ latest_detection.detection_type.name }}" 
-                         style="width: {{ latest_detection.confidence_percentage|floatformat:0 }}%"></div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Camera #{{ latest_detection.camera.id }}</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="detection-badge {{ latest_detection.detection_type.name }}">
+                            {% if latest_detection.detection_type.name == 'fire' %}
+                                <i class="fas fa-fire"></i>
+                            {% elif latest_detection.detection_type.name == 'person' %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                            {{ latest_detection.detection_type.name|capfirst }}
+                        </span>
+                        {% if latest_detection.is_false_positive %}
+                            <i class="fas fa-flag false-positive-flag" title="Marked as False Positive"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detection-meta">
+                    <i class="fas fa-map-marker-alt"></i> {{ latest_detection.camera.project.name }}
+                    {% if latest_detection.camera.farm_boundary %}
+                    - Farm Boundary #{{ latest_detection.camera.farm_boundary.id }}
+                    {% endif %}
+                </div>
+                
+                <div class="detection-meta">
+                    <i class="fas fa-clock"></i> {{ latest_detection.detected_at|date:"M d, Y H:i" }}
+                    <small class="text-muted">({{ latest_detection.detected_at|timesince }} ago)</small>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Confidence: {{ latest_detection.confidence_percentage|floatformat:1 }}%</small>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill {{ latest_detection.detection_type.name }}" 
+                             style="width: {{ latest_detection.confidence_percentage|default:0 }}%"></div>
+                    </div>
                 </div>
             </div>
-            
-            {% if latest_detection.is_false_positive %}
-            <div class="alert alert-warning alert-sm py-2">
-                <i class="fas fa-exclamation-triangle"></i> Marked as False Positive
-            </div>
-            {% endif %}
         </div>
         {% else %}
         <div class="empty-state">
@@ -786,17 +913,23 @@
         {% endif %}
     </div>
 </div>
-    
-    
-</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    // Navigate to project details
+    function goToProject(slug) {
+        window.location.href = `/projects/project/${slug}/`;
+    }
+
+    // View detection details
+    function viewDetectionDetails(detectionId) {
+        window.location.href = `/detection/${detectionId}/`;
+    }
 
     // Add animation on load
     document.addEventListener('DOMContentLoaded', function() {
-        const cards = document.querySelectorAll('.stat-card, .feature-card, .mobile-app-card');
+        const cards = document.querySelectorAll('.stat-card, .feature-card, .mobile-app-card, .project-card, .detection-card');
         cards.forEach((card, index) => {
             setTimeout(() => {
                 card.style.opacity = '0';

@@ -5,9 +5,9 @@
 
 {% block extra_css %}
 <style>
-        :root {
-            --fire-color: #ff5722;
-            --person-color: #2196F3;
+       :root {
+            --fire-color: #ff5722 !important;
+            --person-color: #2196F3 !important;
         }
         
         .page-header {
@@ -83,12 +83,13 @@
             color: white;
         }
         
+        /* Fix: Use direct colors instead of CSS variables that might not be loaded */
         .detection-badge.fire {
-            background: var(--fire-color);
+            background: #ff5722 !important;
         }
         
         .detection-badge.person {
-            background: var(--person-color);
+            background: #2196F3 !important;
         }
         
         .confidence-bar {
@@ -105,12 +106,13 @@
             transition: width 0.3s ease;
         }
         
+        /* Fix: Use direct colors for confidence bars */
         .confidence-fill.fire {
-            background: var(--fire-color);
+            background: #ff5722 !important;
         }
         
         .confidence-fill.person {
-            background: var(--person-color);
+            background: #2196F3 !important;
         }
         
         .camera-info {
@@ -143,6 +145,21 @@
             font-size: 12px;
         }
         
+        /* Loading state for false positive button */
+        .toggle-false-positive.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .toggle-false-positive.loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -165,9 +182,11 @@
             border-color: #dee2e6;
         }
         
+        /* Fix: Ensure active pagination item has white text */
         .pagination .page-item.active .page-link {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            color: white !important;
         }
         
         .filter-badge {
@@ -203,9 +222,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="main-container">
-        <div class="container">
-            <!-- Page Header -->
+
             <div class="page-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -331,7 +348,14 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="camera-info">Camera #{{ detection.camera.id }}</div>
+                                    <div class="camera-info">
+                                        Camera #{{ detection.camera.id }}
+                                        {% if detection.camera.cellular_identifier %}
+                                            <br><small>{{ detection.camera.cellular_identifier }}</small>
+                                        {% elif detection.camera.ip_address %}
+                                            <br><small>{{ detection.camera.ip_address }}:{{ detection.camera.port }}</small>
+                                        {% endif %}
+                                    </div>
                                     <div class="project-info">
                                         <i class="fas fa-project-diagram"></i> {{ detection.camera.project.name }}
                                         {% if detection.camera.farm_boundary %}
@@ -340,10 +364,10 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div>{{ detection.confidence_percentage|floatformat:2 }}%</div>
+                                    <div>{{ detection.confidence_percentage|floatformat:0 }}%</div>
                                     <div class="confidence-bar">
                                         <div class="confidence-fill {{ detection.detection_type.name }}" 
-                                             style="width: {{ detection.confidence_percentage|floatformat:0 }}%"></div>
+                                             style="width: {{ detection.confidence_percentage|default:0 }}%"></div>
                                     </div>
                                 </td>
                                 <td>
@@ -360,20 +384,24 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn btn-primary btn-sm" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#imageModal"
-                                                data-image-src="{{ detection.image_annotated.url }}"
-                                                data-detection-id="{{ detection.id }}"
-                                                title="View Image">
+                                        <!-- Eye icon goes to detail page -->
+                                        <a href="{% url 'detection_management:detection_detail' detection.id %}" 
+                                           class="btn btn-primary btn-sm" 
+                                           title="View Details">
                                             <i class="fas fa-eye"></i>
-                                        </button>
+                                        </a>
+                                        
+                                        
+                                        
+                                        <!-- False positive toggle button -->
                                         <button class="btn btn-outline-warning btn-sm toggle-false-positive" 
                                                 data-detection-id="{{ detection.id }}"
-                                                data-is-false="{{ detection.is_false_positive }}"
+                                                data-is-false="{{ detection.is_false_positive|yesno:'true,false' }}"
                                                 title="{% if detection.is_false_positive %}Mark as Valid{% else %}Mark as False Positive{% endif %}">
                                             <i class="fas fa-flag"></i>
                                         </button>
+                                        
+                                        <!-- Download original button -->
                                         {% if detection.image_original %}
                                         <a href="{{ detection.image_original.url }}" 
                                            target="_blank" 
@@ -446,8 +474,6 @@
                 </div>
                 {% endif %}
             </div>
-        </div>
-    </div>
 
     <!-- Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -469,38 +495,85 @@
             </div>
         </div>
     </div>
+
 {% endblock %}
 
 {% block extra_js %}
+{% csrf_token %}
 <script>
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
     // Handle false positive toggle
     document.querySelectorAll('.toggle-false-positive').forEach(button => {
         button.addEventListener('click', function() {
             const detectionId = this.dataset.detectionId;
             const isFalse = this.dataset.isFalse === 'true';
+            const btn = this;
+            
+            // Add loading state
+            btn.classList.add('loading');
+            btn.disabled = true;
             
             fetch(`/detection/mark-false-positive/${detectionId}/`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',
-                }
+                },
+                body: JSON.stringify({
+                    'is_false_positive': !isFalse
+                })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    showToast('Detection status updated successfully', 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
+                    // Show success message
+                    if (typeof showToast === 'function') {
+                        showToast('Detection status updated successfully', 'success');
+                    }
+                    
+                    // Update button state immediately
+                    const newIsFalse = !isFalse;
+                    btn.dataset.isFalse = newIsFalse.toString();
+                    btn.title = newIsFalse ? 'Mark as Valid' : 'Mark as False Positive';
+                    
+                    // Update status badge in the same row
+                    const statusCell = btn.closest('tr').querySelector('td:nth-child(6)');
+                    if (statusCell) {
+                        if (newIsFalse) {
+                            statusCell.innerHTML = '<span class="false-positive-badge">False Positive</span>';
+                        } else {
+                            statusCell.innerHTML = '<span class="badge bg-success">Valid</span>';
+                        }
+                    }
+                    
+                    // Remove loading state
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    
                 } else {
-                    showToast('Error updating detection status', 'error');
+                    throw new Error(data.message || 'Unknown error occurred');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showToast('Error updating detection status', 'error');
+                
+                // Show error message
+                if (typeof showToast === 'function') {
+                    showToast('Error updating detection status: ' + error.message, 'error');
+                } else {
+                    alert('Error updating detection status: ' + error.message);
+                }
+                
+                // Remove loading state
+                btn.classList.remove('loading');
+                btn.disabled = false;
             });
         });
     });
@@ -511,14 +584,20 @@
         const modalImage = document.getElementById('modalImage');
         const downloadLink = document.getElementById('downloadLink');
         
-        imageModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const imageSrc = button.getAttribute('data-image-src');
-            const detectionId = button.getAttribute('data-detection-id');
-            
-            modalImage.src = imageSrc;
-            downloadLink.href = imageSrc;
-        });
+        if (imageModal) {
+            imageModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const imageSrc = button.getAttribute('data-image-src');
+                const detectionId = button.getAttribute('data-detection-id');
+                
+                if (modalImage && imageSrc) {
+                    modalImage.src = imageSrc;
+                }
+                if (downloadLink && imageSrc) {
+                    downloadLink.href = imageSrc;
+                }
+            });
+        }
     });
 
     // Auto-submit form when filters change

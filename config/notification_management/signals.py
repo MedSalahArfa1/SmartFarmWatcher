@@ -41,7 +41,7 @@ def create_detection_notification(sender, instance, created, **kwargs):
                 user=user,
                 detection=instance,
                 notification_type='detection',
-                title=f'New {instance.detection_type.name} Detection',
+                title=f'New {instance.detection_type.name.capitalize()} Detection',
                 message=f'Camera #{instance.camera.id} detected {instance.detection_type.name} with {instance.confidence_score:.1%} confidence'
             )
             

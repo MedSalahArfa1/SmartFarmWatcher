@@ -1,0 +1,872 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block title %}Detection #{{ detection.id }} - Detection Details{% endblock %}
+
+{% block nav_detections %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.main-container {
+    padding: 30px 0;
+}
+
+.detection-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.detection-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.detection-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.9;
+}
+
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.info-card i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.info-card.fire i { color: #ff5722; }
+.info-card.person i { color: #2196F3; }
+.info-card.camera i { color: var(--warning-color); }
+.info-card.confidence i { color: var(--success-color); }
+
+.info-card h3 {
+    margin: 0 0 5px 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.info-card p {
+    margin: 0;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.detection-image-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.image-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.image-header h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.detection-image {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
+    display: block;
+}
+
+.detection-badge {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detection-badge.fire {
+    background: #ff5722;
+}
+
+.detection-badge.person {
+    background: #2196F3;
+}
+
+.confidence-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.confidence-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.confidence-fill.fire {
+    background: #ff5722;
+}
+
+.confidence-fill.person {
+    background: #2196F3;
+}
+
+.map-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.map-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.map-header h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+/* Map container styling */
+#detection-map {
+    height: 500px !important;
+    width: 100% !important;
+    position: relative;
+    z-index: -1;
+    background: #f8f9fa;
+}
+
+/* Camera marker styling */
+.camera-marker {
+    background: none !important;
+    border: none !important;
+}
+
+/* Leaflet controls */
+.leaflet-control-container {
+    position: relative;
+    z-index: 1000;
+}
+
+.leaflet-tile-pane {
+    z-index: 200;
+}
+
+.leaflet-overlay-pane {
+    z-index: 400;
+}
+
+.leaflet-shadow-pane {
+    z-index: 500;
+}
+
+.leaflet-marker-pane {
+    z-index: 600;
+}
+
+.leaflet-tooltip-pane {
+    z-index: 650;
+}
+
+.leaflet-popup-pane {
+    z-index: 700;
+}
+
+.details-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.detail-group {
+    margin-bottom: 25px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.detail-value {
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.back-link {
+    color: white;
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity 0.3s;
+}
+
+.back-link:hover {
+    color: white;
+    opacity: 1;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-outline-warning.active {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+    color: white;
+}
+
+.status-badge {
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-false-positive {
+    background: #fff3cd;
+    color: #856404;
+}
+
+@media (max-width: 768px) {
+    .detection-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .info-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    #detection-map {
+        height: 400px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detection-header">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <a href="{% url 'detection_management:dashboard' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Detections
+            </a>
+            <h1>Detection #{{ detection.id }}</h1>
+            <div class="d-flex align-items-center gap-3 mt-2">
+                <span class="detection-badge {{ detection.detection_type.name }}">
+                    {% if detection.detection_type.name == 'fire' %}
+                        <i class="fas fa-fire"></i>
+                    {% elif detection.detection_type.name == 'person' %}
+                        <i class="fas fa-user"></i>
+                    {% endif %}
+                    {{ detection.detection_type.name|capfirst }} Detection
+                </span>
+                <span class="status-badge {% if detection.is_false_positive %}status-false-positive{% else %}status-active{% endif %}">
+                    {% if detection.is_false_positive %}
+                        <i class="fas fa-flag"></i> False Positive
+                    {% else %}
+                        <i class="fas fa-check"></i> Valid Detection
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detection-meta">
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ detection.detected_at|date:"M d, Y H:i:s" }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-video"></i>
+                    <span>Camera #{{ detection.camera.id }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ detection.camera.project.name }}</span>
+                </div>
+                {% if detection.camera.farm_boundary %}
+                <div class="meta-item">
+                    <i class="fas fa-vector-square"></i>
+                    <span>Farm Boundary #{{ detection.camera.farm_boundary.id }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="info-cards">
+    <div class="info-card {{ detection.detection_type.name }}">
+        {% if detection.detection_type.name == 'fire' %}
+            <i class="fas fa-fire"></i>
+        {% elif detection.detection_type.name == 'person' %}
+            <i class="fas fa-user"></i>
+        {% endif %}
+        <h3>{{ detection.detection_type.name|capfirst }}</h3>
+        <p>Detection Type</p>
+    </div>
+    <div class="info-card confidence">
+        <i class="fas fa-chart-line"></i>
+        <h3>{{ detection.confidence_percentage|floatformat:1 }}%</h3>
+        <p>Confidence Level</p>
+    </div>
+    <div class="info-card camera">
+        <i class="fas fa-video"></i>
+        <h3>#{{ detection.camera.id }}</h3>
+        <p>Camera ID</p>
+    </div>
+    <div class="info-card">
+        <i class="fas fa-eye"></i>
+        <h3>{{ detection.bounding_boxes|length|default:0 }}</h3>
+        <p>Objects Detected</p>
+    </div>
+</div>
+
+<!-- Detection Image -->
+{% if detection.image_annotated %}
+<div class="detection-image-section">
+    <div class="image-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-image"></i> Detection Image</h3>
+            <div class="d-flex gap-2">
+                {% if detection.image_original %}
+                <a href="{{ detection.image_original.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-download"></i> Original Image
+                </a>
+                {% endif %}
+                <a href="{{ detection.image_annotated.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-external-link-alt"></i> Full Size
+                </a>
+            </div>
+        </div>
+        
+        <!-- Confidence Bar -->
+        <div class="confidence-section">
+            <small class="text-muted">Detection Confidence: {{ detection.confidence_percentage|floatformat:1 }}%</small>
+            <div class="confidence-bar">
+                <div class="confidence-fill {{ detection.detection_type.name }}" 
+                     style="width: {{ detection.confidence_percentage|default:0 }}%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <img src="{{ detection.image_annotated.url }}" 
+             alt="Detection #{{ detection.id }}" 
+             class="detection-image">
+    </div>
+</div>
+{% endif %}
+
+<!-- Camera Location Map -->
+<div class="map-section">
+    <div class="map-header">
+        <h3><i class="fas fa-map"></i> Camera Location & Project Boundaries</h3>
+        <p class="mb-0 text-muted">
+            <span class="badge bg-success me-2">Green Areas</span> Farm Boundaries
+            <span class="badge bg-danger me-2">Red Marker</span> Detection Camera Location
+            <span class="badge bg-primary me-2">Blue Markers</span> Other Project Cameras
+        </p>
+    </div>
+    <div id="detection-map"></div>
+</div>
+
+<!-- Detection Details -->
+<div class="details-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-info-circle"></i> Detection Details</h3>
+        <div class="action-buttons">
+            <button class="btn btn-outline-warning toggle-false-positive {% if detection.is_false_positive %}active{% endif %}" 
+                    data-detection-id="{{ detection.id }}"
+                    data-is-false="{{ detection.is_false_positive }}">
+                <i class="fas fa-flag"></i> 
+                {% if detection.is_false_positive %}Mark as Valid{% else %}Mark as False Positive{% endif %}
+            </button>
+            <a href="{% url 'detection_management:camera_detections' detection.camera.id %}" class="btn btn-outline-primary">
+                <i class="fas fa-video"></i> View All Camera Detections
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="detail-group">
+                <div class="detail-label">Detection ID</div>
+                <div class="detail-value">#{{ detection.id }}</div>
+            </div>
+            
+            <div class="detail-group">
+                <div class="detail-label">Detection Type</div>
+                <div class="detail-value">
+                    <span class="detection-badge {{ detection.detection_type.name }}">
+                        {% if detection.detection_type.name == 'fire' %}
+                            <i class="fas fa-fire"></i>
+                        {% elif detection.detection_type.name == 'person' %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                        {{ detection.detection_type.name|capfirst }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="detail-group">
+                <div class="detail-label">Confidence Score</div>
+                <div class="detail-value">{{ detection.confidence_percentage|floatformat:2 }}%</div>
+            </div>
+            
+            <div class="detail-group">
+                <div class="detail-label">Detected At</div>
+                <div class="detail-value">{{ detection.detected_at|date:"F d, Y \a\t H:i:s" }}</div>
+            </div>
+            
+            {% if detection.notes %}
+            <div class="detail-group">
+                <div class="detail-label">Notes</div>
+                <div class="detail-value">{{ detection.notes }}</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-6">
+            <div class="detail-group">
+                <div class="detail-label">Camera Information</div>
+                <div class="detail-value">
+                    <strong>Camera #{{ detection.camera.id }}</strong><br>
+                    <span class="badge bg-secondary">{{ detection.camera.get_camera_type_display }}</span><br>
+                    {% if detection.camera.get_connection_string %}
+                        <code>{{ detection.camera.get_connection_string }}</code><br>
+                    {% endif %}
+                    <span class="badge {% if detection.camera.is_within_farm_boundary %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if detection.camera.is_within_farm_boundary %}Inside Boundary{% else %}Outside Boundary{% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="detail-group">
+                <div class="detail-label">Project Information</div>
+                <div class="detail-value">
+                    <strong>{{ detection.camera.project.name }}</strong><br>
+                    {% if detection.camera.project.location_city %}
+                        <i class="fas fa-map-marker-alt"></i> {{ detection.camera.project.location_city }}<br>
+                    {% endif %}
+                    <small>Created: {{ detection.camera.project.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+            
+            {% if detection.camera.farm_boundary %}
+            <div class="detail-group">
+                <div class="detail-label">Farm Boundary</div>
+                <div class="detail-value">
+                    <strong>Farm Boundary #{{ detection.camera.farm_boundary.id }}</strong><br>
+                    Area: {{ detection.camera.farm_boundary.area_hectares|floatformat:2 }} hectares<br>
+                    {% if detection.camera.farm_boundary.description %}
+                        {{ detection.camera.farm_boundary.description }}
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if detection.bounding_boxes %}
+            <div class="detail-group">
+                <div class="detail-label">Bounding Boxes</div>
+                <div class="detail-value">
+                    {{ detection.bounding_boxes|length }} object{{ detection.bounding_boxes|length|pluralize }} detected
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('=== DETECTION MAP INITIALIZATION ===');
+
+let detectionMap;
+
+// Get data from Django with safe parsing
+let boundariesData, camerasData, detectionCamera, mapCenter;
+
+try {
+    boundariesData = {{ boundaries_data|safe }} || [];
+    camerasData = {{ cameras_data|safe }} || [];
+    detectionCamera = {{ detection_camera_data|safe }} || null;
+    mapCenter = {{ map_center|safe }} || [36.8065, 10.1815];
+} catch (e) {
+    console.error('Error parsing Django data:', e);
+    boundariesData = [];
+    camerasData = [];
+    detectionCamera = null;
+    mapCenter = [36.8065, 10.1815];
+}
+
+console.log('Parsed data:');
+console.log('- Boundaries:', boundariesData);
+console.log('- Cameras:', camerasData);
+console.log('- Detection Camera:', detectionCamera);
+console.log('- Map Center:', mapCenter);
+
+// Camera icon function
+function getCameraIcon(isDetectionCamera = false, isInside = true) {
+    let backgroundColor;
+    if (isDetectionCamera) {
+        backgroundColor = '#dc3545'; // Red for detection camera
+    } else if (isInside) {
+        backgroundColor = '#2196F3'; // Blue for cameras inside boundary
+    } else {
+        backgroundColor = '#ff9800'; // Orange for cameras outside boundary
+    }
+
+    return L.divIcon({
+        className: 'camera-marker',
+        html: `<div style="
+            background: ${backgroundColor};
+            width: ${isDetectionCamera ? 24 : 20}px;
+            height: ${isDetectionCamera ? 24 : 20}px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: ${isDetectionCamera ? 12 : 10}px;
+        "><i class="fas fa-video"></i></div>`,
+        iconSize: [isDetectionCamera ? 30 : 26, isDetectionCamera ? 30 : 26],
+        iconAnchor: [isDetectionCamera ? 15 : 13, isDetectionCamera ? 15 : 13]
+    });
+}
+
+// Wait for everything to load
+window.addEventListener('load', function() {
+    console.log('Window loaded, initializing detection map...');
+    setTimeout(function() {
+        initializeDetectionMap();
+    }, 1000);
+});
+
+function initializeDetectionMap() {
+    try {
+        console.log('Starting detection map initialization...');
+        
+        // Check container
+        const container = document.getElementById('detection-map');
+        if (!container) {
+            console.error('❌ Map container not found!');
+            return;
+        }
+        console.log('✅ Map container found');
+        
+        // Check Leaflet
+        if (typeof L === 'undefined') {
+            console.error('❌ Leaflet not loaded!');
+            return;
+        }
+        console.log('✅ Leaflet loaded');
+        
+        // Use detection camera position as center if available
+        let center = [36.8065, 10.1815]; // Tunis default
+        if (detectionCamera && !isNaN(detectionCamera.latitude) && !isNaN(detectionCamera.longitude)) {
+            center = [detectionCamera.latitude, detectionCamera.longitude];
+        } else if (mapCenter && Array.isArray(mapCenter) && mapCenter.length === 2 && 
+                   !isNaN(mapCenter[0]) && !isNaN(mapCenter[1])) {
+            center = mapCenter;
+        }
+        console.log('✅ Using center:', center);
+        
+        // Create map
+        detectionMap = L.map('detection-map').setView(center, 15);
+        console.log('✅ Map object created');
+        
+        // Add satellite tile layer
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri'
+        }).addTo(detectionMap);
+        console.log('✅ Satellite tile layer added');
+        
+        // Force resize
+        setTimeout(function() {
+            detectionMap.invalidateSize();
+            console.log('✅ Map size invalidated');
+        }, 100);
+        
+        console.log('✅ Basic detection map initialized successfully');
+        
+        // Add farm boundaries
+        if (boundariesData && Array.isArray(boundariesData) && boundariesData.length > 0) {
+            console.log('Adding farm boundaries...');
+            const boundaryLayers = [];
+            
+            boundariesData.forEach(function(boundary, index) {
+                try {
+                    if (boundary && boundary.geometry) {
+                        const boundaryLayer = L.geoJSON(boundary.geometry, {
+                            style: {
+                                color: '#4CAF50',
+                                weight: 3,
+                                fillOpacity: 0.2,
+                                fillColor: '#4CAF50'
+                            }
+                        }).addTo(detectionMap);
+                        
+                        boundaryLayers.push(boundaryLayer);
+                        
+                        const popupContent = 
+                            '<div style="text-align: center;">' +
+                            '<h6>Farm Boundary #' + (boundary.id || index + 1) + '</h6>' +
+                            '<p><strong>Area:</strong> ' + (boundary.area_hectares || 'N/A') + ' hectares</p>' +
+                            (boundary.description ? '<p><strong>Description:</strong> ' + boundary.description + '</p>' : '') +
+                            '</div>';
+                        
+                        boundaryLayer.bindPopup(popupContent);
+                        console.log('✅ Added boundary #' + (boundary.id || index + 1));
+                    }
+                } catch (e) {
+                    console.error('❌ Error loading boundary:', e);
+                }
+            });
+        }
+        
+        // Add detection camera marker (highlighted)
+        if (detectionCamera && !isNaN(detectionCamera.latitude) && !isNaN(detectionCamera.longitude)) {
+            console.log('Adding detection camera marker...');
+            const detectionIcon = getCameraIcon(true, detectionCamera.is_within_boundary);
+            
+            const detectionMarker = L.marker([detectionCamera.latitude, detectionCamera.longitude], {
+                icon: detectionIcon
+            }).addTo(detectionMap);
+            
+            let connectionInfo = '';
+            if (detectionCamera.camera_type === 'ip') {
+                connectionInfo = `${detectionCamera.ip_address || ''}:${detectionCamera.port || ''}`;
+            } else if (detectionCamera.camera_type === 'cellular') {
+                connectionInfo = detectionCamera.cellular_identifier || '';
+            }
+            
+            const detectionPopupContent = 
+                '<div class="camera-popup">' +
+                '<h6><strong>🎯 Detection Camera #' + detectionCamera.id + '</strong></h6>' +
+                '<p><span class="badge bg-danger">DETECTION SOURCE</span></p>' +
+                '<p><span class="badge bg-secondary">' + (detectionCamera.camera_type || 'Unknown').toUpperCase() + '</span></p>' +
+                (connectionInfo ? '<p><code>' + connectionInfo + '</code></p>' : '') +
+                '<p><span class="badge ' + (detectionCamera.is_within_boundary ? 'bg-success' : 'bg-warning') + '">' +
+                (detectionCamera.is_within_boundary ? 'Inside Boundary' : 'Outside Boundary') + '</span></p>' +
+                '<small>Farm Boundary #' + (detectionCamera.farm_boundary_id || 'N/A') + '</small>' +
+                '</div>';
+            
+            detectionMarker.bindPopup(detectionPopupContent);
+            console.log('✅ Added detection camera marker');
+            
+            // Center map on detection camera
+            detectionMap.setView([detectionCamera.latitude, detectionCamera.longitude], 16);
+        }
+        
+        // Add other project cameras
+        if (camerasData && Array.isArray(camerasData) && camerasData.length > 0) {
+            console.log('Adding other camera markers...');
+            camerasData.forEach(function(camera, index) {
+                try {
+                    if (camera && !isNaN(camera.latitude) && !isNaN(camera.longitude)) {
+                        // Skip if this is the detection camera (already added)
+                        if (detectionCamera && camera.id === detectionCamera.id) {
+                            return;
+                        }
+                        
+                        const isInside = camera.is_within_boundary;
+                        const cameraIcon = getCameraIcon(false, isInside);
+                        
+                        const marker = L.marker([camera.latitude, camera.longitude], {
+                            icon: cameraIcon
+                        }).addTo(detectionMap);
+                        
+                        let connectionInfo = '';
+                        if (camera.camera_type === 'ip') {
+                            connectionInfo = `${camera.ip_address || ''}:${camera.port || ''}`;
+                        } else if (camera.camera_type === 'cellular') {
+                            connectionInfo = camera.cellular_identifier || '';
+                        }
+                        
+                        const popupContent = 
+                            '<div class="camera-popup">' +
+                            '<h6>Camera #' + camera.id + '</h6>' +
+                            '<p><span class="badge bg-secondary">' + (camera.camera_type || 'Unknown').toUpperCase() + '</span></p>' +
+                            (connectionInfo ? '<p><code>' + connectionInfo + '</code></p>' : '') +
+                            '<p><span class="badge ' + (isInside ? 'bg-success' : 'bg-warning') + '">' +
+                            (isInside ? 'Inside Boundary' : 'Outside Boundary') + '</span></p>' +
+                            '<small>Farm Boundary #' + (camera.farm_boundary_id || 'N/A') + '</small>' +
+                            '</div>';
+                        
+                        marker.bindPopup(popupContent);
+                        console.log('✅ Added camera #' + camera.id);
+                    }
+                } catch (e) {
+                    console.error('❌ Error loading camera:', e);
+                }
+            });
+        }
+        
+        // Add scale control
+        L.control.scale().addTo(detectionMap);
+        
+        // Final resize
+        setTimeout(function() {
+            detectionMap.invalidateSize();
+            console.log('✅ Final detection map resize completed');
+            console.log('=== DETECTION MAP INITIALIZATION SUCCESS ===');
+        }, 500);
+        
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR:', error);
+        
+        const container = document.getElementById('detection-map');
+        if (container) {
+            container.innerHTML = 
+                '<div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #666; flex-direction: column;">' +
+                '<i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px; color: #dc3545;"></i>' +
+                '<h5>Map Loading Failed</h5>' +
+                '<p>Check console for details</p>' +
+                '<button onclick="location.reload()" class="btn btn-primary btn-sm">Reload Page</button>' +
+                '</div>';
+        }
+    }
+}
+
+// Handle false positive toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.querySelector('.toggle-false-positive');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const detectionId = this.dataset.detectionId;
+            const isFalse = this.dataset.isFalse === 'true';
+            
+            fetch(`/detection/mark-false-positive/${detectionId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof showToast === 'function') {
+                        showToast('Detection status updated successfully', 'success');
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast('Error updating detection status', 'error');
+                    } else {
+                        alert('Error updating detection status');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('Error updating detection status', 'error');
+                } else {
+                    alert('Error updating detection status');
+                }
+            });
+        });
+    }
+});
+
+// Handle resize
+window.addEventListener('resize', function() {
+    if (detectionMap) {
+        setTimeout(function() {
+            detectionMap.invalidateSize();
+        }, 100);
+    }
+});
+
+// Debug helper
+window.debugDetectionMap = function() {
+    console.log('=== DETECTION MAP DEBUG INFO ===');
+    console.log('Map object:', detectionMap);
+    console.log('Container:', document.getElementById('detection-map'));
+    console.log('Leaflet:', typeof L !== 'undefined' ? 'Loaded' : 'Not loaded');
+    console.log('Data:', { boundariesData, camerasData, detectionCamera, mapCenter });
+};
+
+console.log('Detection map script loaded. Call debugDetectionMap() in console for debug info.');
+</script>
+
+{% csrf_token %}
+<script>
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+</script>
+{% endblock %}

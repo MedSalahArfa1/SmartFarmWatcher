@@ -28,6 +28,9 @@ urlpatterns = [
     path('clients/', include('client_management.urls')),
     path('api/', include('notification_management.urls')),
     path('dashboard/', include('dashboard.urls')),
+
+    
+    path('api/detection/', include('detection_management.api_urls')),
 ]
 
 if settings.DEBUG:

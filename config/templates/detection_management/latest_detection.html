@@ -7,8 +7,8 @@
 {% block extra_css %}
 <style>
         :root {
-            --fire-color: #ff5722;
-            --person-color: #2196F3;
+            --fire-color: #ff5722 !important;
+            --person-color: #2196F3 !important;
         }
         
         .dashboard-header {
@@ -126,11 +126,14 @@
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 15px;
+            position: relative;
         }
         
         .confidence-fill {
             height: 100%;
             transition: width 0.3s ease;
+            min-width: 2px;
+            max-width: 100%;
         }
         
         .confidence-fill.fire {
@@ -263,11 +266,7 @@
                     </div>
                 </div>
                 
-                {% if item.detection.is_false_positive %}
-                <div class="alert alert-warning alert-sm py-2">
-                    <i class="fas fa-exclamation-triangle"></i> Marked as False Positive
-                </div>
-                {% endif %}
+                
                 
                 <div class="action-buttons">
                     <a href="/detection/camera/{{ item.camera.id }}/" class="btn btn-primary btn-sm">
