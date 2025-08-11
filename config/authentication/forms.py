@@ -33,7 +33,7 @@ class SupervisorSignUpForm(UserCreationForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Phone Number (Optional)'
+            'placeholder': '+21612345678'
         })
     )
     gender = forms.ChoiceField(
@@ -100,7 +100,7 @@ class ClientSignUpForm(UserCreationForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Phone Number (Optional)'
+            'placeholder': '+21612345678'
         })
     )
     gender = forms.ChoiceField(

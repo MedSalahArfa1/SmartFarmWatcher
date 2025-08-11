@@ -2,7 +2,7 @@
 
 {% block title %}Detection #{{ detection.id }} - Detection Details{% endblock %}
 
-{% block nav_detections %}active{% endblock %}
+{% block nav_detections_history %}active{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -38,6 +38,7 @@
     opacity: 0.9;
 }
 
+/* Updated KPI Cards - Dashboard Style */
 .info-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -47,35 +48,133 @@
 
 .info-card {
     background: white;
+    border-radius: 15px;
     padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: none;
+    transition: all 0.3s ease;
+    height: 100%;
     position: relative;
-    z-index: 10;
+    overflow: hidden;
 }
 
-.info-card i {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
+/* Specific stat card styling for each metric */
+.info-card.fire::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #ff5722, #e64a19);
 }
 
-.info-card.fire i { color: #ff5722; }
-.info-card.person i { color: #2196F3; }
-.info-card.camera i { color: var(--warning-color); }
-.info-card.confidence i { color: var(--success-color); }
+.info-card.person::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
 
-.info-card h3 {
-    margin: 0 0 5px 0;
-    font-size: 2rem;
-    font-weight: 600;
+.info-card.smoke::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #9E9E9E, #757575);
+}
+
+.info-card.confidence::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--success-color), #1e7e34);
+}
+
+.info-card.camera::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--warning-color), #e0a800);
+}
+
+.info-card.objects::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--info-color), #138496);
+}
+
+.info-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.stat-icon.fire { background: linear-gradient(135deg, #ff5722, #e64a19); }
+.stat-icon.person { background: linear-gradient(135deg, #2196F3, #1976D2); }
+.stat-icon.smoke { background: linear-gradient(135deg, #9E9E9E, #757575); }
+.stat-icon.confidence { background: linear-gradient(135deg, var(--success-color), #1e7e34); }
+.stat-icon.camera { background: linear-gradient(135deg, var(--warning-color), #e0a800); }
+.stat-icon.objects { background: linear-gradient(135deg, var(--info-color), #138496); }
+
+.stat-number {
+    font-size: 2.8rem;
+    font-weight: 700;
     color: #2c3e50;
+    margin: 0;
+    line-height: 1;
 }
 
-.info-card p {
-    margin: 0;
+.stat-label {
     color: #6c757d;
+    font-size: 14px;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+/* Special styling for percentage and ID displays */
+.stat-percentage {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1;
+}
+
+.stat-id {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1;
 }
 
 .detection-image-section {
@@ -126,6 +225,10 @@
     background: #2196F3;
 }
 
+.detection-badge.smoke {
+    background: #9E9E9E;
+}
+
 .confidence-section {
     background: #f8f9fa;
     padding: 15px;
@@ -153,6 +256,10 @@
 
 .confidence-fill.person {
     background: #2196F3;
+}
+
+.confidence-fill.smoke {
+    background: #9E9E9E;
 }
 
 .map-section {
@@ -327,6 +434,8 @@
                         <i class="fas fa-fire"></i>
                     {% elif detection.detection_type.name == 'person' %}
                         <i class="fas fa-user"></i>
+                    {% elif detection.detection_type.name == 'smoke' %}
+                        <i class="fas fa-cloud"></i>
                     {% endif %}
                     {{ detection.detection_type.name|capfirst }} Detection
                 </span>
@@ -362,31 +471,41 @@
     </div>
 </div>
 
-<!-- Statistics Cards -->
+<!-- Statistics Cards with Dashboard Style -->
 <div class="info-cards">
     <div class="info-card {{ detection.detection_type.name }}">
-        {% if detection.detection_type.name == 'fire' %}
-            <i class="fas fa-fire"></i>
-        {% elif detection.detection_type.name == 'person' %}
-            <i class="fas fa-user"></i>
-        {% endif %}
-        <h3>{{ detection.detection_type.name|capfirst }}</h3>
-        <p>Detection Type</p>
+        <div class="stat-icon {{ detection.detection_type.name }}">
+            {% if detection.detection_type.name == 'fire' %}
+                <i class="fas fa-fire"></i>
+            {% elif detection.detection_type.name == 'person' %}
+                <i class="fas fa-user"></i>
+            {% elif detection.detection_type.name == 'smoke' %}
+                <i class="fas fa-cloud"></i>
+            {% endif %}
+        </div>
+        <h3 class="stat-number">{{ detection.detection_type.name|capfirst }}</h3>
+        <p class="stat-label">Detection Type</p>
     </div>
     <div class="info-card confidence">
-        <i class="fas fa-chart-line"></i>
-        <h3>{{ detection.confidence_percentage|floatformat:1 }}%</h3>
-        <p>Confidence Level</p>
+        <div class="stat-icon confidence">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="stat-percentage">{{ detection.confidence_percentage|floatformat:1 }}%</h3>
+        <p class="stat-label">Confidence Level</p>
     </div>
     <div class="info-card camera">
-        <i class="fas fa-video"></i>
-        <h3>#{{ detection.camera.id }}</h3>
-        <p>Camera ID</p>
+        <div class="stat-icon camera">
+            <i class="fas fa-video"></i>
+        </div>
+        <h3 class="stat-id">#{{ detection.camera.id }}</h3>
+        <p class="stat-label">Camera ID</p>
     </div>
-    <div class="info-card">
-        <i class="fas fa-eye"></i>
-        <h3>{{ detection.bounding_boxes|length|default:0 }}</h3>
-        <p>Objects Detected</p>
+    <div class="info-card objects">
+        <div class="stat-icon objects">
+            <i class="fas fa-eye"></i>
+        </div>
+        <h3 class="stat-number">{{ detection.bounding_boxes|length|default:0 }}</h3>
+        <p class="stat-label">Objects Detected</p>
     </div>
 </div>
 
@@ -470,6 +589,8 @@
                             <i class="fas fa-fire"></i>
                         {% elif detection.detection_type.name == 'person' %}
                             <i class="fas fa-user"></i>
+                        {% elif detection.detection_type.name == 'smoke' %}
+                            <i class="fas fa-cloud"></i>
                         {% endif %}
                         {{ detection.detection_type.name|capfirst }}
                     </span>
@@ -842,6 +963,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Add animation on load - same as dashboard
+    const cards = document.querySelectorAll('.info-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 100);
+    });
 });
 
 // Handle resize

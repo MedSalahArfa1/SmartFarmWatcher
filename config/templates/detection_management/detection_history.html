@@ -8,26 +8,29 @@
        :root {
             --fire-color: #ff5722 !important;
             --person-color: #2196F3 !important;
+            --smoke-color: #9E9E9E !important;
         }
         
-        .page-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .page-header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            font-weight: 600;
-        }
-        
-        .page-header p {
-            margin: 10px 0 0;
-            opacity: 0.9;
-        }
+        .welcome-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 35px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
         
         .search-section {
             background: white;
@@ -83,13 +86,17 @@
             color: white;
         }
         
-        /* Fix: Use direct colors instead of CSS variables that might not be loaded */
+        /* Updated detection badge colors including smoke */
         .detection-badge.fire {
             background: #ff5722 !important;
         }
         
         .detection-badge.person {
             background: #2196F3 !important;
+        }
+
+        .detection-badge.smoke {
+            background: #9E9E9E !important;
         }
         
         .confidence-bar {
@@ -106,13 +113,17 @@
             transition: width 0.3s ease;
         }
         
-        /* Fix: Use direct colors for confidence bars */
+        /* Updated confidence bar colors including smoke */
         .confidence-fill.fire {
             background: #ff5722 !important;
         }
         
         .confidence-fill.person {
             background: #2196F3 !important;
+        }
+
+        .confidence-fill.smoke {
+            background: #9E9E9E !important;
         }
         
         .camera-info {
@@ -223,19 +234,21 @@
 
 {% block content %}
 
-            <div class="page-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1><i class="fas fa-history"></i> Detection History</h1>
-                        <p>Complete history of all AI detections from your farm cameras</p>
-                    </div>
-                    <div>
-                        <button class="btn btn-light btn-lg" onclick="location.reload()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                    </div>
-                </div>
+            <div class="welcome-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="mb-2">Detection History</h1>
+            <p class="mb-0 opacity-75">
+                Complete history of all AI detections from your farm cameras
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-flex align-items-center justify-content-md-end">
+                <i class="fas fa-history fa-3x opacity-50"></i>
             </div>
+        </div>
+    </div>
+</div>
 
             <!-- Search and Filters -->
             <div class="search-section">
@@ -252,6 +265,7 @@
                             <option value="">All Types</option>
                             <option value="fire" {% if detection_type == 'fire' %}selected{% endif %}>Fire</option>
                             <option value="person" {% if detection_type == 'person' %}selected{% endif %}>Person</option>
+                            <option value="smoke" {% if detection_type == 'smoke' %}selected{% endif %}>Smoke</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -343,6 +357,8 @@
                                             <i class="fas fa-fire"></i>
                                         {% elif detection.detection_type.name == 'person' %}
                                             <i class="fas fa-user"></i>
+                                        {% elif detection.detection_type.name == 'smoke' %}
+                                            <i class="fas fa-smog"></i>
                                         {% endif %}
                                         {{ detection.detection_type.name|capfirst }}
                                     </span>
@@ -394,11 +410,15 @@
                                         
                                         
                                         <!-- False positive toggle button -->
-                                        <button class="btn btn-outline-warning btn-sm toggle-false-positive" 
+                                        <button class="btn btn-sm toggle-false-positive {% if detection.is_false_positive %}btn-outline-success{% else %}btn-outline-warning{% endif %}" 
                                                 data-detection-id="{{ detection.id }}"
                                                 data-is-false="{{ detection.is_false_positive|yesno:'true,false' }}"
                                                 title="{% if detection.is_false_positive %}Mark as Valid{% else %}Mark as False Positive{% endif %}">
-                                            <i class="fas fa-flag"></i>
+                                            {% if detection.is_false_positive %}
+                                                <i class="fas fa-check-circle"></i>
+                                            {% else %}
+                                                <i class="fas fa-flag"></i>
+                                            {% endif %}
                                         </button>
                                         
                                         <!-- Download original button -->
@@ -467,9 +487,7 @@
                     </a>
                     {% else %}
                     <p>No AI detections have been recorded yet.</p>
-                    <a href="{% url 'detection_management:detection_dashboard' %}" class="btn btn-primary">
-                        <i class="fas fa-tachometer-alt"></i> View Dashboard
-                    </a>
+                    
                     {% endif %}
                 </div>
                 {% endif %}
@@ -506,77 +524,89 @@
 
     // Handle false positive toggle
     document.querySelectorAll('.toggle-false-positive').forEach(button => {
-        button.addEventListener('click', function() {
-            const detectionId = this.dataset.detectionId;
-            const isFalse = this.dataset.isFalse === 'true';
-            const btn = this;
-            
-            // Add loading state
-            btn.classList.add('loading');
-            btn.disabled = true;
-            
-            fetch(`/detection/mark-false-positive/${detectionId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    'is_false_positive': !isFalse
-                })
+    button.addEventListener('click', function() {
+        const detectionId = this.dataset.detectionId;
+        const isFalse = this.dataset.isFalse === 'true';
+        const btn = this;
+        
+        // Add loading state
+        btn.classList.add('loading');
+        btn.disabled = true;
+        
+        fetch(`/detection/mark-false-positive/${detectionId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'is_false_positive': !isFalse
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    if (typeof showToast === 'function') {
-                        showToast('Detection status updated successfully', 'success');
-                    }
-                    
-                    // Update button state immediately
-                    const newIsFalse = !isFalse;
-                    btn.dataset.isFalse = newIsFalse.toString();
-                    btn.title = newIsFalse ? 'Mark as Valid' : 'Mark as False Positive';
-                    
-                    // Update status badge in the same row
-                    const statusCell = btn.closest('tr').querySelector('td:nth-child(6)');
-                    if (statusCell) {
-                        if (newIsFalse) {
-                            statusCell.innerHTML = '<span class="false-positive-badge">False Positive</span>';
-                        } else {
-                            statusCell.innerHTML = '<span class="badge bg-success">Valid</span>';
-                        }
-                    }
-                    
-                    // Remove loading state
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
-                    
-                } else {
-                    throw new Error(data.message || 'Unknown error occurred');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                
-                // Show error message
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message
                 if (typeof showToast === 'function') {
-                    showToast('Error updating detection status: ' + error.message, 'error');
+                    showToast('Detection status updated successfully', 'success');
+                }
+                
+                // Update button state immediately
+                const newIsFalse = !isFalse;
+                btn.dataset.isFalse = newIsFalse.toString();
+                
+                // Update button appearance and text
+                if (newIsFalse) {
+                    // Now false positive - show check button (green)
+                    btn.className = 'btn btn-sm toggle-false-positive btn-success';
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    btn.title = 'Mark as Valid';
                 } else {
-                    alert('Error updating detection status: ' + error.message);
+                    // Now valid - show flag button (warning outline)
+                    btn.className = 'btn btn-sm toggle-false-positive btn-outline-warning';
+                    btn.innerHTML = '<i class="fas fa-flag"></i>';
+                    btn.title = 'Mark as False Positive';
+                }
+                
+                // Update status badge in the same row
+                const statusCell = btn.closest('tr').querySelector('td:nth-child(6)');
+                if (statusCell) {
+                    if (newIsFalse) {
+                        statusCell.innerHTML = '<span class="false-positive-badge">False Positive</span>';
+                    } else {
+                        statusCell.innerHTML = '<span class="badge bg-success">Valid</span>';
+                    }
                 }
                 
                 // Remove loading state
                 btn.classList.remove('loading');
                 btn.disabled = false;
-            });
+                
+            } else {
+                throw new Error(data.message || 'Unknown error occurred');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+            // Show error message
+            if (typeof showToast === 'function') {
+                showToast('Error updating detection status: ' + error.message, 'error');
+            } else {
+                alert('Error updating detection status: ' + error.message);
+            }
+            
+            // Remove loading state
+            btn.classList.remove('loading');
+            btn.disabled = false;
         });
     });
+});
 
     // Handle image modal
     document.addEventListener('DOMContentLoaded', function() {

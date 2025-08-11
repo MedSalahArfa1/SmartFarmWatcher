@@ -49,10 +49,10 @@ class SignUpView(View):
                     user.save()
                     
                     # Assign supervisor role
-                    UserProjectRole.objects.create(
-                        user=user,
-                        role='supervisor',
-                    )
+                    #UserProjectRole.objects.create(
+                        #user=user,
+                        #role='supervisor',
+                    #)
                     
                     login(request, user)
                     messages.success(request, f'Welcome {user.get_full_name()}! Your account has been created successfully.')

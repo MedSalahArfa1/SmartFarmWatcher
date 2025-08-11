@@ -23,9 +23,12 @@ class ClientListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        """Filter clients based on search query and status."""
-        # Only show clients (assuming you have a user_type field)
-        queryset = User.objects.filter(user_type='client').select_related().prefetch_related('project_roles__project')
+        """Filter clients based on search query and status - only clients from supervisor's projects."""
+        # Only show clients associated with projects created by the logged-in supervisor
+        queryset = User.objects.filter(
+            user_type='client',
+            project_roles__project__created_by=self.request.user  # Assuming 'created_by' field on Project model
+        ).distinct().select_related().prefetch_related('project_roles__project')
         
         # Search functionality
         search_query = self.request.GET.get('search', '').strip()
@@ -56,9 +59,12 @@ class ClientListView(LoginRequiredMixin, ListView):
 
 @login_required
 def client_list_view(request):
-    """Function-based view alternative for client list."""
-    # Get all clients with related data
-    clients = User.objects.filter(user_type='client').select_related().prefetch_related('project_roles__project')
+    """Function-based view alternative for client list - filtered by supervisor's projects."""
+    # Get clients associated with projects created by the logged-in supervisor
+    clients = User.objects.filter(
+        user_type='client',
+        project_roles__project__created_by=request.user  # Filter by supervisor
+    ).distinct().select_related().prefetch_related('project_roles__project')
     
     # Search functionality
     search_query = request.GET.get('search', '').strip()
@@ -95,22 +101,33 @@ def client_list_view(request):
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
-    """Detail view for individual client."""
+    """Detail view for individual client - only clients from supervisor's projects."""
     model = User
     template_name = 'client_management/client_detail.html'
     context_object_name = 'client'
     
     def get_queryset(self):
-        return User.objects.filter(user_type='client').prefetch_related('project_roles__project')
+        return User.objects.filter(
+            user_type='client',
+            project_roles__project__created_by=self.request.user
+        ).distinct().prefetch_related('project_roles__project')
 
 
 @login_required
 def client_detail_view(request, client_id):
-    """Function-based view for client details."""
-    client = get_object_or_404(User, id=client_id, user_type='client')
+    """Function-based view for client details - only supervisor's project clients."""
+    # Ensure the client belongs to a project created by the logged-in supervisor
+    client = get_object_or_404(
+        User, 
+        id=client_id, 
+        user_type='client',
+        project_roles__project__created_by=request.user
+    )
     
-    # Get client's projects and roles
-    project_roles = client.project_roles.select_related('project').all()
+    # Get client's projects that belong to this supervisor
+    project_roles = client.project_roles.filter(
+        project__created_by=request.user
+    ).select_related('project').all()
     
     context = {
         'client': client,
@@ -123,9 +140,15 @@ def client_detail_view(request, client_id):
 @login_required
 @require_POST
 def toggle_client_status(request, client_id):
-    """Toggle client active/inactive status via AJAX."""
+    """Toggle client active/inactive status via AJAX - only supervisor's clients."""
     try:
-        client = get_object_or_404(User, id=client_id, user_type='client')
+        # Ensure the client belongs to a project created by the logged-in supervisor
+        client = get_object_or_404(
+            User, 
+            id=client_id, 
+            user_type='client',
+            project_roles__project__created_by=request.user
+        )
         
         # Parse JSON data
         data = json.loads(request.body)
@@ -164,8 +187,13 @@ def add_client_view(request):
 
 @login_required
 def edit_client_view(request, client_id):
-    """View to edit an existing client."""
-    client = get_object_or_404(User, id=client_id, user_type='client')
+    """View to edit an existing client - only supervisor's project clients."""
+    client = get_object_or_404(
+        User, 
+        id=client_id, 
+        user_type='client',
+        project_roles__project__created_by=request.user
+    )
     
     if request.method == 'POST':
         # Handle form submission
@@ -178,8 +206,13 @@ def edit_client_view(request, client_id):
 
 @login_required
 def delete_client_view(request, client_id):
-    """View to delete a client."""
-    client = get_object_or_404(User, id=client_id, user_type='client')
+    """View to delete a client - only supervisor's project clients."""
+    client = get_object_or_404(
+        User, 
+        id=client_id, 
+        user_type='client',
+        project_roles__project__created_by=request.user
+    )
     
     if request.method == 'POST':
         client_name = client.get_full_name() or client.username
@@ -206,14 +239,17 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
-    """Update an existing client."""
+    """Update an existing client - only supervisor's project clients."""
     model = User
     template_name = 'client_management/edit_client.html'
     fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'is_active']
     success_url = reverse_lazy('client_management:client_list')
     
     def get_queryset(self):
-        return User.objects.filter(user_type='client')
+        return User.objects.filter(
+            user_type='client',
+            project_roles__project__created_by=self.request.user
+        ).distinct()
     
     def form_valid(self, form):
         messages.success(self.request, 'Client updated successfully!')
@@ -221,14 +257,17 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class ClientDeleteView(LoginRequiredMixin, DeleteView):
-    """Delete a client."""
+    """Delete a client - only supervisor's project clients."""
     model = User
     template_name = 'client_management/delete_client.html'
     success_url = reverse_lazy('client_management:client_list')
     context_object_name = 'client'
     
     def get_queryset(self):
-        return User.objects.filter(user_type='client')
+        return User.objects.filter(
+            user_type='client',
+            project_roles__project__created_by=self.request.user
+        ).distinct()
     
     def delete(self, request, *args, **kwargs):
         client = self.get_object()
@@ -241,9 +280,18 @@ class ClientDeleteView(LoginRequiredMixin, DeleteView):
 # Additional utility views
 @login_required
 def client_projects_view(request, client_id):
-    """View client's assigned projects."""
-    client = get_object_or_404(User, id=client_id, user_type='client')
-    project_roles = client.project_roles.select_related('project').all()
+    """View client's assigned projects - only supervisor's projects."""
+    client = get_object_or_404(
+        User, 
+        id=client_id, 
+        user_type='client',
+        project_roles__project__created_by=request.user
+    )
+    
+    # Only show projects created by the logged-in supervisor
+    project_roles = client.project_roles.filter(
+        project__created_by=request.user
+    ).select_related('project').all()
     
     context = {
         'client': client,
@@ -255,16 +303,23 @@ def client_projects_view(request, client_id):
 
 @login_required
 def assign_project_to_client(request, client_id):
-    """Assign a project to a client."""
-    client = get_object_or_404(User, id=client_id, user_type='client')
+    """Assign a project to a client - only supervisor's projects."""
+    client = get_object_or_404(
+        User, 
+        id=client_id, 
+        user_type='client',
+        project_roles__project__created_by=request.user
+    )
     
     if request.method == 'POST':
         # Handle project assignment
         # You'll need to implement this based on your ProjectRole model
         pass
     
-    # Get available projects for assignment
-    # available_projects = Project.objects.exclude(projectrole__user=client)
+    # Get available projects for assignment (only supervisor's projects)
+    # available_projects = Project.objects.filter(
+    #     created_by=request.user
+    # ).exclude(projectrole__user=client)
     
     context = {
         'client': client,

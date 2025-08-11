@@ -471,7 +471,7 @@
     .section-title {
         font-size: 1.4rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--primary-color);
         margin: 0;
         display: flex;
         align-items: center;
@@ -669,7 +669,7 @@
             </p>
             {% if user.user_type == 'supervisor' %}
             <a href="{% url 'project_management:create_project_wizard' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Create Your First Project
+                Create Your First Project
             </a>
             {% endif %}
         </div>
@@ -746,7 +746,7 @@
             <h5>No Detections Yet</h5>
             <p>No AI detections have been recorded from your cameras yet.</p>
             <a href="{% url 'detection_management:dashboard' %}" class="btn btn-primary">
-                <i class="fas fa-tachometer-alt"></i> View Detection Dashboard
+                View Detection Dashboard
             </a>
         </div>
         {% endif %}

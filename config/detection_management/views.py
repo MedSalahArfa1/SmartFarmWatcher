@@ -33,8 +33,8 @@ try:
     from ultralytics import YOLO
     
     # Model paths
-    fire_model_path = 'models/FireShield.pt'
-    person_model_path = 'models/yolo11s.pt'
+    fire_model_path = 'ai_models/FireShield.pt'
+    person_model_path = 'ai_models/yolo11s.pt'
     
     # Load FireShield model (detects fire and smoke)
     print(f"Checking FireShield model: {fire_model_path}")

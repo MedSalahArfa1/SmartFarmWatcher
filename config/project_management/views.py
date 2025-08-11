@@ -215,7 +215,7 @@ def _handle_project_creation(request):
         print(f"Total cameras created: {cameras_created}")
     
     messages.success(request, f'Project "{project.name}" created successfully with {len(created_boundaries)} boundaries and {cameras_created} cameras!')
-    return redirect('project_detail', slug=project.slug)
+    return redirect('project_management:project_detail', slug=project.slug)
 
 
 @csrf_exempt

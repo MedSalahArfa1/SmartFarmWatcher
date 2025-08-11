@@ -441,7 +441,7 @@
 
                     <!-- Step 1: General Information -->
                     <div class="form-section {% if step == 1 %}active{% endif %}" id="step1">
-                        <h3 class="mb-4"><i class="fas fa-info-circle"></i> General Project Information</h3>
+                        <h4 class="mb-4" style="color: var(--primary-color);"><i class="fas fa-info-circle"></i> General Project Information</h4>
                         
                         <form method="post" id="project-creation-form" action="{% url 'project_management:create_project_wizard' %}">
     {% csrf_token %}
@@ -494,7 +494,7 @@
 
                     <!-- Step 2: Farm Boundary Mapping -->
                     <div class="form-section {% if step == 2 %}active{% endif %}" id="step2">
-    <h3 class="mb-4"><i class="fas fa-map"></i> Draw Your Farm Boundary</h3>
+    <h4 class="mb-4" style="color: var(--primary-color);"><i class="fas fa-map"></i> Draw Your Farm Boundary</h4>
     
     <div class="map-instructions">
         <i class="fas fa-info-circle"></i>
@@ -519,7 +519,7 @@
 
                     <!-- Step 3: Camera Locations -->
 <div class="form-section {% if step == 3 %}active{% endif %}" id="step3">
-    <h3 class="mb-4"><i class="fas fa-video"></i> Add Camera Locations</h3>
+    <h4 class="mb-4" style="color: var(--primary-color);"><i class="fas fa-video"></i> Add Camera Locations</h4>
     
     <div class="map-instructions">
         <i class="fas fa-info-circle"></i>
@@ -569,7 +569,7 @@
 
                     <!-- Step 4: Finalize Project -->
                     <div class="form-section {% if step == 4 %}active{% endif %}" id="step4">
-    <h3 class="mb-4"><i class="fas fa-check-circle"></i> Finalize Your Project</h3>
+    <h4 class="mb-4" style="color: var(--primary-color);"><i class="fas fa-check-circle"></i> Finalize Your Project</h4>
     
     <!-- Project Summary -->
     <div class="summary-section">
@@ -596,7 +596,7 @@
         <button type="button" class="btn btn-secondary" onclick="goToStep(3)">
             <i class="fas fa-arrow-left"></i> Previous
         </button>
-        <button type="button" class="btn btn-success btn-lg" onclick="createProject()">
+        <button type="button" class="btn btn-primary btn-lg" onclick="createProject()">
             <i class="fas fa-rocket"></i> Create Project
         </button>
     </div>

@@ -12,46 +12,82 @@
     }
     
     .page-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 15px;
-        margin-bottom: 30px;
-        position: relative;
-        overflow: hidden;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.client-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.9;
+}
+
+    /* Status badge styling - same as project details page */
+    .client-status-badge {
+        background: white !important;
+        color: var(--primary-color) !important;
+        border: 2px solid var(--primary-color) !important;
+        padding: 8px 16px !important;
+        border-radius: 25px !important;
+        font-weight: 600 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
     }
-    
-    .page-header::before {
-        content: '';
-        position: absolute;
-        top: -50px;
-        right: -50px;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
+
+    .client-status-badge.inactive {
+        background: white !important;
+        color: #dc3545 !important;
+        border: 2px solid #dc3545 !important;
     }
-    
-    .client-avatar-large {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
+
+    /* Improved back button styling */
+    .back-link {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 28px;
-        font-weight: 600;
-        margin-right: 20px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 8px 16px;
+        border-radius: 25px;
+        color: white !important;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 15px;
     }
-    
-    .client-avatar-large img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
+
+    .back-link:hover {
+        background: rgba(255, 255, 255, 0.25);
+        color: white !important;
+        transform: translateX(-3px);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .back-link i {
+        transition: transform 0.3s ease;
+    }
+
+    .back-link:hover i {
+        transform: translateX(-2px);
     }
     
     .info-card {
@@ -68,13 +104,67 @@
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     }
     
-    .info-card h5 {
+    .info-card h4 {
         color: var(--primary-color);
         margin-bottom: 20px;
         font-weight: 600;
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+
+    /* Enhanced Personal Information Card with Profile Picture */
+    .personal-info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .personal-info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .client-info-layout {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+    }
+
+    .client-info-content {
+        flex: 1;
+    }
+
+    .client-avatar-side {
+        width: 150px;
+        height: 150px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 48px;
+        font-weight: 600;
+        border: 4px solid rgba(76, 175, 80, 0.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .client-avatar-side:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .client-avatar-side img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 16px;
     }
     
     .info-row {
@@ -103,21 +193,50 @@
     }
     
     .status-badge {
-        padding: 6px 15px;
-        border-radius: 20px;
+        padding: 8px 18px;
+        border-radius: 25px;
         font-size: 12px;
-        font-weight: 500;
+        font-weight: 600;
         text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
     
     .status-active {
-        background: #d4edda;
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
         color: #155724;
+        border: 1px solid #c3e6cb;
     }
     
     .status-inactive {
-        background: #f8d7da;
+        background: linear-gradient(135deg, #f8d7da, #f1b0b7);
         color: #721c24;
+        border: 1px solid #f1b0b7;
+    }
+
+    /* Gender badge styling */
+    .gender-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .gender-male {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #1565c0;
+        border: 1px solid #bbdefb;
+    }
+
+    .gender-female {
+        background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+        color: #c2185b;
+        border: 1px solid #f8bbd9;
     }
     
     .project-card {
@@ -170,42 +289,6 @@
         gap: 5px;
     }
     
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .stat-item {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        border-top: 3px solid var(--primary-color);
-    }
-    
-    .stat-number {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 5px;
-    }
-    
-    .stat-label {
-        font-size: 14px;
-        color: #6c757d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    
     .empty-state {
         text-align: center;
         padding: 40px;
@@ -220,32 +303,7 @@
         opacity: 0.5;
     }
     
-    .breadcrumb {
-        background: none;
-        padding: 0;
-        margin-bottom: 20px;
-    }
-    
-    .breadcrumb-item a {
-        color: var(--primary-color);
-        text-decoration: none;
-    }
-    
-    .breadcrumb-item.active {
-        color: #6c757d;
-    }
-    
     @media (max-width: 768px) {
-        .client-header {
-            flex-direction: column;
-            text-align: center;
-            gap: 20px;
-        }
-        
-        .action-buttons {
-            justify-content: center;
-        }
-        
         .info-row {
             flex-direction: column;
             gap: 5px;
@@ -255,6 +313,23 @@
             min-width: auto;
             margin-right: 0;
         }
+
+        .client-info-layout {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .client-avatar-side {
+            width: 120px;
+            height: 120px;
+            font-size: 36px;
+        }
+
+        .client-meta {
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 </style>
 {% endblock %}
@@ -262,183 +337,144 @@
 {% block content %}
 
         <div class="page-header">
-            <div class="d-flex align-items-center justify-content-between flex-wrap client-header">
-                <div class="d-flex align-items-center">
-                    <div class="client-avatar-large">
-                        {% if client.profile_picture %}
-                            <img src="{{ client.profile_picture.url }}" alt="{{ client.get_full_name }}">
-                        {% else %}
-                            {{ client.first_name|first|default:client.username|first|upper }}{{ client.last_name|first|upper }}
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <a href="{% url 'client_management:client_list' %}" class="back-link">
+                        <i class="fas fa-arrow-left"></i> Back to Clients
+                    </a>
+                    <h1>{{ client.get_full_name|default:client.username }}</h1>
+                    
+                    <div class="client-meta">
+                        {% if client.phone_number %}
+                        <div class="meta-item">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ client.phone_number }}</span>
+                        </div>
+                        {% endif %}
+                        {% if client.email %}
+                        <div class="meta-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>{{ client.email }}</span>
+                        </div>
                         {% endif %}
                     </div>
-                    <div>
-                        <h1 class="mb-2">{{ client.get_full_name|default:client.username }}</h1>
-                        <p class="mb-1 opacity-75">
-                            <i class="fas fa-envelope"></i> {{ client.email }}
-                        </p>
-                        <span class="status-badge {% if client.is_active %}status-active{% else %}status-inactive{% endif %}">
-                            {% if client.is_active %}
-                                <i class="fas fa-check"></i> Active Client
-                            {% else %}
-                                <i class="fas fa-ban"></i> Inactive Client
-                            {% endif %}
-                        </span>
-                    </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number">{{ client.project_roles.count }}</div>
-                <div class="stat-label">Projects Assigned</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ client.date_joined|timesince }}</div>
-                <div class="stat-label">Member Since</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">
-                    {% if client.last_login %}
-                        {{ client.last_login|timesince }} ago
-                    {% else %}
-                        Never
-                    {% endif %}
+                <div>
+                    <span class="client-status-badge {% if not client.is_active %}inactive{% endif %}">
+                        {% if client.is_active %}
+                            <i class="fas fa-check"></i> Active
+                        {% else %}
+                            <i class="fas fa-pause"></i> Inactive
+                        {% endif %}
+                    </span>
                 </div>
-                <div class="stat-label">Last Login</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ client.project_roles.count }}</div>
-                <div class="stat-label">Active Projects</div>
             </div>
         </div>
 
         <div class="row">
-            <!-- Client Information -->
-            <div class="col-lg-8 mb-4">
-                <!-- Personal Information -->
+            <!-- Personal Information Card -->
+            <div class="col-lg-6 mb-4">
                 <div class="info-card">
-                    <h5><i class="fas fa-user"></i> Personal Information</h5>
-                    <div class="info-row">
-                        <div class="info-label">Full Name:</div>
-                        <div class="info-value">
-                            {{ client.get_full_name|default:"Not specified" }}
+                    <h4><i class="fas fa-user"></i> Personal Information</h4>
+                    <div class="client-info-layout">
+                        <div class="client-info-content">
+                            <div class="info-row">
+                                <div class="info-label">Full Name:</div>
+                                <div class="info-value">
+                                    {{ client.get_full_name|default:"Not specified" }}
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Username:</div>
+                                <div class="info-value">{{ client.username }}</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Email:</div>
+                                <div class="info-value">
+                                    <a href="mailto:{{ client.email }}" style="color: #2c3e50;">{{ client.email }}</a>
+                                </div>
+                            </div>
+                            {% if client.phone_number %}
+                            <div class="info-row">
+                                <div class="info-label">Phone:</div>
+                                <div class="info-value">
+                                    <a href="tel:{{ client.phone_number }}" style="color: #2c3e50;">{{ client.phone_number }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if client.gender %}
+                            <div class="info-row">
+                                <div class="info-label">Gender:</div>
+                                <div class="info-value">
+                                    <span class="gender-badge {% if client.gender == 'M' %}gender-male{% else %}gender-female{% endif %}">
+                                        <i class="fas fa-{% if client.gender == 'M' %}mars{% else %}venus{% endif %}"></i>
+                                        {{ client.get_gender_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Username:</div>
-                        <div class="info-value">{{ client.username }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Email:</div>
-                        <div class="info-value">
-                            <a href="mailto:{{ client.email }}">{{ client.email }}</a>
-                        </div>
-                    </div>
-                    {% if client.phone %}
-                    <div class="info-row">
-                        <div class="info-label">Phone:</div>
-                        <div class="info-value">
-                            <a href="tel:{{ client.phone }}">{{ client.phone }}</a>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="info-row">
-                        <div class="info-label">Account Status:</div>
-                        <div class="info-value">
-                            <span class="status-badge {% if client.is_active %}status-active{% else %}status-inactive{% endif %}">
-                                {% if client.is_active %}Active{% else %}Inactive{% endif %}
-                            </span>
+                        <div class="client-avatar-side">
+                            {% if client.profile_picture %}
+                                <img src="{{ client.profile_picture.url }}" alt="{{ client.get_full_name }}">
+                            {% else %}
+                                {{ client.first_name|first|default:client.username|first|upper }}{{ client.last_name|first|upper }}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Account Details -->
+            <!-- Account Details Card -->
+            <div class="col-lg-6 mb-4">
                 <div class="info-card">
-                    <h5><i class="fas fa-info-circle"></i> Account Details</h5>
+                    <h4><i class="fas fa-cog"></i> Account Details</h4>
+                    <div class="info-row">
+                        <div class="info-label">User ID:</div>
+                        <div class="info-value">
+                            <code>#{{ client.id }}</code>
+                        </div>
+                    </div>
+                
                     <div class="info-row">
                         <div class="info-label">Date Joined:</div>
                         <div class="info-value">
-                            {{ client.date_joined|date:"F d, Y" }} 
-                            <small class="text-muted">({{ client.date_joined|timesince }} ago)</small>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Last Login:</div>
-                        <div class="info-value">
-                            {% if client.last_login %}
-                                {{ client.last_login|date:"F d, Y H:i" }}
-                                <small class="text-muted">({{ client.last_login|timesince }} ago)</small>
-                            {% else %}
-                                <span class="text-muted">Never logged in</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">User Type:</div>
-                        <div class="info-value">
-                            <span class="badge bg-secondary">{{ client.user_type|title|default:"Client" }}</span>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Email Verified:</div>
-                        <div class="info-value">
-                            {% if client.email_verified %}
-                                <span class="text-success"><i class="fas fa-check"></i> Verified</span>
-                            {% else %}
-                                <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Pending</span>
-                            {% endif %}
+                            {{ client.date_joined|date:"M d, Y H:i" }}
                         </div>
                     </div>
                 </div>
 
-                <!-- Project Access -->
+                <!-- Project Access Card (moved under Account Details) -->
                 <div class="info-card">
-                    
-                    {% if client.project_roles.exists %}
-                        {% for role in client.project_roles.select_related %}
+                    <h4><i class="fas fa-project-diagram"></i> Project Access</h4>
+                    {% if client.project_roles.all %}
+                        {% for role in client.project_roles.all %}
                         <div class="project-card">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="flex-grow-1">
-                                    <a href="{% url 'project_management:project_detail' role.project.slug %}" 
-                                       class="project-name">{{ role.project.name }}</a>
+                                    <a href="{% url 'project_management:project_detail' role.project.slug %}" class="project-name">
+                                        {{ role.project.name }}
+                                    </a>
                                     <div class="project-meta">
                                         <span>
                                             <i class="fas fa-map-marker-alt"></i>
-                                            {{ role.project.location_city|default:"Location not set" }}
+                                            {{ role.project.location_city|default:"No location" }}
                                         </span>
                                         <span>
                                             <i class="fas fa-calendar"></i>
-                                            Added {{ role.created_at|date:"M d, Y" }}
-                                        </span>
-                                        <span>
-                                            <i class="fas fa-{% if role.project.is_active %}check text-success{% else %}pause text-warning{% endif %}"></i>
-                                            {% if role.project.is_active %}Active{% else %}Inactive{% endif %}
+                                            Created {{ role.project.created_at|date:"M d, Y" }}
                                         </span>
                                     </div>
-                                    {% if role.project.description %}
-                                    <p class="text-muted mb-0 mt-2 small">{{ role.project.description|truncatechars:100 }}</p>
-                                    {% endif %}
                                 </div>
-                                <div class="text-end">
-                                    <span class="project-role">{{ role.get_role_display }}</span>
-                                    <div class="mt-2">
-                                        <button class="btn btn-sm btn-outline-danger remove-project" 
-                                                data-role-id="{{ role.id }}"
-                                                title="Remove access">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                         {% endfor %}
                     {% else %}
                         <div class="empty-state">
                             <i class="fas fa-project-diagram"></i>
-                            <h6>No Project Access</h6>
-                            <p>This client hasn't been assigned to any projects yet.</p>
+                            <h5>No Project Access</h5>
+                            <p>This client doesn't have access to any projects yet.</p>
                         </div>
                     {% endif %}
                 </div>
@@ -449,123 +485,20 @@
 
 {% block extra_js %}
 <script>
-    // Handle status toggle
-    document.querySelector('.toggle-status')?.addEventListener('click', function() {
-        const clientId = this.dataset.clientId;
-        const isActive = this.dataset.active === 'true';
-        
-        fetch(`/clients/${clientId}/toggle-status/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'active': !isActive
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast(data.message, 'success');
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
-            } else {
-                showToast(data.message || 'Error updating client status', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error updating client status', 'error');
-        });
-    });
-
-    // Handle project removal
-    document.querySelectorAll('.remove-project').forEach(button => {
-        button.addEventListener('click', function() {
-            if (confirm('Are you sure you want to remove this client from the project?')) {
-                const roleId = this.dataset.roleId;
+    // Add animation on load - same as dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.personal-info-card, .info-card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                 
-                fetch(`/clients/remove-project-role/${roleId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                                      document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Project access removed successfully', 'success');
-                        this.closest('.project-card').remove();
-                    } else {
-                        showToast('Error removing project access', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error removing project access', 'error');
-                });
-            }
-        });
-    });
-
-    // Handle password reset
-    document.querySelector('.reset-password')?.addEventListener('click', function() {
-        if (confirm('Send password reset email to this client?')) {
-            const clientId = this.dataset.clientId;
-            
-            fetch(`/clients/${clientId}/reset-password/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Password reset email sent successfully', 'success');
-                } else {
-                    showToast('Error sending password reset email', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Error sending password reset email', 'error');
-            });
-        }
-    });
-
-    // Handle notes saving
-    document.querySelector('.save-notes')?.addEventListener('click', function() {
-        const clientId = this.dataset.clientId;
-        const notes = document.getElementById('clientNotes').value;
-        
-        fetch(`/clients/${clientId}/save-notes/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'notes': notes
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('Notes saved successfully', 'success');
-            } else {
-                showToast('Error saving notes', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error saving notes', 'error');
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
         });
     });
 </script>
