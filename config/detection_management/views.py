@@ -444,14 +444,35 @@ def receive_image(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-@login_required
+@login_required 
 def detection_dashboard(request):
     """Display latest detections from all cameras in user's projects"""
     user_projects = Project.objects.filter(created_by=request.user, is_active=True)
-    user_cameras = Camera.objects.filter(
-        project__in=user_projects,
-        is_active=True
-    ).select_related('project', 'farm_boundary')
+    
+    # Get selected project from query parameters
+    selected_project_id = request.GET.get('project')
+    selected_project = None
+    
+    # Filter cameras based on selected project
+    if selected_project_id:
+        try:
+            selected_project = user_projects.get(id=selected_project_id)
+            user_cameras = Camera.objects.filter(
+                project=selected_project,
+                is_active=True
+            ).select_related('project', 'farm_boundary')
+        except Project.DoesNotExist:
+            # If invalid project ID, show all cameras
+            user_cameras = Camera.objects.filter(
+                project__in=user_projects,
+                is_active=True
+            ).select_related('project', 'farm_boundary')
+    else:
+        # Show all cameras if no project selected
+        user_cameras = Camera.objects.filter(
+            project__in=user_projects,
+            is_active=True
+        ).select_related('project', 'farm_boundary')
     
     # Get latest detection for each camera
     latest_detections = []
@@ -465,8 +486,12 @@ def detection_dashboard(request):
                 'project': camera.project
             })
     
-    # Get detection statistics
-    all_detections = Detection.objects.filter(camera__project__in=user_projects)
+    # Get detection statistics for filtered cameras
+    if selected_project:
+        all_detections = Detection.objects.filter(camera__project=selected_project)
+    else:
+        all_detections = Detection.objects.filter(camera__project__in=user_projects)
+    
     stats = {
         'total_detections': all_detections.count(),
         'fire_detections': all_detections.filter(detection_type__name='fire').count(),
@@ -478,24 +503,92 @@ def detection_dashboard(request):
     context = {
         'latest_detections': latest_detections,
         'user_projects': user_projects,
+        'selected_project': selected_project,
         'stats': stats
     }
     
     return render(request, 'detection_management/latest_detection.html', context)
 
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+from .models import Camera, Detection
+
 @login_required
 def camera_detections(request, camera_id):
-    """Display all detections for a specific camera"""
+    """Display all detections for a specific camera with pagination"""
     camera = get_object_or_404(Camera, id=camera_id, project__created_by=request.user)
-    detections = Detection.objects.filter(camera=camera).select_related('detection_type')
-
-    for detection in detections:
+    
+    # Get filter parameters from request
+    detection_type = request.GET.get('type', '')
+    status_filter = request.GET.get('status', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    # Base queryset
+    detections_queryset = Detection.objects.filter(
+        camera=camera
+    ).select_related('detection_type').order_by('-detected_at')
+    
+    # Apply filters
+    if detection_type:
+        detections_queryset = detections_queryset.filter(detection_type__name=detection_type)
+    
+    if status_filter == 'valid':
+        detections_queryset = detections_queryset.filter(is_false_positive=False)
+    elif status_filter == 'false_positive':
+        detections_queryset = detections_queryset.filter(is_false_positive=True)
+    
+    if date_from:
+        detections_queryset = detections_queryset.filter(detected_at__date__gte=date_from)
+    
+    if date_to:
+        detections_queryset = detections_queryset.filter(detected_at__date__lte=date_to)
+    
+    # Calculate confidence percentage for each detection
+    for detection in detections_queryset:
         detection.confidence_percentage = detection.confidence_score * 100
+    
+    # Pagination - 12 detections per page (good for grid layout)
+    paginator = Paginator(detections_queryset, 12)
+    page = request.GET.get('page', 1)
+    
+    try:
+        detections = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page
+        detections = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page
+        detections = paginator.page(paginator.num_pages)
+    
+    # Get detection type choices for filter dropdown
+    detection_types = Detection.objects.filter(
+        camera=camera
+    ).values_list('detection_type__name', flat=True).distinct()
+    
+    # Calculate summary stats for the camera
+    total_detections = Detection.objects.filter(camera=camera).count()
+    false_positives = Detection.objects.filter(camera=camera, is_false_positive=True).count()
+    valid_detections = total_detections - false_positives
     
     context = {
         'camera': camera,
-        'detections': detections
+        'detections': detections,  # This is now a Page object
+        'detection_types': detection_types,
+        'current_filters': {
+            'type': detection_type,
+            'status': status_filter,
+            'date_from': date_from,
+            'date_to': date_to,
+        },
+        'stats': {
+            'total': total_detections,
+            'valid': valid_detections,
+            'false_positives': false_positives,
+        }
     }
     
     return render(request, 'detection_management/camera_detections.html', context)

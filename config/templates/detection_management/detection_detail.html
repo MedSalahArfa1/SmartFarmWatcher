@@ -36,6 +36,13 @@
     align-items: center;
     gap: 8px;
     opacity: 0.9;
+    color: white;
+    font-size: 14px;
+}
+
+.meta-item i {
+    width: 16px;
+    text-align: center;
 }
 
 /* Updated KPI Cards - Dashboard Style */
@@ -206,6 +213,43 @@
     display: block;
 }
 
+.detection-image-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.confidence-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confidence-overlay-header {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.confidence-overlay .confidence-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0;
+}
+
 .detection-badge {
     padding: 8px 16px;
     border-radius: 25px;
@@ -262,20 +306,32 @@
     background: #9E9E9E;
 }
 
+/* NEW: Side by side layout for map and details */
+.map-details-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    align-items: stretch;
+}
+
 .map-section {
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin-bottom: 30px;
     position: relative;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+    height: 580px;
 }
 
 .map-header {
     padding: 20px;
     border-bottom: 1px solid #e9ecef;
     background: #f8f9fa;
+    flex-shrink: 0;
 }
 
 .map-header h3 {
@@ -285,7 +341,8 @@
 
 /* Map container styling */
 #detection-map {
-    height: 500px !important;
+    flex: 1;
+    min-height: 400px;
     width: 100% !important;
     position: relative;
     z-index: -1;
@@ -330,21 +387,94 @@
 
 .details-section {
     background: white;
-    padding: 30px;
+    padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 10;
+    height: 580px;
+    display: flex;
+    flex-direction: column;
 }
 
+.details-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.details-header {
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+/* ADD THIS CSS TO YOUR STYLESHEET - Missing Button Styles */
+
+/* Action Button General Styling */
+.action-buttons .btn {
+    flex: 1;
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border-width: 2px !important;
+}
+
+/* Toggle Button - Warning State (Orange) */
+.toggle-false-positive.btn-outline-warning {
+    border-color: #ffc107 !important;
+    color: #ffc107 !important;
+    background: white !important;
+}
+
+.toggle-false-positive.btn-outline-warning:hover,
+.toggle-false-positive.btn-outline-warning:focus,
+.toggle-false-positive.btn-outline-warning:active {
+    background: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #212529 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}
+
+/* Toggle Button - Success State (Green) */
+.toggle-false-positive.btn-outline-success {
+    border-color: #28a745 !important;
+    color: #28a745 !important;
+    background: white !important;
+}
+
+.toggle-false-positive.btn-outline-success:hover,
+.toggle-false-positive.btn-outline-success:focus,
+.toggle-false-positive.btn-outline-success:active {
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+/* Disabled state for buttons */
+.btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+
+
 .detail-group {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .detail-label {
     font-weight: 600;
     color: #495057;
     margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-label i {
+    color: var(--primary-color);
+    width: 16px;
 }
 
 .detail-value {
@@ -353,21 +483,81 @@
 }
 
 .back-link {
-    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 25px;
+    color: white !important;
     text-decoration: none;
-    opacity: 0.9;
-    transition: opacity 0.3s;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 15px;
 }
 
 .back-link:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white !important;
+    transform: translateX(-3px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.back-link i {
+    transition: transform 0.3s ease;
+}
+
+.back-link:hover i {
+    transform: translateX(-2px);
+}
+
+.confidence-indicator {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 20px;
     color: white;
-    opacity: 1;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detection-status-badge {
+    background: white !important;
+    color: var(--success-color) !important;
+    border: 2px solid var(--success-color) !important;
+    padding: 8px 16px !important;
+    border-radius: 25px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.detection-status-badge.false-positive {
+    background: white !important;
+    color: var(--warning-color) !important;
+    border: 2px solid var(--warning-color) !important;
+}
+
+.detection-status-badge.valid {
+    background: white !important;
+    color: #28a745 !important;
+    border: 2px solid #28a745 !important;
 }
 
 .action-buttons {
     display: flex;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
 }
 
 .btn-outline-warning.active {
@@ -399,22 +589,149 @@
     color: #856404;
 }
 
+@media (max-width: 1200px) {
+    .map-details-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .map-section, .details-section {
+        height: auto;
+    }
+    
+    #detection-map {
+        height: 400px !important;
+        min-height: 400px;
+    }
+}
+
 @media (max-width: 768px) {
     .detection-meta {
         flex-direction: column;
         gap: 10px;
     }
     
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .confidence-indicator {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
     .info-cards {
         grid-template-columns: 1fr;
     }
     
+    .map-details-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .map-section, .details-section {
+        height: auto;
+    }
+    
     #detection-map {
-        height: 400px;
+        height: 350px !important;
+        min-height: 350px;
     }
     
     .action-buttons {
         flex-direction: column;
+    }
+    
+    .confidence-overlay {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 10px;
+    }
+    
+    .confidence-overlay-header {
+        font-size: 12px;
+    }
+}
+
+/* Detection Details Table Styling */
+.detail-table {
+    margin-bottom: 0;
+}
+
+.detail-table td {
+    padding: 12px 15px;
+    border: none;
+    vertical-align: middle;
+}
+
+.table-section-header td {
+    padding-top: 20px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid #e9ecef !important;
+}
+
+.table-section-header:first-child td {
+    padding-top: 0 !important;
+}
+
+.detail-label-table {
+    width: 40%;
+    font-weight: 600;
+    color: #495057;
+    background: #f8f9fa;
+    border-right: 1px solid #e9ecef;
+    font-size: 14px;
+}
+
+.detail-value-table {
+    width: 60%;
+    color: #6c757d;
+    background: white;
+    font-size: 14px;
+}
+
+/* Mini confidence bar for table */
+.confidence-bar-mini {
+    width: 100px;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.confidence-bar-mini .confidence-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+/* Table responsive improvements */
+@media (max-width: 768px) {
+    .detail-label-table,
+    .detail-value-table {
+        width: 100%;
+        display: block;
+        padding: 8px 15px;
+    }
+    
+    .detail-label-table {
+        background: #f8f9fa;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: 700;
+        padding-bottom: 5px;
+    }
+    
+    .detail-value-table {
+        background: white;
+        padding-top: 5px;
+        padding-bottom: 15px;
+    }
+    
+    .table-section-header td {
+        padding-top: 15px !important;
     }
 }
 </style>
@@ -424,40 +741,16 @@
 <div class="detection-header">
     <div class="d-flex justify-content-between align-items-start">
         <div>
-            <a href="{% url 'detection_management:dashboard' %}" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Detections
+            <a href="{% url 'detection_management:detection_history' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Detections History
             </a>
             <h1>Detection #{{ detection.id }}</h1>
-            <div class="d-flex align-items-center gap-3 mt-2">
-                <span class="detection-badge {{ detection.detection_type.name }}">
-                    {% if detection.detection_type.name == 'fire' %}
-                        <i class="fas fa-fire"></i>
-                    {% elif detection.detection_type.name == 'person' %}
-                        <i class="fas fa-user"></i>
-                    {% elif detection.detection_type.name == 'smoke' %}
-                        <i class="fas fa-cloud"></i>
-                    {% endif %}
-                    {{ detection.detection_type.name|capfirst }} Detection
-                </span>
-                <span class="status-badge {% if detection.is_false_positive %}status-false-positive{% else %}status-active{% endif %}">
-                    {% if detection.is_false_positive %}
-                        <i class="fas fa-flag"></i> False Positive
-                    {% else %}
-                        <i class="fas fa-check"></i> Valid Detection
-                    {% endif %}
-                </span>
-            </div>
+            
+            <!-- Meta information in project style -->
             <div class="detection-meta">
+                
                 <div class="meta-item">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ detection.detected_at|date:"M d, Y H:i:s" }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-video"></i>
-                    <span>Camera #{{ detection.camera.id }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <i class="fas fa-project-diagram"></i>
                     <span>{{ detection.camera.project.name }}</span>
                 </div>
                 {% if detection.camera.farm_boundary %}
@@ -466,7 +759,20 @@
                     <span>Farm Boundary #{{ detection.camera.farm_boundary.id }}</span>
                 </div>
                 {% endif %}
+                <div class="meta-item">
+                    <i class="fas fa-video"></i>
+                    <span>Camera #{{ detection.camera.id }}</span>
+                </div>
             </div>
+        </div>
+        <div>
+            <span class="detection-status-badge {% if detection.is_false_positive %}false-positive{% else %}valid{% endif %}">
+                {% if detection.is_false_positive %}
+                    <i class="fas fa-flag"></i> False Positive
+                {% else %}
+                    <i class="fas fa-check-circle"></i> Valid Detection
+                {% endif %}
+            </span>
         </div>
     </div>
 </div>
@@ -490,22 +796,22 @@
         <div class="stat-icon confidence">
             <i class="fas fa-chart-line"></i>
         </div>
-        <h3 class="stat-percentage">{{ detection.confidence_percentage|floatformat:1 }}%</h3>
+        <h3 class="stat-number">{{ detection.confidence_percentage|floatformat:1 }}%</h3>
         <p class="stat-label">Confidence Level</p>
     </div>
     <div class="info-card camera">
         <div class="stat-icon camera">
-            <i class="fas fa-video"></i>
+            <i class="fas fa-calendar"></i>
         </div>
-        <h3 class="stat-id">#{{ detection.camera.id }}</h3>
-        <p class="stat-label">Camera ID</p>
+        <h3 class="stat-number">{{ detection.detected_at|date:"M d" }}</h3>
+        <p class="stat-label">Detection Date</p>
     </div>
     <div class="info-card objects">
         <div class="stat-icon objects">
-            <i class="fas fa-eye"></i>
+            <i class="fas fa-clock"></i>
         </div>
-        <h3 class="stat-number">{{ detection.bounding_boxes|length|default:0 }}</h3>
-        <p class="stat-label">Objects Detected</p>
+        <h3 class="stat-number">{{ detection.detected_at|date:"H:i:s" }}</h3>
+        <p class="stat-label">Detection Time</p>
     </div>
 </div>
 
@@ -514,7 +820,7 @@
 <div class="detection-image-section">
     <div class="image-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h3><i class="fas fa-image"></i> Detection Image</h3>
+            <h4 style="color: var(--primary-color);"><i class="fas fa-image"></i> Detection Image</h4>
             <div class="d-flex gap-2">
                 {% if detection.image_original %}
                 <a href="{{ detection.image_original.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
@@ -527,142 +833,262 @@
             </div>
         </div>
         
-        <!-- Confidence Bar -->
-        <div class="confidence-section">
-            <small class="text-muted">Detection Confidence: {{ detection.confidence_percentage|floatformat:1 }}%</small>
-            <div class="confidence-bar">
-                <div class="confidence-fill {{ detection.detection_type.name }}" 
-                     style="width: {{ detection.confidence_percentage|default:0 }}%"></div>
-            </div>
-        </div>
     </div>
     <div class="text-center">
-        <img src="{{ detection.image_annotated.url }}" 
-             alt="Detection #{{ detection.id }}" 
-             class="detection-image">
+        <div class="detection-image-container">
+            <img src="{{ detection.image_annotated.url }}" 
+                 alt="Detection #{{ detection.id }}" 
+                 class="detection-image">
+        </div>
     </div>
 </div>
 {% endif %}
 
-<!-- Camera Location Map -->
-<div class="map-section">
-    <div class="map-header">
-        <h3><i class="fas fa-map"></i> Camera Location & Project Boundaries</h3>
-        <p class="mb-0 text-muted">
-            <span class="badge bg-success me-2">Green Areas</span> Farm Boundaries
-            <span class="badge bg-danger me-2">Red Marker</span> Detection Camera Location
-            <span class="badge bg-primary me-2">Blue Markers</span> Other Project Cameras
-        </p>
-    </div>
-    <div id="detection-map"></div>
-</div>
-
-<!-- Detection Details -->
-<div class="details-section">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3><i class="fas fa-info-circle"></i> Detection Details</h3>
-        <div class="action-buttons">
-            <button class="btn btn-outline-warning toggle-false-positive {% if detection.is_false_positive %}active{% endif %}" 
-                    data-detection-id="{{ detection.id }}"
-                    data-is-false="{{ detection.is_false_positive }}">
-                <i class="fas fa-flag"></i> 
-                {% if detection.is_false_positive %}Mark as Valid{% else %}Mark as False Positive{% endif %}
-            </button>
-            <a href="{% url 'detection_management:camera_detections' detection.camera.id %}" class="btn btn-outline-primary">
-                <i class="fas fa-video"></i> View All Camera Detections
-            </a>
+<!-- NEW: Side by side container for map and details -->
+<div class="map-details-container">
+    <!-- Camera Location Map -->
+    <div class="map-section">
+        <div class="map-header">
+            <h4 style="color: var(--primary-color);"><i class="fas fa-map"></i> Camera Location & Project Boundaries</h4>
+            <p class="mb-0 text-muted">
+                <span class="badge bg-success me-2">Green Areas</span> Farm Boundaries<br>
+                <span class="badge bg-danger me-2">Red Marker</span> Detection Camera Location<br>
+                <span class="badge bg-primary me-2">Blue Markers</span> Other Project Cameras
+            </p>
         </div>
+        <div id="detection-map"></div>
     </div>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="detail-group">
-                <div class="detail-label">Detection ID</div>
-                <div class="detail-value">#{{ detection.id }}</div>
-            </div>
-            
-            <div class="detail-group">
-                <div class="detail-label">Detection Type</div>
-                <div class="detail-value">
-                    <span class="detection-badge {{ detection.detection_type.name }}">
-                        {% if detection.detection_type.name == 'fire' %}
-                            <i class="fas fa-fire"></i>
-                        {% elif detection.detection_type.name == 'person' %}
-                            <i class="fas fa-user"></i>
-                        {% elif detection.detection_type.name == 'smoke' %}
-                            <i class="fas fa-cloud"></i>
-                        {% endif %}
-                        {{ detection.detection_type.name|capfirst }}
-                    </span>
-                </div>
-            </div>
-            
-            <div class="detail-group">
-                <div class="detail-label">Confidence Score</div>
-                <div class="detail-value">{{ detection.confidence_percentage|floatformat:2 }}%</div>
-            </div>
-            
-            <div class="detail-group">
-                <div class="detail-label">Detected At</div>
-                <div class="detail-value">{{ detection.detected_at|date:"F d, Y \a\t H:i:s" }}</div>
-            </div>
-            
-            {% if detection.notes %}
-            <div class="detail-group">
-                <div class="detail-label">Notes</div>
-                <div class="detail-value">{{ detection.notes }}</div>
-            </div>
-            {% endif %}
+
+    <!-- Detection Details -->
+    <div class="details-section">
+        <div class="details-header">
+            <h4 style="color: var(--primary-color);"><i class="fas fa-info-circle"></i> Detection Details</h4>
         </div>
         
-        <div class="col-md-6">
-            <div class="detail-group">
-                <div class="detail-label">Camera Information</div>
-                <div class="detail-value">
-                    <strong>Camera #{{ detection.camera.id }}</strong><br>
-                    <span class="badge bg-secondary">{{ detection.camera.get_camera_type_display }}</span><br>
-                    {% if detection.camera.get_connection_string %}
-                        <code>{{ detection.camera.get_connection_string }}</code><br>
-                    {% endif %}
-                    <span class="badge {% if detection.camera.is_within_farm_boundary %}bg-success{% else %}bg-warning{% endif %}">
-                        {% if detection.camera.is_within_farm_boundary %}Inside Boundary{% else %}Outside Boundary{% endif %}
-                    </span>
-                </div>
-            </div>
-            
-            <div class="detail-group">
-                <div class="detail-label">Project Information</div>
-                <div class="detail-value">
-                    <strong>{{ detection.camera.project.name }}</strong><br>
-                    {% if detection.camera.project.location_city %}
-                        <i class="fas fa-map-marker-alt"></i> {{ detection.camera.project.location_city }}<br>
-                    {% endif %}
-                    <small>Created: {{ detection.camera.project.created_at|date:"M d, Y" }}</small>
-                </div>
-            </div>
-            
-            {% if detection.camera.farm_boundary %}
-            <div class="detail-group">
-                <div class="detail-label">Farm Boundary</div>
-                <div class="detail-value">
-                    <strong>Farm Boundary #{{ detection.camera.farm_boundary.id }}</strong><br>
-                    Area: {{ detection.camera.farm_boundary.area_hectares|floatformat:2 }} hectares<br>
-                    {% if detection.camera.farm_boundary.description %}
+        <!-- Detection Details Section - Replace the existing details-content div -->
+<div class="details-content">
+    <div class="table-responsive">
+        <table class="table table-borderless detail-table">
+            <tbody>
+                <!-- Detection Information -->
+                <tr class="table-section-header">
+                    <td colspan="2">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bullseye me-2"></i>Detection Information
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-hashtag text-muted me-2"></i>Detection ID
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="badge bg-light text-dark">#{{ detection.id }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-fire text-muted me-2"></i>Detection Type
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="detection-badge {{ detection.detection_type.name }}">
+                            {% if detection.detection_type.name == 'fire' %}
+                                <i class="fas fa-fire"></i>
+                            {% elif detection.detection_type.name == 'person' %}
+                                <i class="fas fa-user"></i>
+                            {% elif detection.detection_type.name == 'smoke' %}
+                                <i class="fas fa-cloud"></i>
+                            {% endif %}
+                            {{ detection.detection_type.name|capfirst }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-percentage text-muted me-2"></i>Confidence Score
+                    </td>
+                    <td class="detail-value-table">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold me-2">{{ detection.confidence_percentage|floatformat:2 }}%</span>
+                            <div class="confidence-bar-mini">
+                                <div class="confidence-fill {{ detection.detection_type.name }}" 
+                                     style="width: {{ detection.confidence_percentage }}%;"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-clock text-muted me-2"></i>Detection Date & Time
+                    </td>
+                    <td class="detail-value-table">
+                        <div>
+                            <strong>{{ detection.detected_at|date:"F d, Y" }}</strong><br>
+                            <small class="text-muted">{{ detection.detected_at|date:"H:i:s" }} ({{ detection.detected_at|timesince }} ago)</small>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-flag text-muted me-2"></i>Status
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="detection-status-badge {% if detection.is_false_positive %}false-positive{% else %}valid{% endif %}">
+                            {% if detection.is_false_positive %}
+                                <i class="fas fa-flag"></i> False Positive
+                            {% else %}
+                                <i class="fas fa-check-circle"></i> Valid Detection
+                            {% endif %}
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- Spacing row -->
+                <tr><td colspan="2" class="pb-3"></td></tr>
+
+                <!-- Camera Information -->
+                <tr class="table-section-header">
+                    <td colspan="2">
+                        <h5 class="mb-0">
+                            <i class="fas fa-video me-2"></i>Camera Information
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-camera text-muted me-2"></i>Camera ID
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="badge bg-light text-dark">#{{ detection.camera.id }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-cog text-muted me-2"></i>Camera Type
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="badge bg-secondary">{{ detection.camera.get_camera_type_display }}</span>
+                    </td>
+                </tr>
+                {% if detection.camera.get_connection_string %}
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-link text-muted me-2"></i>Connection
+                    </td>
+                    <td class="detail-value-table">
+                        <code class="bg-light p-1 rounded">{{ detection.camera.get_connection_string }}</code>
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-map-marker-alt text-muted me-2"></i>Location Status
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="badge {% if detection.camera.is_within_farm_boundary %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if detection.camera.is_within_farm_boundary %}
+                                <i class="fas fa-check"></i> Inside Boundary
+                            {% else %}
+                                <i class="fas fa-exclamation-triangle"></i> Outside Boundary
+                            {% endif %}
+                        </span>
+                    </td>
+                </tr>
+
+                {% if detection.camera.farm_boundary %}
+                <!-- Spacing row -->
+                <tr><td colspan="2" class="pb-3"></td></tr>
+
+                <!-- Farm Boundary Information (moved before Project) -->
+                <tr class="table-section-header">
+                    <td colspan="2">
+                        <h5 class="mb-0">
+                            <i class="fas fa-vector-square me-2"></i>Farm Boundary Information
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-hashtag text-muted me-2"></i>Boundary ID
+                    </td>
+                    <td class="detail-value-table">
+                        <span class="badge bg-light text-dark">#{{ detection.camera.farm_boundary.id }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-ruler-combined text-muted me-2"></i>Area
+                    </td>
+                    <td class="detail-value-table">
+                        <strong>{{ detection.camera.farm_boundary.area_hectares|floatformat:2 }} hectares</strong>
+                    </td>
+                </tr>
+                {% if detection.camera.farm_boundary.description %}
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-info-circle text-muted me-2"></i>Description
+                    </td>
+                    <td class="detail-value-table">
                         {{ detection.camera.farm_boundary.description }}
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-            
-            {% if detection.bounding_boxes %}
-            <div class="detail-group">
-                <div class="detail-label">Bounding Boxes</div>
-                <div class="detail-value">
-                    {{ detection.bounding_boxes|length }} object{{ detection.bounding_boxes|length|pluralize }} detected
-                </div>
-            </div>
-            {% endif %}
-        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                <!-- Spacing row -->
+                <tr><td colspan="2" class="pb-3"></td></tr>
+
+                <!-- Project Information (moved after Farm Boundary) -->
+                <tr class="table-section-header">
+                    <td colspan="2">
+                        <h5 class="mb-0">
+                            <i class="fas fa-project-diagram me-2"></i>Project Information
+                        </h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-folder text-muted me-2"></i>Project Name
+                    </td>
+                    <td class="detail-value-table">
+                        <strong>{{ detection.camera.project.name }}</strong>
+                    </td>
+                </tr>
+                {% if detection.camera.project.location_city %}
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-map-marker-alt text-muted me-2"></i>Location
+                    </td>
+                    <td class="detail-value-table">
+                        {{ detection.camera.project.location_city }}
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td class="detail-label-table">
+                        <i class="fas fa-calendar-plus text-muted me-2"></i>Project Created
+                    </td>
+                    <td class="detail-value-table">
+                        {{ detection.camera.project.created_at|date:"M d, Y" }}
+                        <small class="text-muted">({{ detection.camera.project.created_at|timesince }} ago)</small>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+        
+       <div class="action-buttons">
+    <button class="btn toggle-false-positive" 
+            data-detection-id="{{ detection.id }}"
+            data-is-false="{{ detection.is_false_positive }}">
+        <!-- Button content will be set by JavaScript -->
+    </button>
+    <a href="{% url 'detection_management:camera_detections' detection.camera.id %}" 
+       class="btn btn-outline-primary">
+        <i class="fas fa-video"></i> View All Camera Detections
+    </a>
+</div>
     </div>
 </div>
 {% endblock %}
@@ -924,9 +1350,17 @@ function initializeDetectionMap() {
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.querySelector('.toggle-false-positive');
     if (toggleBtn) {
+        // Set initial button state based on detection status
+        updateToggleButtonState(toggleBtn);
+        
         toggleBtn.addEventListener('click', function() {
             const detectionId = this.dataset.detectionId;
             const isFalse = this.dataset.isFalse === 'true';
+            
+            // Disable button during request
+            this.disabled = true;
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
             
             fetch(`/detection/mark-false-positive/${detectionId}/`, {
                 method: 'POST',
@@ -946,6 +1380,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         location.reload();
                     }, 1000);
                 } else {
+                    // Reset button state on error
+                    this.disabled = false;
+                    this.innerHTML = originalText;
                     if (typeof showToast === 'function') {
                         showToast('Error updating detection status', 'error');
                     } else {
@@ -955,6 +1392,9 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Reset button state on error
+                this.disabled = false;
+                this.innerHTML = originalText;
                 if (typeof showToast === 'function') {
                     showToast('Error updating detection status', 'error');
                 } else {
@@ -979,6 +1419,61 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 100);
     });
 });
+
+// REPLACE your updateToggleButtonState function with this CORRECTED version
+
+function updateToggleButtonState(button) {
+    console.log('🔧 updateToggleButtonState called');
+    console.log('🎯 Button dataset.isFalse:', button.dataset.isFalse);
+    console.log('🎯 Type of dataset.isFalse:', typeof button.dataset.isFalse);
+    
+    // FIX: Handle both "True"/"False" (Django) and "true"/"false" (JavaScript) 
+    const isFalse = button.dataset.isFalse === 'true' || button.dataset.isFalse === 'True';
+    console.log('🔍 Computed isFalse (boolean):', isFalse);
+    
+    // Clear ALL existing classes completely
+    button.className = 'btn toggle-false-positive';
+    console.log('🧹 Cleared all classes, current className:', button.className);
+    
+    if (isFalse) {
+        // Detection is currently marked as FALSE POSITIVE
+        // Show GREEN button to mark as VALID
+        button.classList.add('btn-outline-success');
+        button.innerHTML = '<i class="fas fa-check-circle"></i> Mark as Valid Detection';
+        console.log('✅ Applied GREEN button (detection is false positive) - classes:', button.classList.toString());
+        
+        // Force the styles directly as a fallback
+        button.style.borderColor = '#28a745';
+        button.style.color = '#28a745';
+        button.style.backgroundColor = 'white';
+        button.style.borderWidth = '2px';
+        button.style.borderStyle = 'solid';
+        
+    } else {
+        // Detection is currently marked as VALID
+        // Show ORANGE button to mark as FALSE POSITIVE
+        button.classList.add('btn-outline-warning');
+        button.innerHTML = '<i class="fas fa-flag"></i> Mark as False Positive';
+        console.log('🚨 Applied ORANGE button (detection is valid) - classes:', button.classList.toString());
+        
+        // Force the styles directly as a fallback
+        button.style.borderColor = '#ffc107';
+        button.style.color = '#ffc107';
+        button.style.backgroundColor = 'white';
+        button.style.borderWidth = '2px';
+        button.style.borderStyle = 'solid';
+    }
+    
+    // Force a style recalculation
+    button.offsetHeight;
+    console.log('🎨 Final button state - classes:', button.classList.toString());
+    console.log('🎨 Final button innerHTML:', button.innerHTML);
+    console.log('🎨 Final computed styles:', {
+        borderColor: getComputedStyle(button).borderColor,
+        color: getComputedStyle(button).color,
+        backgroundColor: getComputedStyle(button).backgroundColor
+    });
+}
 
 // Handle resize
 window.addEventListener('resize', function() {

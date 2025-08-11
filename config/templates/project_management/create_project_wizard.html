@@ -543,9 +543,6 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5><i class="fas fa-video"></i> Cameras (<span id="camera-count">0</span>)</h5>
-                <button type="button" class="btn btn-primary btn-sm" onclick="openCameraModal()">
-                    <i class="fas fa-plus"></i> Add Camera Details
-                </button>
             </div>
             
             <div class="item-list" id="cameras-list">
@@ -690,6 +687,7 @@
     let selectedCameraMarker = null;
     let currentStep = {{ step|default:1 }};
     let projectData = {};
+    let cameraMarkersMap = new Map(); // Track camera-marker relationships
     
     document.addEventListener('DOMContentLoaded', function() {
         initializeCurrentStep();
@@ -734,30 +732,30 @@
         map.addControl(drawControl);
         
         map.on(L.Draw.Event.CREATED, function(e) {
-    const layer = e.layer;
-    drawnItems.clearLayers();
-    drawnItems.addLayer(layer);
-    
-    // Get the GeoJSON with proper coordinate structure
-    const geoJSON = layer.toGeoJSON();
-    
-    // Ensure we have a valid polygon geometry
-    if (geoJSON.geometry && geoJSON.geometry.type === 'Polygon') {
-        // Store the boundary data with proper structure
-        farmBoundaries = [{
-            temp_id: 1,
-            boundary: geoJSON.geometry, // Store just the geometry part, not the full GeoJSON
-            description: ''
-        }];
-        
-        console.log('Farm boundary created:', farmBoundaries[0]);
-        updateBoundaryData();
-        document.getElementById('step2-submit').disabled = false;
-    } else {
-        showAlert('danger', 'Invalid boundary geometry. Please draw a proper polygon.');
-        document.getElementById('step2-submit').disabled = true;
-    }
-});
+            const layer = e.layer;
+            drawnItems.clearLayers();
+            drawnItems.addLayer(layer);
+            
+            // Get the GeoJSON with proper coordinate structure
+            const geoJSON = layer.toGeoJSON();
+            
+            // Ensure we have a valid polygon geometry
+            if (geoJSON.geometry && geoJSON.geometry.type === 'Polygon') {
+                // Store the boundary data with proper structure
+                farmBoundaries = [{
+                    temp_id: 1,
+                    boundary: geoJSON.geometry, // Store just the geometry part, not the full GeoJSON
+                    description: ''
+                }];
+                
+                console.log('Farm boundary created:', farmBoundaries[0]);
+                updateBoundaryData();
+                document.getElementById('step2-submit').disabled = false;
+            } else {
+                showAlert('danger', 'Invalid boundary geometry. Please draw a proper polygon.');
+                document.getElementById('step2-submit').disabled = true;
+            }
+        });
         
         map.on(L.Draw.Event.DELETED, function() {
             farmBoundaries = [];
@@ -769,77 +767,77 @@
     }
     
     function initializeCameraMap() {
-    cameraMap = L.map('camera-map').setView([36.8065, 10.1815], 15);
-    
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Esri'
-    }).addTo(cameraMap);
-    
-    cameraMarkers = new L.FeatureGroup();
-    cameraMap.addLayer(cameraMarkers);
-    
-    // Load farm boundary if exists
-    if (farmBoundaries.length > 0) {
-        try {
-            const boundaryGeometry = farmBoundaries[0].boundary;
-            console.log('Loading boundary geometry:', boundaryGeometry);
-            
-            // Create a full GeoJSON object for Leaflet
-            const boundaryGeoJSON = {
-                type: "Feature",
-                geometry: boundaryGeometry,
-                properties: {}
-            };
-            
-            const boundaryLayer = L.geoJSON(boundaryGeoJSON, {
-                style: {
-                    color: '#4CAF50',
-                    weight: 3,
-                    fillOpacity: 0.1,
-                    dashArray: '5, 5'
-                }
-            }).addTo(cameraMap);
-            
-            cameraMap.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
-            window.farmBoundaryLayer = boundaryLayer;
-            
-            console.log('Farm boundary loaded successfully');
-        } catch (e) {
-            console.error('Error loading farm boundary:', e);
+        cameraMap = L.map('camera-map').setView([36.8065, 10.1815], 15);
+        
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Esri'
+        }).addTo(cameraMap);
+        
+        cameraMarkers = new L.FeatureGroup();
+        cameraMap.addLayer(cameraMarkers);
+        
+        // Load farm boundary if exists
+        if (farmBoundaries.length > 0) {
+            try {
+                const boundaryGeometry = farmBoundaries[0].boundary;
+                console.log('Loading boundary geometry:', boundaryGeometry);
+                
+                // Create a full GeoJSON object for Leaflet
+                const boundaryGeoJSON = {
+                    type: "Feature",
+                    geometry: boundaryGeometry,
+                    properties: {}
+                };
+                
+                const boundaryLayer = L.geoJSON(boundaryGeoJSON, {
+                    style: {
+                        color: '#4CAF50',
+                        weight: 3,
+                        fillOpacity: 0.1,
+                        dashArray: '5, 5'
+                    }
+                }).addTo(cameraMap);
+                
+                cameraMap.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
+                window.farmBoundaryLayer = boundaryLayer;
+                
+                console.log('Farm boundary loaded successfully');
+            } catch (e) {
+                console.error('Error loading farm boundary:', e);
+            }
         }
+        
+        cameraMap.on('click', function(e) {
+            console.log('Camera map clicked at:', e.latlng);
+            
+            const marker = L.marker(e.latlng, {
+                icon: getCameraIcon(true),
+                draggable: true
+            });
+            
+            marker.addTo(cameraMarkers);
+            selectedCameraMarker = marker;
+            
+            // Set form values
+            document.getElementById('camera-lat').value = e.latlng.lat;
+            document.getElementById('camera-lng').value = e.latlng.lng;
+            document.getElementById('camera-boundary-id').value = 1; // First boundary
+            
+            console.log('Camera coordinates set:', e.latlng.lat, e.latlng.lng);
+            
+            const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
+            modal.show();
+            
+            marker.on('dragend', function() {
+                const pos = marker.getLatLng();
+                document.getElementById('camera-lat').value = pos.lat;
+                document.getElementById('camera-lng').value = pos.lng;
+                console.log('Camera dragged to:', pos.lat, pos.lng);
+            });
+        });
+        
+        setTimeout(() => cameraMap.invalidateSize(), 100);
     }
-    
-    cameraMap.on('click', function(e) {
-        console.log('Camera map clicked at:', e.latlng);
-        
-        const marker = L.marker(e.latlng, {
-            icon: getCameraIcon(true),
-            draggable: true
-        });
-        
-        marker.addTo(cameraMarkers);
-        selectedCameraMarker = marker;
-        
-        // Set form values
-        document.getElementById('camera-lat').value = e.latlng.lat;
-        document.getElementById('camera-lng').value = e.latlng.lng;
-        document.getElementById('camera-boundary-id').value = 1; // First boundary
-        
-        console.log('Camera coordinates set:', e.latlng.lat, e.latlng.lng);
-        
-        const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
-        modal.show();
-        
-        marker.on('dragend', function() {
-            const pos = marker.getLatLng();
-            document.getElementById('camera-lat').value = pos.lat;
-            document.getElementById('camera-lng').value = pos.lng;
-            console.log('Camera dragged to:', pos.lat, pos.lng);
-        });
-    });
-    
-    setTimeout(() => cameraMap.invalidateSize(), 100);
-}
     
     function getCameraIcon(selected = false) {
         const backgroundColor = selected ? '#ff6b6b' : '#2196F3';
@@ -953,38 +951,38 @@
     }
     
     async function validateBoundaryData() {
-    if (farmBoundaries.length === 0) {
-        showAlert('warning', 'Please draw at least one farm boundary.');
-        return false;
-    }
-    
-    // Debug: Log the boundary data being sent
-    console.log('Validating boundary data:', farmBoundaries);
-    
-    try {
-        const response = await fetch('{% url "project_management:validate_boundary_step" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: `farm_boundaries_data=${encodeURIComponent(JSON.stringify(farmBoundaries))}`
-        });
-        
-        const data = await response.json();
-        console.log('Validation response:', data);
-        
-        if (!data.valid) {
-            showAlert('danger', data.message);
+        if (farmBoundaries.length === 0) {
+            showAlert('warning', 'Please draw at least one farm boundary.');
             return false;
         }
-        return true;
-    } catch (error) {
-        console.error('Validation error:', error);
-        showAlert('danger', 'Validation error occurred.');
-        return false;
+        
+        // Debug: Log the boundary data being sent
+        console.log('Validating boundary data:', farmBoundaries);
+        
+        try {
+            const response = await fetch('{% url "project_management:validate_boundary_step" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `farm_boundaries_data=${encodeURIComponent(JSON.stringify(farmBoundaries))}`
+            });
+            
+            const data = await response.json();
+            console.log('Validation response:', data);
+            
+            if (!data.valid) {
+                showAlert('danger', data.message);
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Validation error:', error);
+            showAlert('danger', 'Validation error occurred.');
+            return false;
+        }
     }
-}
     
     async function validateCameraData() {
         if (cameras.length === 0) {
@@ -1034,32 +1032,104 @@
         document.getElementById('camera-count').textContent = cameras.length;
     }
     
+    function validateCameraForm() {
+        const form = document.getElementById('camera-form');
+        const formData = new FormData(form);
+        const cameraType = formData.get('camera_type');
+        
+        if (cameraType === 'ip') {
+            const ipAddress = formData.get('ip_address');
+            const port = formData.get('port');
+            
+            if (!ipAddress || !port) {
+                showAlert('warning', 'IP address and port are required for IP cameras.');
+                return false;
+            }
+            
+            // Basic IP validation
+            const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            if (!ipRegex.test(ipAddress)) {
+                showAlert('warning', 'Please enter a valid IP address.');
+                return false;
+            }
+            
+            const portNum = parseInt(port);
+            if (portNum < 1 || portNum > 65535) {
+                showAlert('warning', 'Port must be between 1 and 65535.');
+                return false;
+            }
+        } else if (cameraType === 'cellular') {
+            const cellularId = formData.get('cellular_identifier');
+            if (!cellularId) {
+                showAlert('warning', 'Cellular identifier is required for cellular cameras.');
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
     function saveCameraData() {
+        if (!validateCameraForm()) {
+            return;
+        }
+        
         const form = document.getElementById('camera-form');
         const formData = new FormData(form);
         
         const camera = {
             temp_id: Date.now(),
-            farm_boundary_temp_id: formData.get('farm_boundary_temp_id'),
+            farm_boundary_temp_id: formData.get('farm_boundary_temp_id') || 1,
             camera_type: formData.get('camera_type'),
-            description: formData.get('description'),
-            ip_address: formData.get('ip_address'),
-            port: formData.get('port'),
-            cellular_identifier: formData.get('cellular_identifier'),
+            description: formData.get('description') || '',
+            ip_address: formData.get('ip_address') || null,
+            port: formData.get('port') ? parseInt(formData.get('port')) : null,
+            cellular_identifier: formData.get('cellular_identifier') || null,
             location: {
                 lat: parseFloat(formData.get('latitude')),
                 lng: parseFloat(formData.get('longitude'))
             }
         };
         
+        // Validate required fields based on camera type
+        if (camera.camera_type === 'ip') {
+            if (!camera.ip_address || !camera.port) {
+                showAlert('danger', 'IP address and port are required for IP cameras.');
+                return;
+            }
+        } else if (camera.camera_type === 'cellular') {
+            if (!camera.cellular_identifier) {
+                showAlert('danger', 'Cellular identifier is required for cellular cameras.');
+                return;
+            }
+        }
+        
+        // Validate location
+        if (!camera.location.lat || !camera.location.lng || isNaN(camera.location.lat) || isNaN(camera.location.lng)) {
+            showAlert('danger', 'Valid camera location is required.');
+            return;
+        }
+        
         cameras.push(camera);
         updateCameraData();
         
-        // Update marker
+        // Update marker and track it
         if (selectedCameraMarker) {
             selectedCameraMarker.setIcon(getCameraIcon(false));
             selectedCameraMarker.options.draggable = false;
             selectedCameraMarker.dragging.disable();
+            
+            // Store the relationship between camera and marker
+            cameraMarkersMap.set(camera.temp_id, selectedCameraMarker);
+            
+            // Add popup with camera info
+            selectedCameraMarker.bindPopup(`
+                <div>
+                    <strong>Camera #${camera.temp_id}</strong><br>
+                    <small>Type: ${camera.camera_type}</small><br>
+                    <small>${camera.camera_type === 'ip' ? `${camera.ip_address}:${camera.port}` : camera.cellular_identifier}</small>
+                </div>
+            `);
         }
         
         // Add to list
@@ -1074,53 +1144,65 @@
     }
     
     function addCameraToList(camera) {
-    const list = document.getElementById('cameras-list');
-    const noCamera = document.getElementById('no-cameras');
-    
-    if (noCamera) noCamera.remove();
-    
-    // Create connection info based on camera type
-    let connectionInfo = '';
-    if (camera.camera_type === 'ip') {
-        connectionInfo = `${camera.ip_address || ''}:${camera.port || ''}`;
-    } else if (camera.camera_type === 'cellular') {
-        connectionInfo = camera.cellular_identifier || '';
+        const list = document.getElementById('cameras-list');
+        const noCamera = document.getElementById('no-cameras');
+        
+        if (noCamera) noCamera.remove();
+        
+        // Create connection info based on camera type
+        let connectionInfo = '';
+        if (camera.camera_type === 'ip') {
+            connectionInfo = `${camera.ip_address || ''}:${camera.port || ''}`;
+        } else if (camera.camera_type === 'cellular') {
+            connectionInfo = camera.cellular_identifier || '';
+        }
+        
+        const cameraDiv = document.createElement('div');
+        cameraDiv.className = 'item-card';
+        cameraDiv.innerHTML = `
+            <div class="item-info">
+                <h6 class="item-name">Camera #${camera.temp_id}</h6>
+                <p class="item-details">Type: ${camera.camera_type} | ${connectionInfo}</p>
+            </div>
+            <div class="item-actions">
+                <button class="btn btn-danger btn-sm" onclick="deleteCamera(${camera.temp_id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        list.appendChild(cameraDiv);
     }
     
-    const cameraDiv = document.createElement('div');
-    cameraDiv.className = 'item-card';
-    cameraDiv.innerHTML = `
-        <div class="item-info">
-            <h6 class="item-name">Camera #${camera.temp_id}</h6>
-            <p class="item-details">Type: ${camera.camera_type} | ${connectionInfo}</p>
-        </div>
-        <div class="item-actions">
-            <button class="btn btn-danger btn-sm" onclick="deleteCamera(${camera.temp_id})">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    `;
-    
-    list.appendChild(cameraDiv);
-}
-    
     function deleteCamera(tempId) {
+        // Remove from cameras array
         cameras = cameras.filter(c => c.temp_id !== tempId);
         updateCameraData();
         
+        // Remove marker from map
+        const marker = cameraMarkersMap.get(tempId);
+        if (marker && cameraMarkers) {
+            cameraMarkers.removeLayer(marker);
+            cameraMarkersMap.delete(tempId);
+        }
+        
         // Remove from UI
         const cameraCard = document.querySelector(`[onclick="deleteCamera(${tempId})"]`).closest('.item-card');
-        cameraCard.remove();
+        if (cameraCard) {
+            cameraCard.remove();
+        }
         
         // Show no cameras message if empty
         if (cameras.length === 0) {
             document.getElementById('cameras-list').innerHTML = `
                 <div class="text-center text-muted py-4" id="no-cameras">
                     <i class="fas fa-video fa-2x mb-2"></i>
-                    <p>No cameras added yet. Click on the map to place cameras.</p>
+                    <p>No cameras added yet. Click on the map to place cameras, then add their details.</p>
                 </div>
             `;
         }
+        
+        showAlert('success', 'Camera deleted successfully!');
     }
     
     function updateSummary() {
@@ -1140,43 +1222,43 @@
     }
     
     function createProject() {
-    console.log('Creating project with data:');
-    console.log('Project data:', projectData);
-    console.log('Farm boundaries:', farmBoundaries);
-    console.log('Cameras:', cameras);
-    
-    if (cameras.length === 0) {
-        showAlert('warning', 'Please add at least one camera before creating the project.');
-        return;
+        console.log('Creating project with data:');
+        console.log('Project data:', projectData);
+        console.log('Farm boundaries:', farmBoundaries);
+        console.log('Cameras:', cameras);
+        
+        if (cameras.length === 0) {
+            showAlert('warning', 'Please add at least one camera before creating the project.');
+            return;
+        }
+        
+        // Prepare final form data
+        const form = document.getElementById('project-creation-form');
+        
+        // Add all data as hidden inputs
+        const hiddenInputs = `
+            <input type="hidden" name="project_name" value="${escapeHtml(projectData.name || '')}">
+            <input type="hidden" name="project_description" value="${escapeHtml(projectData.description || '')}">
+            <input type="hidden" name="location_city" value="${escapeHtml(projectData.location_city || '')}">
+            <input type="hidden" name="contact_person" value="${escapeHtml(projectData.contact_person || '')}">
+            <input type="hidden" name="contact_phone" value="${escapeHtml(projectData.contact_phone || '')}">
+            <input type="hidden" name="farm_boundaries_data" value='${JSON.stringify(farmBoundaries)}'>
+            <input type="hidden" name="cameras_data" value='${JSON.stringify(cameras)}'>
+        `;
+        
+        form.innerHTML = hiddenInputs + '<input type="hidden" name="csrfmiddlewaretoken" value="' + 
+                        document.querySelector('[name=csrfmiddlewaretoken]').value + '">';
+        
+        console.log('Submitting form with cameras:', cameras.length);
+        form.submit();
     }
-    
-    // Prepare final form data
-    const form = document.getElementById('project-creation-form');
-    
-    // Add all data as hidden inputs
-    const hiddenInputs = `
-        <input type="hidden" name="project_name" value="${escapeHtml(projectData.name || '')}">
-        <input type="hidden" name="project_description" value="${escapeHtml(projectData.description || '')}">
-        <input type="hidden" name="location_city" value="${escapeHtml(projectData.location_city || '')}">
-        <input type="hidden" name="contact_person" value="${escapeHtml(projectData.contact_person || '')}">
-        <input type="hidden" name="contact_phone" value="${escapeHtml(projectData.contact_phone || '')}">
-        <input type="hidden" name="farm_boundaries_data" value='${JSON.stringify(farmBoundaries)}'>
-        <input type="hidden" name="cameras_data" value='${JSON.stringify(cameras)}'>
-    `;
-    
-    form.innerHTML = hiddenInputs + '<input type="hidden" name="csrfmiddlewaretoken" value="' + 
-                    document.querySelector('[name=csrfmiddlewaretoken]').value + '">';
-    
-    console.log('Submitting form with cameras:', cameras.length);
-    form.submit();
-}
 
-// Helper function to escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
     
     function showAlert(type, message) {
         const alertDiv = document.createElement('div');
@@ -1194,126 +1276,6 @@ function escapeHtml(text) {
             if (alert) alert.close();
         }, 5000);
     }
-
-    function validateCameraForm() {
-    const form = document.getElementById('camera-form');
-    const formData = new FormData(form);
-    const cameraType = formData.get('camera_type');
-    
-    if (cameraType === 'ip') {
-        const ipAddress = formData.get('ip_address');
-        const port = formData.get('port');
-        
-        if (!ipAddress || !port) {
-            showAlert('warning', 'IP address and port are required for IP cameras.');
-            return false;
-        }
-        
-        // Basic IP validation
-        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        if (!ipRegex.test(ipAddress)) {
-            showAlert('warning', 'Please enter a valid IP address.');
-            return false;
-        }
-        
-        const portNum = parseInt(port);
-        if (portNum < 1 || portNum > 65535) {
-            showAlert('warning', 'Port must be between 1 and 65535.');
-            return false;
-        }
-    } else if (cameraType === 'cellular') {
-        const cellularId = formData.get('cellular_identifier');
-        if (!cellularId) {
-            showAlert('warning', 'Cellular identifier is required for cellular cameras.');
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-// Update the saveCameraData function to include validation
-function saveCameraData() {
-    if (!validateCameraForm()) {
-        return;
-    }
-    
-    const form = document.getElementById('camera-form');
-    const formData = new FormData(form);
-    
-    // Debug: Log form data
-    console.log('Form data before processing:');
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
-    
-    const camera = {
-        temp_id: Date.now(),
-        farm_boundary_temp_id: formData.get('farm_boundary_temp_id') || 1, // Default to 1 if not set
-        camera_type: formData.get('camera_type'),
-        description: formData.get('description') || '',
-        ip_address: formData.get('ip_address') || null,
-        port: formData.get('port') ? parseInt(formData.get('port')) : null,
-        cellular_identifier: formData.get('cellular_identifier') || null,
-        location: {
-            lat: parseFloat(formData.get('latitude')),
-            lng: parseFloat(formData.get('longitude'))
-        }
-    };
-    
-    // Debug: Log camera object
-    console.log('Camera object created:', camera);
-    
-    // Validate required fields based on camera type
-    if (camera.camera_type === 'ip') {
-        if (!camera.ip_address || !camera.port) {
-            showAlert('danger', 'IP address and port are required for IP cameras.');
-            return;
-        }
-    } else if (camera.camera_type === 'cellular') {
-        if (!camera.cellular_identifier) {
-            showAlert('danger', 'Cellular identifier is required for cellular cameras.');
-            return;
-        }
-    }
-    
-    // Validate location
-    if (!camera.location.lat || !camera.location.lng || isNaN(camera.location.lat) || isNaN(camera.location.lng)) {
-        showAlert('danger', 'Valid camera location is required.');
-        return;
-    }
-    
-    cameras.push(camera);
-    updateCameraData();
-    
-    console.log('Updated cameras array:', cameras);
-    
-    // Update marker
-    if (selectedCameraMarker) {
-        selectedCameraMarker.setIcon(getCameraIcon(false));
-        selectedCameraMarker.options.draggable = false;
-        selectedCameraMarker.dragging.disable();
-        
-        // Add popup with camera info
-        selectedCameraMarker.bindPopup(`
-            <div>
-                <strong>Camera #${camera.temp_id}</strong><br>
-                <small>Type: ${camera.camera_type}</small><br>
-                <small>${camera.camera_type === 'ip' ? `${camera.ip_address}:${camera.port}` : camera.cellular_identifier}</small>
-            </div>
-        `);
-    }
-    
-    // Add to list
-    addCameraToList(camera);
-    
-    // Close modal and reset
-    bootstrap.Modal.getInstance(document.getElementById('cameraModal')).hide();
-    form.reset();
-    selectedCameraMarker = null;
-    
-    showAlert('success', 'Camera added successfully!');
-}
 </script>
 </body>
 </html>

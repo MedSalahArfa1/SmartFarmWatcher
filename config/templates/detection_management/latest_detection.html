@@ -32,6 +32,70 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
         }
+
+        /* Simplified Filter Styles - No Card, Icon Left */
+        .filter-section-inline {
+            margin-left: auto;
+        }
+
+        .project-filter-inline {
+            padding: 12px 16px;
+            border: 2px solid #e8ecef;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 220px;
+            color: #2c3e50;
+        }
+
+        .project-filter-inline:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
+        }
+
+        .project-filter-inline:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .filter-icon {
+            color: #6c757d;
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .clear-filter-btn-inline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        .clear-filter-btn-inline:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .detections-header-left {
+            flex: 1;
+            min-width: 0;
+        }
         
         /* Updated Stats Grid - Dashboard Style */
         .stats-grid {
@@ -262,6 +326,21 @@
             padding: 5px 12px;
             font-size: 12px;
         }
+
+        /* Loading state for false positive button */
+        .toggle-false-positive.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .toggle-false-positive.loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         
         .empty-state {
             text-align: center;
@@ -308,16 +387,6 @@
         }
 
         @media (max-width: 768px) {
-            .fab {
-                bottom: 20px;
-                right: 20px;
-                width: 48px;
-                height: 48px;
-                font-size: 18px;
-            }
-        }
-        
-        @media (max-width: 768px) {
             .detections-grid {
                 grid-template-columns: 1fr;
             }
@@ -325,26 +394,55 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+
+            .fab {
+                bottom: 20px;
+                right: 20px;
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+
+            /* Mobile adjustments for inline filter */
+            .mb-4.d-flex {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .filter-section-inline {
+                min-width: 100%;
+            }
+
+            .project-filter-inline {
+                min-width: 100%;
+            }
+
+            .detections-header-left h4 {
+                font-size: 1.2rem;
+            }
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="welcome-card">
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <h1 class="mb-2">Latest Detection</h1>
-            <p class="mb-0 opacity-75">
-                Monitor AI detections across all your farm cameras
-            </p>
-        </div>
-        <div class="col-md-4 text-md-end">
-            <div class="d-flex align-items-center justify-content-md-end">
-                <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">Latest Detection</h1>
+                <p class="mb-0 opacity-75">
+                    Monitor AI detections across all your farm cameras
+                    {% if selected_project %}
+                        <br><small>Showing results for: {{ selected_project.name }}</small>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="d-flex align-items-center justify-content-md-end">
+                    <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Statistics with Dashboard Style -->
     <div class="stats-grid">
@@ -376,13 +474,43 @@
             <h3 class="stat-number">{{ stats.smoke_detections }}</h3>
             <p class="stat-label">Smoke Detections</p>
         </div>
-       
     </div>
 
-    <!-- Latest Detections -->
-    <div class="mb-4">
-        <h4 style="color: var(--primary-color)"><i class="fas fa-clock" style="color: var(--primary-color);"></i> Latest Detections by Camera</h4>
-        <p class="text-muted">Most recent detection from each camera</p>
+    <!-- Latest Detections Header with Enhanced Filter -->
+    <div class="mb-4 d-flex justify-content-between align-items-start flex-wrap">
+        <div class="detections-header-left">
+            <h4 style="color: var(--primary-color)" class="mb-2">
+                <i class="fas fa-clock" style="color: var(--primary-color);"></i> 
+                Latest Detections by Camera
+            </h4>
+            <p class="text-muted mb-0">
+                Most recent detection from each camera
+                {% if selected_project %}
+                    in {{ selected_project.name }}
+                {% endif %}
+            </p>
+        </div>
+        
+        <!-- Simplified Project Filter - Very Right Side -->
+        <div class="filter-section-inline">
+            <form method="GET" id="project-filter-form" class="d-flex align-items-center gap-2">
+                <i class="fas fa-filter filter-icon"></i>
+                <select name="project" id="project-filter" class="project-filter-inline" onchange="this.form.submit()">
+                    <option value="">All Projects</option>
+                    {% for project in user_projects %}
+                        <option value="{{ project.id }}" 
+                                {% if selected_project and selected_project.id == project.id %}selected{% endif %}>
+                            {{ project.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if selected_project %}
+                    <a href="?" class="clear-filter-btn-inline" title="Clear Filter">
+                        <i class="fas fa-times"></i>
+                    </a>
+                {% endif %}
+            </form>
+        </div>
     </div>
 
     {% if latest_detections %}
@@ -433,11 +561,14 @@
                     <a href="/detection/camera/{{ item.camera.id }}/" class="btn btn-primary btn-sm">
                         <i class="fas fa-eye"></i> View All
                     </a>
-                    <button class="btn btn-outline-warning btn-sm toggle-false-positive" 
+                    <button class="btn {% if item.detection.is_false_positive %}btn-outline-success{% else %}btn-outline-warning{% endif %} btn-sm toggle-false-positive" 
                             data-detection-id="{{ item.detection.id }}"
                             data-is-false="{{ item.detection.is_false_positive }}">
-                        <i class="fas fa-flag"></i> 
-                        {% if item.detection.is_false_positive %}Un-flag{% else %}False Positive{% endif %}
+                        {% if item.detection.is_false_positive %}
+                            <i class="fas fa-check-circle"></i> Un-flag
+                        {% else %}
+                            <i class="fas fa-flag"></i> False Positive
+                        {% endif %}
                     </button>
                     {% if item.detection.image_original %}
                     <a href="{{ item.detection.image_original.url }}" target="_blank" 
@@ -455,7 +586,13 @@
     <div class="empty-state">
         <i class="fas fa-search"></i>
         <h3>No Detections Found</h3>
-        <p>No AI detections have been recorded from your cameras yet.</p>
+        <p>
+            {% if selected_project %}
+                No AI detections have been recorded from cameras in {{ selected_project.name }} yet.
+            {% else %}
+                No AI detections have been recorded from your cameras yet.
+            {% endif %}
+        </p>
     </div>
     {% endif %}
 
@@ -466,50 +603,99 @@
 {% endblock %}
 
 {% block extra_js %}
+{% csrf_token %}
 <script>
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                      document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
     // Handle false positive toggle
     document.querySelectorAll('.toggle-false-positive').forEach(button => {
         button.addEventListener('click', function() {
             const detectionId = this.dataset.detectionId;
             const isFalse = this.dataset.isFalse === 'true';
+            const btn = this;
+            
+            // Add loading state
+            btn.classList.add('loading');
+            btn.disabled = true;
             
             fetch(`/detection/mark-false-positive/${detectionId}/`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                                  document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json',
-                }
+                },
+                body: JSON.stringify({
+                    'is_false_positive': !isFalse
+                })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    showToast('Detection status updated successfully', 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
+                    // Show success message
+                    if (typeof showToast === 'function') {
+                        showToast('Detection status updated successfully', 'success');
+                    }
+                    
+                    // Update button state immediately
+                    const newIsFalse = !isFalse;
+                    btn.dataset.isFalse = newIsFalse.toString();
+                    
+                    // Update button appearance and text
+                    if (newIsFalse) {
+                        // Now false positive - show check button (green)
+                        btn.className = 'btn btn-sm toggle-false-positive btn-outline-success';
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Un-flag';
+                        btn.title = 'Mark as Valid';
+                    } else {
+                        // Now valid - show flag button (warning outline)
+                        btn.className = 'btn btn-sm toggle-false-positive btn-outline-warning';
+                        btn.innerHTML = '<i class="fas fa-flag"></i> False Positive';
+                        btn.title = 'Mark as False Positive';
+                    }
+                    
+                    // Remove loading state
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    
                 } else {
-                    showToast('Error updating detection status', 'error');
+                    throw new Error(data.message || 'Unknown error occurred');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showToast('Error updating detection status', 'error');
+                
+                // Show error message
+                if (typeof showToast === 'function') {
+                    showToast('Error updating detection status: ' + error.message, 'error');
+                } else {
+                    alert('Error updating detection status: ' + error.message);
+                }
+                
+                // Remove loading state
+                btn.classList.remove('loading');
+                btn.disabled = false;
             });
         });
     });
 
-    // Auto-refresh every 30 seconds
+    // Auto-refresh every 30 seconds - preserve current filter
     setInterval(() => {
-    const refreshBtn = document.querySelector('.fab');
-    if (refreshBtn) {
-        // Just make the icon spin, no text change
-        refreshBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
-        setTimeout(() => {
-            location.reload();
-        }, 1000);
-    }
-}, 30000);
+        const refreshBtn = document.querySelector('.fab');
+        if (refreshBtn) {
+            // Just make the icon spin, no text change
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    }, 30000);
 
     // Add animation on load - same as dashboard
     document.addEventListener('DOMContentLoaded', function() {
