@@ -1,9 +1,5 @@
-# detection_management/models.py
 from django.db import models
-from django.utils import timezone
 from project_management.models import Camera
-import uuid
-import os
 
 
 class DetectionType(models.Model):

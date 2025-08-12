@@ -748,7 +748,6 @@
                     description: ''
                 }];
                 
-                console.log('Farm boundary created:', farmBoundaries[0]);
                 updateBoundaryData();
                 document.getElementById('step2-submit').disabled = false;
             } else {
@@ -780,7 +779,6 @@
         if (farmBoundaries.length > 0) {
             try {
                 const boundaryGeometry = farmBoundaries[0].boundary;
-                console.log('Loading boundary geometry:', boundaryGeometry);
                 
                 // Create a full GeoJSON object for Leaflet
                 const boundaryGeoJSON = {
@@ -801,14 +799,12 @@
                 cameraMap.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
                 window.farmBoundaryLayer = boundaryLayer;
                 
-                console.log('Farm boundary loaded successfully');
             } catch (e) {
                 console.error('Error loading farm boundary:', e);
             }
         }
         
         cameraMap.on('click', function(e) {
-            console.log('Camera map clicked at:', e.latlng);
             
             const marker = L.marker(e.latlng, {
                 icon: getCameraIcon(true),
@@ -823,7 +819,6 @@
             document.getElementById('camera-lng').value = e.latlng.lng;
             document.getElementById('camera-boundary-id').value = 1; // First boundary
             
-            console.log('Camera coordinates set:', e.latlng.lat, e.latlng.lng);
             
             const modal = new bootstrap.Modal(document.getElementById('cameraModal'));
             modal.show();
@@ -832,7 +827,6 @@
                 const pos = marker.getLatLng();
                 document.getElementById('camera-lat').value = pos.lat;
                 document.getElementById('camera-lng').value = pos.lng;
-                console.log('Camera dragged to:', pos.lat, pos.lng);
             });
         });
         
@@ -956,9 +950,6 @@
             return false;
         }
         
-        // Debug: Log the boundary data being sent
-        console.log('Validating boundary data:', farmBoundaries);
-        
         try {
             const response = await fetch('{% url "project_management:validate_boundary_step" %}', {
                 method: 'POST',
@@ -970,7 +961,6 @@
             });
             
             const data = await response.json();
-            console.log('Validation response:', data);
             
             if (!data.valid) {
                 showAlert('danger', data.message);
@@ -1222,10 +1212,6 @@
     }
     
     function createProject() {
-        console.log('Creating project with data:');
-        console.log('Project data:', projectData);
-        console.log('Farm boundaries:', farmBoundaries);
-        console.log('Cameras:', cameras);
         
         if (cameras.length === 0) {
             showAlert('warning', 'Please add at least one camera before creating the project.');
@@ -1249,7 +1235,6 @@
         form.innerHTML = hiddenInputs + '<input type="hidden" name="csrfmiddlewaretoken" value="' + 
                         document.querySelector('[name=csrfmiddlewaretoken]').value + '">';
         
-        console.log('Submitting form with cameras:', cameras.length);
         form.submit();
     }
 

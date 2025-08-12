@@ -1,25 +1,26 @@
+# Python standard library
 import json
 import os
 import io
-import base64
 from datetime import datetime, timedelta
 
+# Third-party libraries
 import cv2
 import numpy as np
 from PIL import Image
 
+# Django core imports
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_POST
 from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.utils import timezone
-from django.conf import settings
 
+# Local app imports
 from project_management.models import Project, Camera, UserProjectRole
 from .models import Detection, DetectionType
 
@@ -37,20 +38,14 @@ try:
     person_model_path = 'ai_models/yolo11s.pt'
     
     # Load FireShield model (detects fire and smoke)
-    print(f"Checking FireShield model: {fire_model_path}")
     if os.path.exists(fire_model_path):
-        print("✅ FireShield.pt found")
         fire_model = YOLO(fire_model_path)
-        print("✅ FireShield model loaded successfully (detects fire and smoke)")
     else:
         print("❌ FireShield.pt not found")
     
     # Load person detection model
-    print(f"Checking person model: {person_model_path}")
     if os.path.exists(person_model_path):
-        print("✅ yolo11s.pt found")
         person_model = YOLO(person_model_path)
-        print("✅ Person model loaded successfully")
     else:
         print("❌ yolo11s.pt not found")
         
@@ -508,13 +503,6 @@ def detection_dashboard(request):
     }
     
     return render(request, 'detection_management/latest_detection.html', context)
-
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
-from .models import Camera, Detection
 
 @login_required
 def camera_detections(request, camera_id):

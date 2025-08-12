@@ -1,10 +1,13 @@
+# Django REST Framework imports
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db.models import Q
-from .models import Notification
+
+# Local app imports
+from .models import Notification, FCMToken
 from .serializers import NotificationSerializer
+
 
 class NotificationListView(generics.ListAPIView):
     serializer_class = NotificationSerializer
@@ -29,16 +32,6 @@ def mark_notification_read(request, notification_id):
 def mark_all_read(request):
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     return Response({'status': 'success'})
-
-
-
-
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from .models import FCMToken
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

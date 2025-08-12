@@ -1,5 +1,3 @@
-# detection_management/api_urls.py - Django REST Framework API URLs
-
 from django.urls import path
 from . import api_views
 
@@ -29,6 +27,3 @@ urlpatterns = [
     path('history/', api_views.detection_history, name='detection_history'),
 
 ]
-
-# URLs to add to main urls.py:
-# 

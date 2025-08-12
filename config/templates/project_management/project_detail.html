@@ -559,7 +559,6 @@
 
 
 <script>
-console.log('=== PROJECT MAP INITIALIZATION ===');
 
 let projectMap;
 
@@ -576,11 +575,6 @@ try {
     camerasData = [];
     mapCenter = [36.8065, 10.1815];
 }
-
-console.log('Parsed data:');
-console.log('- Boundaries:', boundariesData);
-console.log('- Cameras:', camerasData);
-console.log('- Map Center:', mapCenter);
 
 // Camera icon function matching your style
 function getCameraIcon(isInside = true, selected = false) {
@@ -615,7 +609,6 @@ function getCameraIcon(isInside = true, selected = false) {
 
 // Wait for everything to load
 window.addEventListener('load', function() {
-    console.log('Window loaded, initializing map...');
     setTimeout(function() {
         initializeProjectMap();
     }, 1000);
@@ -623,7 +616,6 @@ window.addEventListener('load', function() {
 
 function initializeProjectMap() {
     try {
-        console.log('Starting map initialization...');
         
         // Check container
         const container = document.getElementById('project-map');
@@ -631,14 +623,12 @@ function initializeProjectMap() {
             console.error('❌ Map container not found!');
             return;
         }
-        console.log('✅ Map container found');
         
         // Check Leaflet
         if (typeof L === 'undefined') {
             console.error('❌ Leaflet not loaded!');
             return;
         }
-        console.log('✅ Leaflet loaded');
         
         // Validate center
         let center = [36.8065, 10.1815]; // Tunis default
@@ -646,29 +636,23 @@ function initializeProjectMap() {
             !isNaN(mapCenter[0]) && !isNaN(mapCenter[1])) {
             center = mapCenter;
         }
-        console.log('✅ Using center:', center);
         
         // Create map - matching your project creation map style
         projectMap = L.map('project-map').setView(center, 13);
-        console.log('✅ Map object created');
         
         // Add satellite tile layer (same as your project creation)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri'
         }).addTo(projectMap);
-        console.log('✅ Satellite tile layer added');
         
         // Force resize
         setTimeout(function() {
             projectMap.invalidateSize();
-            console.log('✅ Map size invalidated');
         }, 100);
         
-        console.log('✅ Basic map initialized successfully');
         
         // Add farm boundaries with your styling
         if (boundariesData && Array.isArray(boundariesData) && boundariesData.length > 0) {
-            console.log('Adding farm boundaries...');
             const boundaryLayers = [];
             
             boundariesData.forEach(function(boundary, index) {
@@ -695,7 +679,6 @@ function initializeProjectMap() {
                             '</div>';
                         
                         boundaryLayer.bindPopup(popupContent);
-                        console.log('✅ Added boundary #' + (boundary.id || index + 1));
                     }
                 } catch (e) {
                     console.error('❌ Error loading boundary:', e);
@@ -709,18 +692,15 @@ function initializeProjectMap() {
                     projectMap.fitBounds(group.getBounds(), {
                         padding: [20, 20]
                     });
-                    console.log('✅ Map fitted to boundaries');
                 } catch (e) {
                     console.error('❌ Error fitting bounds:', e);
                 }
             }
         } else {
-            console.log('No valid boundaries data available');
         }
         
         // Add camera markers with your exact styling
         if (camerasData && Array.isArray(camerasData) && camerasData.length > 0) {
-            console.log('Adding camera markers...');
             camerasData.forEach(function(camera, index) {
                 try {
                     if (camera && !isNaN(camera.latitude) && !isNaN(camera.longitude)) {
@@ -756,14 +736,12 @@ function initializeProjectMap() {
                             '</div>';
                         
                         marker.bindPopup(popupContent);
-                        console.log('✅ Added camera #' + (camera.id || index + 1));
                     }
                 } catch (e) {
                     console.error('❌ Error loading camera:', e);
                 }
             });
         } else {
-            console.log('No valid cameras data available');
         }
         
         // Add scale control
@@ -772,8 +750,6 @@ function initializeProjectMap() {
         // Final resize and completion
         setTimeout(function() {
             projectMap.invalidateSize();
-            console.log('✅ Final map resize completed');
-            console.log('=== MAP INITIALIZATION SUCCESS ===');
         }, 500);
         
     } catch (error) {
@@ -801,17 +777,6 @@ window.addEventListener('resize', function() {
         }, 100);
     }
 });
-
-// Debug helper
-window.debugProjectMap = function() {
-    console.log('=== PROJECT MAP DEBUG INFO ===');
-    console.log('Map object:', projectMap);
-    console.log('Container:', document.getElementById('project-map'));
-    console.log('Leaflet:', typeof L !== 'undefined' ? 'Loaded' : 'Not loaded');
-    console.log('Data:', { boundariesData, camerasData, mapCenter });
-};
-
-console.log('Project map script loaded. Call debugProjectMap() in console for debug info.');
 
 // Add animation on load - same as dashboard
 document.addEventListener('DOMContentLoaded', function() {

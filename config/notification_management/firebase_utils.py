@@ -1,7 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, messaging
 from django.conf import settings
-import json
 import os
 
 # Initialize Firebase Admin (add your service account key)

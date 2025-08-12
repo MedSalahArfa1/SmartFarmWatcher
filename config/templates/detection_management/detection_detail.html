@@ -1095,7 +1095,6 @@
 
 {% block extra_js %}
 <script>
-console.log('=== DETECTION MAP INITIALIZATION ===');
 
 let detectionMap;
 
@@ -1114,12 +1113,6 @@ try {
     detectionCamera = null;
     mapCenter = [36.8065, 10.1815];
 }
-
-console.log('Parsed data:');
-console.log('- Boundaries:', boundariesData);
-console.log('- Cameras:', camerasData);
-console.log('- Detection Camera:', detectionCamera);
-console.log('- Map Center:', mapCenter);
 
 // Camera icon function
 function getCameraIcon(isDetectionCamera = false, isInside = true) {
@@ -1154,7 +1147,6 @@ function getCameraIcon(isDetectionCamera = false, isInside = true) {
 
 // Wait for everything to load
 window.addEventListener('load', function() {
-    console.log('Window loaded, initializing detection map...');
     setTimeout(function() {
         initializeDetectionMap();
     }, 1000);
@@ -1162,7 +1154,6 @@ window.addEventListener('load', function() {
 
 function initializeDetectionMap() {
     try {
-        console.log('Starting detection map initialization...');
         
         // Check container
         const container = document.getElementById('detection-map');
@@ -1170,14 +1161,12 @@ function initializeDetectionMap() {
             console.error('❌ Map container not found!');
             return;
         }
-        console.log('✅ Map container found');
         
         // Check Leaflet
         if (typeof L === 'undefined') {
             console.error('❌ Leaflet not loaded!');
             return;
         }
-        console.log('✅ Leaflet loaded');
         
         // Use detection camera position as center if available
         let center = [36.8065, 10.1815]; // Tunis default
@@ -1187,29 +1176,23 @@ function initializeDetectionMap() {
                    !isNaN(mapCenter[0]) && !isNaN(mapCenter[1])) {
             center = mapCenter;
         }
-        console.log('✅ Using center:', center);
         
         // Create map
         detectionMap = L.map('detection-map').setView(center, 15);
-        console.log('✅ Map object created');
         
         // Add satellite tile layer
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri'
         }).addTo(detectionMap);
-        console.log('✅ Satellite tile layer added');
         
         // Force resize
         setTimeout(function() {
             detectionMap.invalidateSize();
-            console.log('✅ Map size invalidated');
         }, 100);
         
-        console.log('✅ Basic detection map initialized successfully');
         
         // Add farm boundaries
         if (boundariesData && Array.isArray(boundariesData) && boundariesData.length > 0) {
-            console.log('Adding farm boundaries...');
             const boundaryLayers = [];
             
             boundariesData.forEach(function(boundary, index) {
@@ -1234,7 +1217,6 @@ function initializeDetectionMap() {
                             '</div>';
                         
                         boundaryLayer.bindPopup(popupContent);
-                        console.log('✅ Added boundary #' + (boundary.id || index + 1));
                     }
                 } catch (e) {
                     console.error('❌ Error loading boundary:', e);
@@ -1244,7 +1226,6 @@ function initializeDetectionMap() {
         
         // Add detection camera marker (highlighted)
         if (detectionCamera && !isNaN(detectionCamera.latitude) && !isNaN(detectionCamera.longitude)) {
-            console.log('Adding detection camera marker...');
             const detectionIcon = getCameraIcon(true, detectionCamera.is_within_boundary);
             
             const detectionMarker = L.marker([detectionCamera.latitude, detectionCamera.longitude], {
@@ -1270,7 +1251,6 @@ function initializeDetectionMap() {
                 '</div>';
             
             detectionMarker.bindPopup(detectionPopupContent);
-            console.log('✅ Added detection camera marker');
             
             // Center map on detection camera
             detectionMap.setView([detectionCamera.latitude, detectionCamera.longitude], 16);
@@ -1278,7 +1258,6 @@ function initializeDetectionMap() {
         
         // Add other project cameras
         if (camerasData && Array.isArray(camerasData) && camerasData.length > 0) {
-            console.log('Adding other camera markers...');
             camerasData.forEach(function(camera, index) {
                 try {
                     if (camera && !isNaN(camera.latitude) && !isNaN(camera.longitude)) {
@@ -1312,7 +1291,6 @@ function initializeDetectionMap() {
                             '</div>';
                         
                         marker.bindPopup(popupContent);
-                        console.log('✅ Added camera #' + camera.id);
                     }
                 } catch (e) {
                     console.error('❌ Error loading camera:', e);
@@ -1326,8 +1304,6 @@ function initializeDetectionMap() {
         // Final resize
         setTimeout(function() {
             detectionMap.invalidateSize();
-            console.log('✅ Final detection map resize completed');
-            console.log('=== DETECTION MAP INITIALIZATION SUCCESS ===');
         }, 500);
         
     } catch (error) {
@@ -1423,24 +1399,18 @@ document.addEventListener('DOMContentLoaded', function() {
 // REPLACE your updateToggleButtonState function with this CORRECTED version
 
 function updateToggleButtonState(button) {
-    console.log('🔧 updateToggleButtonState called');
-    console.log('🎯 Button dataset.isFalse:', button.dataset.isFalse);
-    console.log('🎯 Type of dataset.isFalse:', typeof button.dataset.isFalse);
     
     // FIX: Handle both "True"/"False" (Django) and "true"/"false" (JavaScript) 
     const isFalse = button.dataset.isFalse === 'true' || button.dataset.isFalse === 'True';
-    console.log('🔍 Computed isFalse (boolean):', isFalse);
     
     // Clear ALL existing classes completely
     button.className = 'btn toggle-false-positive';
-    console.log('🧹 Cleared all classes, current className:', button.className);
     
     if (isFalse) {
         // Detection is currently marked as FALSE POSITIVE
         // Show GREEN button to mark as VALID
         button.classList.add('btn-outline-success');
         button.innerHTML = '<i class="fas fa-check-circle"></i> Mark as Valid Detection';
-        console.log('✅ Applied GREEN button (detection is false positive) - classes:', button.classList.toString());
         
         // Force the styles directly as a fallback
         button.style.borderColor = '#28a745';
@@ -1454,7 +1424,6 @@ function updateToggleButtonState(button) {
         // Show ORANGE button to mark as FALSE POSITIVE
         button.classList.add('btn-outline-warning');
         button.innerHTML = '<i class="fas fa-flag"></i> Mark as False Positive';
-        console.log('🚨 Applied ORANGE button (detection is valid) - classes:', button.classList.toString());
         
         // Force the styles directly as a fallback
         button.style.borderColor = '#ffc107';
@@ -1466,13 +1435,6 @@ function updateToggleButtonState(button) {
     
     // Force a style recalculation
     button.offsetHeight;
-    console.log('🎨 Final button state - classes:', button.classList.toString());
-    console.log('🎨 Final button innerHTML:', button.innerHTML);
-    console.log('🎨 Final computed styles:', {
-        borderColor: getComputedStyle(button).borderColor,
-        color: getComputedStyle(button).color,
-        backgroundColor: getComputedStyle(button).backgroundColor
-    });
 }
 
 // Handle resize
@@ -1484,16 +1446,6 @@ window.addEventListener('resize', function() {
     }
 });
 
-// Debug helper
-window.debugDetectionMap = function() {
-    console.log('=== DETECTION MAP DEBUG INFO ===');
-    console.log('Map object:', detectionMap);
-    console.log('Container:', document.getElementById('detection-map'));
-    console.log('Leaflet:', typeof L !== 'undefined' ? 'Loaded' : 'Not loaded');
-    console.log('Data:', { boundariesData, camerasData, detectionCamera, mapCenter });
-};
-
-console.log('Detection map script loaded. Call debugDetectionMap() in console for debug info.');
 </script>
 
 {% csrf_token %}

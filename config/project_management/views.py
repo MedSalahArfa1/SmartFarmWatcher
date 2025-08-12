@@ -1,16 +1,21 @@
-# project_management/views.py
-from django.shortcuts import render, redirect
+# Django core imports
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import Q
 from django.contrib.gis.geos import GEOSGeometry, Point
+
+# Local app imports
 from .models import Project, FarmBoundary, Camera
 from .forms import ProjectForm
-import json
 
+# Python standard library
+import json
 
 @login_required
 def create_project_wizard(request):
@@ -57,8 +62,6 @@ def _handle_project_creation(request):
     boundaries_json = request.POST.get('farm_boundaries_data', '[]')
     cameras_json = request.POST.get('cameras_data', '[]')
     
-    print(f"Raw boundaries JSON: {boundaries_json}")  # Debug
-    print(f"Raw cameras JSON: {cameras_json}")  # Debug
     
     try:
         farm_boundaries_data = json.loads(boundaries_json)
@@ -66,8 +69,6 @@ def _handle_project_creation(request):
     except json.JSONDecodeError:
         raise ValueError("Invalid farm boundaries or cameras data")
     
-    print(f"Parsed farm boundaries: {farm_boundaries_data}")  # Debug
-    print(f"Parsed cameras: {cameras_data}")  # Debug
     
     # Validate project data
     form = ProjectForm(project_data)
@@ -87,8 +88,6 @@ def _handle_project_creation(request):
         )
         project.full_clean()
         project.save()
-        
-        print(f"Project created: {project.id}")  # Debug
         
         # Create farm boundaries and map them
         boundary_mapping = {}
@@ -130,35 +129,28 @@ def _handle_project_creation(request):
                         elif geom.geom_type == 'MultiPolygon':
                             farm_boundary.boundary = geom
                         else:
-                            print(f"Unexpected geometry type: {geom.geom_type}")
                             continue
                     
                 except Exception as e:
-                    print(f"Error processing boundary geometry: {str(e)}")
                     continue
             
             farm_boundary.full_clean()
             farm_boundary.save()
             
-            print(f"Farm boundary saved successfully. ID: {farm_boundary.id}")
             created_boundaries.append(farm_boundary)
             
             # Map temporary ID to actual boundary
             temp_id = boundary_data.get('temp_id')
             if temp_id:
                 boundary_mapping[str(temp_id)] = farm_boundary  # Ensure string key
-                print(f"Mapped temp_id {temp_id} to boundary {farm_boundary.id}")
         
-        print(f"Boundary mapping: {boundary_mapping}")  # Debug
         
         # Create cameras
         cameras_created = 0
         for camera_data in cameras_data:
-            print(f"Processing camera: {camera_data}")  # Debug
             
             # Find the corresponding farm boundary
             temp_boundary_id = camera_data.get('farm_boundary_temp_id')
-            print(f"Looking for temp_boundary_id: {temp_boundary_id}")  # Debug
             
             # Try different ways to find the boundary
             farm_boundary = None
@@ -173,13 +165,10 @@ def _handle_project_creation(request):
             # If still no boundary found, use the first created boundary as fallback
             if not farm_boundary and created_boundaries:
                 farm_boundary = created_boundaries[0]
-                print(f"Using fallback boundary: {farm_boundary.id}")
             
             if not farm_boundary:
-                print(f"No farm boundary found for camera. Skipping.")
                 continue
             
-            print(f"Using farm boundary: {farm_boundary.id}")
             
             camera = Camera(
                 project=project,
@@ -199,7 +188,6 @@ def _handle_project_creation(request):
                 if lat and lng:
                     try:
                         camera.location = Point(float(lng), float(lat), srid=4326)
-                        print(f"Camera location set: {lat}, {lng}")
                     except (ValueError, TypeError) as e:
                         print(f"Error setting camera location: {e}")
             
@@ -207,13 +195,9 @@ def _handle_project_creation(request):
                 camera.full_clean()
                 camera.save()
                 cameras_created += 1
-                print(f"Camera saved successfully. ID: {camera.id}")
             except Exception as e:
-                print(f"Error saving camera: {str(e)}")
                 continue
-        
-        print(f"Total cameras created: {cameras_created}")
-    
+            
     messages.success(request, f'Project "{project.name}" created successfully with {len(created_boundaries)} boundaries and {cameras_created} cameras!')
     return redirect('project_management:project_detail', slug=project.slug)
 
@@ -225,9 +209,7 @@ def validate_boundary_step(request):
     try:
         boundaries_json = request.POST.get('farm_boundaries_data', '[]')
         boundaries_data = json.loads(boundaries_json)
-        
-        print(f"Received boundary data: {boundaries_data}")  # Debug log
-        
+                
         if not boundaries_data:
             return JsonResponse({
                 'valid': False,
@@ -251,9 +233,7 @@ def validate_boundary_step(request):
                 else:
                     # If it's already a dict/object
                     geom_data = boundary_geom
-                
-                print(f"Processing geometry: {geom_data}")  # Debug log
-                
+                                
                 # Check if we have a geometry object or need to extract it
                 geometry_json = None
                 if 'geometry' in geom_data:
@@ -288,11 +268,8 @@ def validate_boundary_step(request):
                         'valid': False,
                         'message': f'Farm boundary {i+1} must have a valid area.'
                     })
-                
-                print(f"Boundary {i+1} validation successful. Area: {geom.area}")  # Debug log
-                
+                                
             except Exception as e:
-                print(f"Geometry validation error: {str(e)}")  # Debug log
                 return JsonResponse({
                     'valid': False,
                     'message': f'Farm boundary {i+1} has invalid geometry: {str(e)}'
@@ -309,13 +286,11 @@ def validate_boundary_step(request):
         return JsonResponse({'valid': True})
         
     except json.JSONDecodeError as e:
-        print(f"JSON decode error: {str(e)}")  # Debug log
         return JsonResponse({
             'valid': False,
             'message': 'Invalid boundary data format.'
         })
     except Exception as e:
-        print(f"Unexpected validation error: {str(e)}")  # Debug log
         return JsonResponse({
             'valid': False,
             'message': f'Validation error: {str(e)}'
@@ -439,7 +414,6 @@ def _check_boundary_overlaps(boundaries_data):
                 
                 geometries.append(geom)
             except Exception as e:
-                print(f"Error parsing geometry for overlap check: {str(e)}")
                 continue
     
     # Check for overlaps
@@ -450,14 +424,6 @@ def _check_boundary_overlaps(boundaries_data):
                 overlapping_pairs.append(f"Boundary {i+1} and Boundary {j+1}")
     
     return ", ".join(overlapping_pairs) if overlapping_pairs else None
-
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.http import JsonResponse
-import json
 
 @login_required
 def project_list(request):
@@ -533,7 +499,6 @@ def project_detail(request, slug):
                 }
                 boundaries_data.append(boundary_data)
             except Exception as e:
-                print(f"Error processing boundary {boundary.id}: {e}")
                 continue
     
     # Prepare camera data for the map
@@ -554,7 +519,6 @@ def project_detail(request, slug):
                 }
                 cameras_data.append(camera_data)
             except Exception as e:
-                print(f"Error processing camera {camera.id}: {e}")
                 continue
     
     # Calculate map center based on boundaries or cameras

@@ -1,20 +1,14 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.utils import timezone
-from datetime import timedelta
-from project_management.models import Project
-from detection_management.models import Detection, Camera
-# dashboard/views.py
+# Django core imports
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
 from django.utils import timezone
-from datetime import datetime, timedelta
 
-# Import your models - adjust these imports based on your app structure
+# Local app imports
 from project_management.models import Project, Camera
 from detection_management.models import Detection
+
+# Python standard library
+from datetime import timedelta
 
 
 @login_required

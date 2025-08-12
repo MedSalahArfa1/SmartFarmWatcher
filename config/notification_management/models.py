@@ -1,7 +1,6 @@
 from django.db import models
 from authentication.models import AppUser
 from detection_management.models import Detection
-from django.utils import timezone
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = [

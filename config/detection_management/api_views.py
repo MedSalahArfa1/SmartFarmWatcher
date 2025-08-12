@@ -1,5 +1,3 @@
-# detection_management/api_views.py - Updated for your models
-
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -7,17 +5,17 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.utils import timezone
 from django.db.models import Count, Q
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.shortcuts import get_object_or_404
 
-from project_management.models import Project, Camera, UserProjectRole
-from .models import Detection, DetectionType
+from project_management.models import Project, Camera
+from .models import Detection
 
 
 def get_user_projects(user):
     """Get all projects accessible to the user"""
     return Project.objects.filter(
-        Q(created_by=user) | Q(user_roles__user=user),  # Updated to use user_roles
+        Q(created_by=user) | Q(user_roles__user=user),
         is_active=True
     ).distinct()
 

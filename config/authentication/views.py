@@ -1,29 +1,29 @@
+# Django core imports
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
 from django.db import transaction
-from django.core.exceptions import ValidationError
-from .models import AppUser
-from project_management.models import Project, UserProjectRole
-from .forms import SupervisorSignUpForm, ClientSignUpForm, LoginForm
-import json
-from authentication import serializers
+
+# Django REST Framework imports
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from django.contrib.auth import authenticate
-from .serializers import ClientSignupSerializer, UserProfileSerializer
+
+# Local app imports
 from .models import AppUser
+from .forms import SupervisorSignUpForm, ClientSignUpForm, LoginForm
+from .serializers import ClientSignupSerializer, UserProfileSerializer
+from project_management.models import Project, UserProjectRole
+
+# Python standard library
+import json
 
 class SignUpView(View):
     template_name = 'authentication/signup.html'
