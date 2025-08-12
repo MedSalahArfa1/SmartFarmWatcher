@@ -1,6 +1,6 @@
 {% extends "dashboard/dashboard_base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Supervisor Dashboard{% endblock %}
 {% block nav_dashboard %}active{% endblock %}
 
 {% block extra_css %}
@@ -525,6 +525,49 @@
             text-align: center;
         }
     }
+
+    .detection-card.smoke::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(135deg, var(--smoke-color), #757575);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Detection click hint for smoke detection */
+.detection-card.smoke .click-hint {
+    background: rgba(158, 158, 158, 0.1);
+    color: var(--smoke-color);
+}
+
+/* Detection badge for smoke */
+.detection-badge.smoke {
+    background: var(--smoke-color);
+}
+
+/* Confidence fill for smoke detection */
+.confidence-fill.smoke {
+    background: var(--smoke-color);
+}
+
+/* If you want to add a smoke stat card, here's the styling */
+.stat-card.smoke::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--smoke-color), #757575);
+}
+
+.stat-icon.smoke { 
+    background: linear-gradient(135deg, var(--smoke-color), #757575); 
+}
 </style>
 {% endblock %}
 
@@ -708,6 +751,8 @@
                             <i class="fas fa-fire"></i>
                         {% elif latest_detection.detection_type.name == 'person' %}
                             <i class="fas fa-user"></i>
+                        {% elif latest_detection.detection_type.name == 'smoke' %}
+                            <i class="fas fa-smog"></i>
                         {% endif %}
                         {{ latest_detection.detection_type.name|capfirst }}
                     </span>

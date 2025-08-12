@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Farm Watcher - AI-Powered Farm Monitoring</title>
+    <title>Home - Smart Farm Watcher</title>
     <link rel="icon" type="image/png" href="{% static 'img/SFW_LogoW.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -23,6 +23,7 @@
             --info-color: #17a2b8;
             --dark-color: #2c3e50;
             --light-gray: #f8f9fa;
+            --solar-orange: #ff9500;
         }
 
         * {
@@ -61,12 +62,14 @@
             gap: 10px;
         }
 
-        .navbar-brand i {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 1.2rem;
+        .navbar-brand img {
+            height: 40px;
+            width: auto;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover img {
+            transform: scale(1.05);
         }
 
         .navbar-nav .nav-link {
@@ -249,10 +252,12 @@
             margin: 0 auto 25px;
         }
 
+        .feature-icon.solar { background: linear-gradient(135deg, var(--solar-orange), #ff6b35); }
         .feature-icon.ai { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .feature-icon.monitor { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .feature-icon.alert { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .feature-icon.analytics { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .feature-icon.dual-ai { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .feature-icon.notifications { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .feature-icon.supervisor { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .feature-icon.mobile { background: linear-gradient(135deg, #fa709a, #fee140); }
 
         .feature-card h4 {
             font-size: 1.3rem;
@@ -264,6 +269,75 @@
         .feature-card p {
             color: #6c757d;
             line-height: 1.6;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .process-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .process-step:nth-child(even) .step-content {
+            text-align: right;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 40px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .step-content p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .process-connector {
+            position: absolute;
+            left: 50%;
+            top: 80px;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--primary-light));
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .process-step:last-child .process-connector {
+            display: none;
         }
 
         /* Technology Section */
@@ -318,6 +392,67 @@
             margin-bottom: 10px;
         }
 
+        /* Roles Section */
+        .roles {
+            padding: 100px 0;
+            background: var(--light-gray);
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+        }
+
+        .role-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            margin: 0 auto 30px;
+        }
+
+        .role-icon.supervisor { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .role-icon.farmer { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+
+        .role-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+
+        .role-features {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .role-features li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .role-features i {
+            color: var(--primary-color);
+            width: 20px;
+        }
+
         /* Stats Section */
         .stats {
             padding: 80px 0;
@@ -352,10 +487,10 @@
         /* CTA Section */
         .cta {
             padding: 100px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             text-align: center;
         }
+
+        
 
         .cta h2 {
             font-size: 2.5rem;
@@ -372,7 +507,7 @@
         .btn-light {
             background: white;
             color: var(--primary-color);
-            border: none;
+            border: 2px solid var(--primary-color);
             border-radius: 25px;
             padding: 15px 40px;
             font-weight: 600;
@@ -404,7 +539,7 @@
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 20px;
-            color: var(--primary-light);
+            color: black;
         }
 
         .footer-section p,
@@ -416,7 +551,7 @@
         }
 
         .footer-section a:hover {
-            color: var(--primary-light);
+            color: black;
         }
 
         .footer-bottom {
@@ -443,6 +578,7 @@
 
             .section-title h2 {
                 font-size: 2rem;
+                color: white;
             }
 
             .feature-card {
@@ -456,6 +592,25 @@
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-step {
+                flex-direction: column !important;
+                text-align: center;
+            }
+
+            .process-step:nth-child(even) .step-content {
+                text-align: center;
+            }
+
+            .step-number {
+                margin: 0 0 20px 0;
+            }
+
+            .process-connector {
+                left: 50%;
+                top: 100px;
+                height: 80px;
             }
         }
 
@@ -477,8 +632,8 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <!--<i class="fas fa-seedling"></i>-->
-                Smart Farm Watcher
+                <img src="{% static 'img/SFW_Logo.png' %}" alt="Smart Farm Watcher Logo">
+                Smart Farm Watcher (Beta)
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -491,19 +646,19 @@
                         <a class="nav-link" href="#features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#technology">Technology</a>
+                        <a class="nav-link" href="#roles">For You</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#stats">About</a>
+                        <a class="nav-link" href="#detections">Detections</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
                 {% if user.is_authenticated %}
-                    <a href="/auth/dashboard/" class="btn btn-primary ms-3">Dashboard</a>
+                    <a href="{% url 'dashboard:dashboard' %}" class="btn btn-primary ms-3">Dashboard</a>
                 {% else %}
-                    <a href="/auth/login/" class="btn btn-primary ms-3">Login</a>
+                    <a href="{% url 'login' %}" class="btn btn-primary ms-3">Login</a>
                 {% endif %}
             </div>
         </div>
@@ -512,44 +667,43 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="floating-elements">
-            <i class="fas fa-seedling floating-icon" style="font-size: 4rem;"></i>
+            <i class="fas fa-solar-panel floating-icon" style="font-size: 4rem;"></i>
             <i class="fas fa-video floating-icon" style="font-size: 3rem;"></i>
-            <i class="fas fa-shield-alt floating-icon" style="font-size: 3.5rem;"></i>
+            <i class="fas fa-fire floating-icon" style="font-size: 3.5rem;"></i>
         </div>
         
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="hero-content fade-in">
-                        <h1>AI-Powered Farm Monitoring & Security</h1>
-                        <p>Protect your agricultural investments with cutting-edge artificial intelligence. Monitor crops, detect threats, and secure your farm 24/7 with Smart Farm Watcher.</p>
+                        <h1>Solar-Powered AI Farm Security</h1>
+                        <p>Revolutionary Raspberry Pi 4 camera system with dual-layer AI detection. Protect your farm from fire, smoke, and intruders with 24/7 solar-powered monitoring and instant mobile alerts.</p>
                         
                         <div class="d-flex gap-3 flex-wrap">
                             <a href="auth/login/" class="btn btn-primary btn-lg">
-                                <i class="fas fa-rocket"></i> Start Monitoring
+                                <i class="fas fa-play"></i> Start Protecting
                             </a>
-                            <a href="#features" class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-play"></i> Learn More
+                            <a href="#how-it-works" class="btn btn-outline-light btn-lg">
+                                How It Works
                             </a>
                         </div>
 
                         <div class="hero-stats">
                             <div class="hero-stat">
-                                <h3>99.9%</h3>
-                                <p>Uptime</p>
+                                <h3><i class="fas fa-sun"></i></h3>
+                                <p>Solar Powered</p>
                             </div>
                             <div class="hero-stat">
                                 <h3>24/7</h3>
-                                <p>Monitoring</p>
+                                <p>AI Monitoring</p>
                             </div>
                             <div class="hero-stat">
-                                <h3>AI</h3>
-                                <p>Powered</p>
+                                <h3>2x</h3>
+                                <p>AI Verification</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
@@ -558,119 +712,188 @@
     <section class="features" id="features">
         <div class="container">
             <div class="section-title fade-in">
-                <h2>Comprehensive Farm Protection</h2>
-                <p>Our AI-driven platform provides complete monitoring solutions for modern agriculture, combining advanced technology with user-friendly interfaces.</p>
+                <h2>Revolutionary Solar-Powered AI Protection</h2>
+                <p>Built on Raspberry Pi 4 with cutting-edge AI models for fire, smoke, and intrusion detection. Completely self-sustaining with solar power and dual-role monitoring system.</p>
             </div>
 
             <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon solar">
+                            <i class="fas fa-solar-panel"></i>
+                        </div>
+                        <h4>Solar-Powered System</h4>
+                        <p>Completely off-grid operation with solar panels powering Raspberry Pi 4 cameras. No electrical infrastructure needed for remote farm locations.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="feature-card fade-in">
                         <div class="feature-icon ai">
                             <i class="fas fa-brain"></i>
                         </div>
-                        <h4>AI Detection</h4>
-                        <p>Advanced machine learning algorithms detect fire, intruders, and anomalies in real-time with 95%+ accuracy.</p>
+                        <h4>On-Device AI Detection</h4>
+                        <p>Local AI model on Raspberry Pi 4 detects fire, smoke, and intrusions in real-time. Immediate response without internet dependency.</p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="feature-card fade-in">
-                        <div class="feature-icon monitor">
-                            <i class="fas fa-video"></i>
+                        <div class="feature-icon dual-ai">
+                            <i class="fas fa-server"></i>
                         </div>
-                        <h4>Live Monitoring</h4>
-                        <p>Monitor multiple camera feeds simultaneously with intelligent boundary detection and automated alerts.</p>
+                        <h4>Dual AI Verification</h4>
+                        <p>Detected frames sent to our powerful AI server for re-analysis and confirmation, ensuring 95%+ accuracy with minimal false alarms.</p>
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="feature-card fade-in">
-                        <div class="feature-icon alert">
+                        <div class="feature-icon notifications">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Real-Time Alerts</h4>
+                        <p>Instant notifications with detection images sent simultaneously to supervisor web dashboard and farmer mobile app.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon supervisor">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h4>Supervisor Web App</h4>
+                        <p>Comprehensive web dashboard for supervisors to monitor multiple farms, manage alerts, and analyze detection patterns.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card fade-in">
+                        <div class="feature-icon mobile">
                             <i class="fas fa-bell"></i>
                         </div>
-                        <h4>Instant Alerts</h4>
-                        <p>Receive immediate notifications via multiple channels when threats are detected on your property.</p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="feature-card fade-in">
-                        <div class="feature-icon analytics">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h4>Analytics Dashboard</h4>
-                        <p>Comprehensive reporting and analytics to track incidents, patterns, and system performance over time.</p>
+                        <h4>Farmer Mobile App</h4>
+                        <p>Dedicated mobile app for farmers to receive instant alerts, view detection images, and respond to threats immediately.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Technology Section -->
-    <section class="technology" id="technology">
+    <!-- Roles Section -->
+    <section class="roles" id="roles">
         <div class="container">
-            <div class="tech-content">
-                <div class="section-title fade-in">
-                    <h2>Powered by Advanced Technology</h2>
-                    <p>Built with cutting-edge AI and modern web technologies to deliver reliable, scalable farm monitoring solutions.</p>
-                </div>
+            <div class="section-title fade-in">
+                <h2>Built for Two Essential Roles</h2>
+                <p>Our system serves both supervisors managing multiple farms and individual farmers protecting their land.</p>
+            </div>
 
-                <div class="tech-grid">
-                    <div class="tech-item fade-in">
-                        <i class="fas fa-robot"></i>
-                        <h5>Machine Learning</h5>
-                        <p>Deep neural networks trained on agricultural environments</p>
-                    </div>
-                    
-                    <div class="tech-item fade-in">
-                        <i class="fas fa-map-marked-alt"></i>
-                        <h5>GIS Mapping</h5>
-                        <p>Interactive maps with precise boundary detection</p>
-                    </div>
-                    
-                    <div class="tech-item fade-in">
-                        <i class="fas fa-cloud"></i>
-                        <h5>Cloud Infrastructure</h5>
-                        <p>Scalable, secure cloud-based architecture</p>
-                    </div>
-                    
-                    <div class="tech-item fade-in">
-                        <i class="fas fa-mobile-alt"></i>
-                        <h5>Mobile Ready</h5>
-                        <p>Responsive design for all devices and platforms</p>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="role-card fade-in">
+                        <div class="role-icon supervisor">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h3>For Supervisors</h3>
+                        <p>Comprehensive web application for agricultural supervisors, farm managers, and security coordinators.</p>
                     </div>
                 </div>
+                <div class="col-lg-6 mb-4">
+    <div class="role-card fade-in">
+        <div class="role-icon farmer">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <h3>For Farmers</h3>
+        <p>Dedicated mobile application for individual farmers and landowners to protect their property.</p>
+    </div>
+</div>
             </div>
         </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="technology" id="detections">
+        <div class="container">
+    <div class="tech-content">
+        <div class="section-title fade-in">
+            <h2 style="color: white;">AI Detection Capabilities</h2>
+            <p style="color: white;">Our advanced AI models are specifically trained to detect three critical threats to agricultural properties with exceptional accuracy and minimal false alarms.</p>
+        </div>
+        
+        <div class="tech-grid">
+            <div class="tech-item fade-in">
+                <i class="fas fa-fire"></i>
+                <h5>Fire Detection</h5>
+                <p>Real-time identification of flames and fire outbreaks using computer vision trained on agricultural fire scenarios and various lighting conditions</p>
+            </div>
+            
+            <div class="tech-item fade-in">
+                <i class="fas fa-smog"></i>
+                <h5>Smoke Detection</h5>
+                <p>Early warning system that detects smoke patterns and plumes before fires spread, crucial for preventing devastating crop and equipment losses</p>
+            </div>
+            
+            <div class="tech-item fade-in">
+                <i class="fas fa-user"></i>
+                <h5>Intrusion Detection</h5>
+                <p>Intelligent human detection that identifies potential intruders, protecting valuable resources</p>
+            </div>
+        </div>
+    </div>
+</div>
     </section>
 
     <!-- Stats Section -->
     <section class="stats" id="stats">
         <div class="container">
             <div class="section-title fade-in">
-                <h2>Trusted by Farmers Worldwide</h2>
-                <p>Join thousands of agricultural professionals who trust Smart Farm Watcher to protect their investments.</p>
+                <h2>Proven Results in Agricultural Security</h2>
+                <p>Join farmers and supervisors who trust our solar-powered AI system to protect their investments.</p>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-item fade-in">
-                    <span class="stat-number">500+</span>
-                    <div class="stat-label">Farms Protected</div>
-                </div>
-                
-                <div class="stat-item fade-in">
-                    <span class="stat-number">10K+</span>
-                    <div class="stat-label">Cameras Monitored</div>
-                </div>
-                
-                <div class="stat-item fade-in">
                     <span class="stat-number">95%</span>
-                    <div class="stat-label">Detection Accuracy</div>
+                    <div class="stat-label">AI Detection Accuracy</div>
                 </div>
                 
                 <div class="stat-item fade-in">
                     <span class="stat-number">24/7</span>
-                    <div class="stat-label">Support Available</div>
+                    <div class="stat-label">Solar-Powered Operation</div>
+                </div>
+                
+                <div class="stat-item fade-in">
+                    <span class="stat-number">2x</span>
+                    <div class="stat-label">AI Verification Layers</div>
+                </div>
+                
+                <div class="stat-item fade-in">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Electrical Infrastructure Needed</div>
+                </div>
+                
+                <div class="stat-item fade-in">
+                    <span class="stat-number">2</span>
+                    <div class="stat-label">User Roles Supported</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="fade-in">
+                <h2>Ready to Protect Your Farm?</h2>
+                <p>Deploy our solar-powered AI security system and start protecting your agricultural investments today. No electricity required, maximum protection guaranteed.</p>
+                
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="/auth/login/" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-shield"></i> Supervisor Dashboard
+                    </a>
+                    <a href="/auth/login/" class="btn btn-light btn-lg">
+                        <i class="fas fa-mobile-alt"></i> Farmer Mobile App
+                    </a>
                 </div>
             </div>
         </div>
@@ -678,43 +901,43 @@
 
     <!-- Footer -->
     <footer class="footer" id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h5>Smart Farm Watcher</h5>
-                    <p>AI-powered farm monitoring and security solutions for modern agriculture. Protecting your investments with cutting-edge technology.</p>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{% static 'img/SFW_LogoW.png' %}" alt="Smart Farm Watcher Logo" style="height: 250px; width: auto;">
                 </div>
-                
-                <div class="footer-section">
-                    <h5>Features</h5>
-                    <a href="#features">AI Detection</a>
-                    <a href="#features">Live Monitoring</a>
-                    <a href="#features">Instant Alerts</a>
-                    <a href="#features">Analytics Dashboard</a>
+            </div>
+
+            <div class="footer-section">
+                <div class="d-flex align-items-center mb-3">
+                    <h5 style="margin: 0;">Smart Farm Watcher</h5>
                 </div>
-                
-                <div class="footer-section">
-                    <h5>Company</h5>
-                    <a href="#stats">About Us</a>
-                    <a href="#technology">Technology</a>
-                    <a href="#contact">Contact</a>
-                    <a href="/privacy/">Privacy Policy</a>
-                </div>
-                
-                <div class="footer-section">
-                    <h5>Get Started</h5>
-                    <a href="/login/">Login</a>
-                    <a href="/register/">Sign Up</a>
-                    <a href="/demo/">Request Demo</a>
-                    <a href="/support/">Support</a>
-                </div>
+                <p>Solar-powered AI security system built on Raspberry Pi 4. Protecting farms with dual-layer AI detection for fire, smoke, and intrusions. Serving both supervisors and farmers with specialized applications.</p>
             </div>
             
-            <div class="footer-bottom">
-                <p>&copy; 2025 Smart Farm Watcher</p>
+            <div class="footer-section">
+                <h5>Key Features</h5>
+                <a href="#features">Solar-Powered Cameras</a>
+                <a href="#features">Dual AI Detection</a>
+                <a href="#features">Real-Time Alerts</a>
+                <a href="#roles">Supervisor Dashboard</a>
+                <a href="#roles">Farmer Mobile App</a>
+            </div>
+            
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <a href="{% url 'home:home' %}">Home</a>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
             </div>
         </div>
-    </footer>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Farm Watcher - Built at Smart For Green - Designed by Mohamed Salah Arfa</p>
+        </div>
+    </div>
+</footer>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -763,6 +986,15 @@
 
         // Counter animation for stats
         function animateCounter(element, target, duration = 2000) {
+            const originalText = element.textContent;
+            const isPercentage = originalText.includes('%');
+            const isTime = originalText.includes('/');
+            const isMultiplier = originalText.includes('x');
+            
+            if (isTime || isMultiplier || target === 0) {
+                return; // Don't animate these
+            }
+            
             const start = 0;
             const startTime = performance.now();
             
@@ -771,7 +1003,7 @@
                 const progress = Math.min(elapsed / duration, 1);
                 
                 const current = Math.floor(progress * target);
-                element.textContent = current + (element.dataset.suffix || '');
+                element.textContent = current + (isPercentage ? '%' : '');
                 
                 if (progress < 1) {
                     requestAnimationFrame(updateCounter);
@@ -787,9 +1019,9 @@
                 if (entry.isIntersecting) {
                     const number = entry.target.querySelector('.stat-number');
                     const value = number.textContent.replace(/[^0-9]/g, '');
-                    const suffix = number.textContent.replace(/[0-9]/g, '');
-                    number.dataset.suffix = suffix;
-                    animateCounter(number, parseInt(value));
+                    if (value && parseInt(value) > 0) {
+                        animateCounter(number, parseInt(value));
+                    }
                     statsObserver.unobserve(entry.target);
                 }
             });

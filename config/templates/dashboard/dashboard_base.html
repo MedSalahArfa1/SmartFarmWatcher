@@ -507,7 +507,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Sidebar Header -->
         <div class="sidebar-header">
-            <a href="{% url 'dashboard' %}" class="sidebar-brand">
+            <a href="{% url 'home:home' %}" class="sidebar-brand">
         <img src="{% static 'img/SFW_LogoW.png' %}" alt="Smart Farm Watcher Logo" class="sidebar-logo">
                 <span>Smart Farm Watcher</span>
             </a>
@@ -518,7 +518,7 @@
             <ul class="nav flex-column">
                 <!-- Dashboard -->
                 <li class="nav-item">
-                    <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}">
+                    <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard:dashboard' %}">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>

@@ -1,10 +1,8 @@
-
-
 {% extends 'dashboard/dashboard_base.html' %}
 
 {% load static %}
 
-{% block title %}Download Mobile App - Smart Farm Watcher{% endblock %}
+{% block title %}Download Mobile App{% endblock %}
 
 {% block nav_download_app %}active{% endblock %}
 
@@ -45,7 +43,7 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
             border-radius: 25px;
-            padding: 60px 40px;
+            padding: 40px 40px;
             margin-bottom: 60px;
             position: relative;
             overflow: hidden;
@@ -84,6 +82,9 @@
             position: relative;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .phone-screen {
@@ -91,12 +92,21 @@
             height: 280px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             border-radius: 25px;
-            margin: 20px auto 0;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             color: white;
+            overflow: hidden;
+        }
+
+        .phone-screen img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .phone-screen i {
@@ -414,6 +424,11 @@
                 height: 240px;
             }
 
+            .phone-screen img {
+                width: 100px;
+                height: 100px;
+            }
+
             .features-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
@@ -442,7 +457,11 @@
             <div class="mobile-app-card">
                 
                 <div class="phone-mockup">
-                    
+                    <div class="phone-screen">
+                        <!-- Add your square image here -->
+                        <img src="{% static 'img/SFW_LogoW.png' %}" alt="Smart Farm Watcher App" />
+                        <small>Smart Farm Watcher</small>
+                    </div>
                 </div>
                 
                 <h2 class="app-title">Get the Mobile App</h2>
@@ -452,7 +471,7 @@
                 </p>
                 
                 <div class="download-buttons">
-                    <a href="#" class="download-btn">
+                    <a href="https://drive.google.com/file/d/1XMCUrJ21VSo4BL3kVFJY4PJF9JzHAIk-/view?usp=sharing" class="download-btn" target="_blank">
                         <i class="fab fa-android"></i>
                         <div class="download-btn-text">
                             <div class="download-btn-small">Get it for</div>
@@ -479,27 +498,18 @@
                         </div>
                         <h5 class="feature-title">Real-time Alerts</h5>
                         <p class="feature-description">
-                            Get instant push notifications when potential threats are detected on your farm. 
-                            Our AI-powered system ensures you're always aware of what's happening, 
+                            Get instant push notifications when potential threats are detected on your farm
                             even when you're miles away from your property.
                         </p>
                     </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-history"></i>
                         </div>
                         <h5 class="feature-title">Detection History</h5>
                         <p class="feature-description">
-                            Browse through comprehensive historical detection data, view past incidents, 
-                            and analyze security patterns over time. Export reports and track 
-                            long-term trends to optimize your security strategy.
+                            Browse through comprehensive historical detection data and view past incidents.
                         </p>
                     </div>
                     
@@ -509,9 +519,8 @@
                         </div>
                         <h5 class="feature-title">Secure Access</h5>
                         <p class="feature-description">
-                            Enjoy secure, encrypted access to your farm monitoring system 
+                            Enjoy secure access to your farm monitoring system 
                             with advanced authentication and unique project code. 
-                            Your data and privacy are protected with enterprise-grade security.
                         </p>
                     </div>
                 </div>

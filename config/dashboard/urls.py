@@ -6,6 +6,6 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
-    # Project creation wizard
+    path('', views.dashboard_view, name='dashboard'),
     path('download_mobile_app/', views.mobile_app_view, name='download_mobile_app'),
 ]

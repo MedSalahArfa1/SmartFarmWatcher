@@ -1,4 +1,3 @@
-# views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -13,8 +12,18 @@ from .models import AppUser
 from project_management.models import Project, UserProjectRole
 from .forms import SupervisorSignUpForm, ClientSignUpForm, LoginForm
 import json
-
 from authentication import serializers
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from django.contrib.auth import authenticate
+from .serializers import ClientSignupSerializer, UserProfileSerializer
+from .models import AppUser
 
 class SignUpView(View):
     template_name = 'authentication/signup.html'
@@ -56,7 +65,7 @@ class SignUpView(View):
                     
                     login(request, user)
                     messages.success(request, f'Welcome {user.get_full_name()}! Your account has been created successfully.')
-                    return redirect('dashboard')
+                    return redirect('dashboard:dashboard')
             except Exception as e:
                 messages.error(request, f'An error occurred during registration: {str(e)}')
         else:
@@ -92,7 +101,7 @@ class SignUpView(View):
                     
                     login(request, user)
                     messages.success(request, f'Welcome {user.get_full_name()}! Your account has been created successfully.')
-                    return redirect('dashboard')
+                    return redirect('dashboard:dashboard')
             except Exception as e:
                 messages.error(request, f'An error occurred during registration: {str(e)}')
         else:
@@ -121,7 +130,7 @@ class LoginView(View):
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Welcome back, {user.get_full_name()}!')
-                next_url = request.GET.get('next', 'dashboard')
+                next_url = request.GET.get('next', 'dashboard:dashboard')
                 return redirect(next_url)
             else:
                 messages.error(request, 'Invalid username or password.')
@@ -138,92 +147,6 @@ def logout_view(request):
     logout(request)
     messages.success(request, f'Goodbye {user_name}! You have been logged out successfully.')
     return redirect('login')
-
-# dashboard/views.py
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
-from django.utils import timezone
-from datetime import datetime, timedelta
-
-# Import your models - adjust these imports based on your app structure
-from project_management.models import Project, Camera
-from detection_management.models import Detection
-
-@login_required
-def dashboard_view(request):
-    """Main dashboard view with latest project and detection"""
-    
-    # Get user's projects
-    if request.user.user_type == 'supervisor':
-        user_projects = Project.objects.filter(created_by=request.user, is_active=True)
-    else:
-        # For clients, get projects they have access to
-        user_projects = Project.objects.filter(
-            user_roles__user=request.user,
-            is_active=True
-        ).distinct()
-    
-    # Get latest project
-    latest_project = user_projects.order_by('-created_at').first()
-    
-    # Add statistics to the latest project if it exists
-    if latest_project:
-        latest_project.total_boundaries = latest_project.get_total_farm_boundaries()
-        latest_project.total_cameras = latest_project.get_total_cameras()
-        latest_project.total_detections = Detection.objects.filter(
-            camera__project=latest_project
-        ).count()
-    
-    # Get latest detection from user's projects
-    latest_detection = Detection.objects.filter(
-        camera__project__in=user_projects
-    ).select_related(
-        'camera', 'camera__project', 'camera__farm_boundary', 'detection_type'
-    ).order_by('-detected_at').first()
-    
-    # Add confidence percentage if detection exists
-    if latest_detection:
-        latest_detection.confidence_percentage = latest_detection.confidence_score * 100
-    
-    # Get statistics
-    project_count = user_projects.count()
-    
-    # Get camera count
-    camera_count = Camera.objects.filter(
-        project__in=user_projects,
-        is_active=True
-    ).count()
-    
-    # Get detection count for today
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    detection_count = Detection.objects.filter(
-        camera__project__in=user_projects,
-        detected_at__gte=today
-    ).count()
-    
-    # Get alert count (you can customize this based on your alert system)
-    alert_count = Detection.objects.filter(
-        camera__project__in=user_projects,
-        is_false_positive=False,
-        detected_at__gte=timezone.now() - timedelta(hours=24)
-    ).count()
-    
-    context = {
-        'latest_project': latest_project,
-        'latest_detection': latest_detection,
-        'project_count': project_count,
-        'camera_count': camera_count,
-        'detection_count': detection_count,
-        'alert_count': alert_count,
-    }
-    
-    # Route clients to mobile app invitation page
-    if request.user.user_type == 'client':
-        return render(request, 'dashboard/dashboard_client.html', context)
-    else:
-        # Supervisors get the regular dashboard
-        return render(request, 'dashboard/dashboard_supervisor.html', context)
 
 # AJAX view for validating access codes
 def validate_access_code(request):
@@ -251,18 +174,7 @@ def validate_access_code(request):
     return JsonResponse({'valid': False, 'message': 'Invalid request method.'})
 
 
-# views.py
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from django.contrib.auth import authenticate
-from .serializers import ClientSignupSerializer, UserProfileSerializer
-from .models import AppUser
+
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
