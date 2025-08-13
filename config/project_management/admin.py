@@ -181,7 +181,7 @@ class FarmBoundaryAdmin(LeafletGeoAdmin):
 class CameraAdmin(LeafletGeoAdmin):
     list_display = [
         'id_display', 'project', 'farm_boundary_display', 'camera_type', 
-        'connection_info', 'is_within_boundary', 'is_active', 'created_at'
+        'connection_info', 'is_within_boundary', 'is_active', 'created_at', 'heartbeat_check', 'last_heartbeat'
     ]
     list_filter = [
         'camera_type', 'is_active', 'project', 'farm_boundary', 'created_at'
@@ -205,7 +205,7 @@ class CameraAdmin(LeafletGeoAdmin):
             'fields': ('location', 'coordinates_display')
         }),
         ('Status', {
-            'fields': ('is_active',)
+            'fields': ('is_active','heartbeat_check','last_heartbeat')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

@@ -30,16 +30,20 @@ GEOS_LIBRARY_PATH = 'GDAL/geos_c.dll'
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','10.0.2.2', 'localhost', '192.168.1.5', '192.168.1.189']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-#CORS_ALLOWED_ALL_ORIGINS = True
+DYNAMIC_IP = config('DYNAMIC_IP')
+PUBLIC_DOMAIN = config('PUBLIC_DOMAIN')
 
-CORS_ALLOWED_ORIGINS = [
-    'http://192.168.1.189:8000',
-]
+if DYNAMIC_IP:
+    ALLOWED_HOSTS.append(DYNAMIC_IP)
 
+if PUBLIC_DOMAIN:
+    ALLOWED_HOSTS.append(PUBLIC_DOMAIN)
+
+CORS_ALLOWED_ALL_ORIGINS = True
 
 # Application definition
 

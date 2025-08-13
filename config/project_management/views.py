@@ -1,3 +1,7 @@
+# Python standard library
+import json
+from datetime import timedelta
+
 # Django core imports
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -6,16 +10,21 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import transaction, models
 from django.db.models import Q
+from django.utils import timezone
 from django.contrib.gis.geos import GEOSGeometry, Point
+
+# Django REST Framework imports
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 # Local app imports
 from .models import Project, FarmBoundary, Camera
 from .forms import ProjectForm
 
-# Python standard library
-import json
 
 @login_required
 def create_project_wizard(request):
@@ -603,3 +612,88 @@ def project_regenerate_code(request, slug):
         })
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def camera_heartbeat(request):
+
+    # First, check for expired cameras and mark them as not working
+    timeout_threshold = timezone.now() - timedelta(seconds=300)
+    expired_cameras = Camera.objects.filter(
+        heartbeat_check=True  # Only check cameras that were previously working
+    ).filter(
+        models.Q(last_heartbeat__lt=timeout_threshold) |
+        models.Q(last_heartbeat__isnull=True)
+    )
+    expired_count = expired_cameras.update(heartbeat_check=False)
+    
+    # Now handle the incoming heartbeat
+    connection_string = request.data.get('connection_string')
+    heartbeat_check = request.data.get('heartbeat_check')
+
+    # Validate input
+    if not connection_string:
+        return Response({
+            'success': False,
+            'message': 'connection_string is required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    if heartbeat_check is None:
+        return Response({
+            'success': False,
+            'message': 'heartbeat_check is required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # Find camera by connection string
+        camera = None
+        
+        if ':' in connection_string:
+            # IP camera format: "192.168.1.100:8080"
+            ip_address, port = connection_string.split(':', 1)
+            camera = Camera.objects.get(
+                camera_type='ip',
+                ip_address=ip_address,
+                port=int(port)
+            )
+        else:
+            # Cellular camera format: just the identifier
+            camera = Camera.objects.get(
+                camera_type='cellular',
+                cellular_identifier=connection_string
+            )
+
+        # Only update if heartbeat_check is True
+        if heartbeat_check:
+            camera.heartbeat_check = True
+            camera.last_heartbeat = timezone.now()
+            camera.save(update_fields=['heartbeat_check', 'last_heartbeat'])
+        
+        return Response({
+            'success': True,
+            'message': f'Camera heartbeat received',
+            'camera_id': camera.id,
+            'connection_string': connection_string,
+            'heartbeat_check': camera.heartbeat_check,
+            'last_heartbeat': camera.last_heartbeat,
+            'expired_cameras_count': expired_count  # How many cameras were marked as not working
+        }, status=status.HTTP_200_OK)
+        
+    except Camera.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': f'Camera with connection string "{connection_string}" not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    except ValueError as e:
+        return Response({
+            'success': False,
+            'message': f'Invalid connection string format: {str(e)}'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': 'Internal server error'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

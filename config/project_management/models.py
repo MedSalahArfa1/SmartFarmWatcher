@@ -300,6 +300,10 @@ class Camera(models.Model):
         unique=True,
         help_text="Unique identifier for cellular cameras"
     )
+
+    # Heartbeat Tracking
+    heartbeat_check = models.BooleanField(default=False, db_index=True)
+    last_heartbeat = models.DateTimeField(null=True, blank=True)
     
     # Metadata
     is_active = models.BooleanField(default=True, db_index=True)

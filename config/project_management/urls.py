@@ -19,4 +19,7 @@ urlpatterns = [
     path('project/<slug:slug>/delete/', views.project_delete, name='project_delete'),
     path('project/<slug:slug>/toggle-status/', views.project_status_toggle, name='project_status_toggle'),
     path('project/<slug:slug>/regenerate-code/', views.project_regenerate_code, name='project_regenerate_code'),
+
+    # Camera heartbeat endpoint
+    path('camera/heartbeat/', views.camera_heartbeat, name='camera_heartbeat'),
 ]

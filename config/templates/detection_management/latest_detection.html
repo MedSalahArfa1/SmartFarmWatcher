@@ -421,6 +421,66 @@
                 font-size: 1.2rem;
             }
         }
+
+        /* Camera Status Dot Styles */
+.camera-status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: 8px;
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+.camera-status-dot.online {
+    background-color: #4CAF50;
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+}
+
+.camera-status-dot.offline {
+    background-color: #f44336;
+    box-shadow: 0 0 6px rgba(244, 67, 54, 0.6);
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 12px rgba(76, 175, 80, 0.8), 0 0 18px rgba(76, 175, 80, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 6px rgba(244, 67, 54, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 12px rgba(244, 67, 54, 0.8), 0 0 18px rgba(244, 67, 54, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 6px rgba(244, 67, 54, 0.6);
+    }
+}
+
+.camera-status-text {
+    font-size: 11px;
+    color: #6c757d;
+    margin-left: 4px;
+}
+
+.camera-status-text.online {
+    color: #4CAF50;
+}
+
+.camera-status-text.offline {
+    color: #f44336;
+}
     </style>
 {% endblock %}
 
@@ -525,7 +585,15 @@
             
             <div class="detection-info">
                 <div class="detection-header">
-                    <h5 class="camera-name">Camera #{{ item.camera.id }}</h5>
+                    <h5 class="camera-name">
+                        Camera #{{ item.camera.id }}
+                        <span class="camera-status-dot {% if item.camera.heartbeat_check %}online{% else %}offline{% endif %}" 
+                            title="{% if item.camera.heartbeat_check %}Camera Online{% else %}Camera Offline{% endif %}">
+                        </span>
+                        <span class="camera-status-text {% if item.camera.heartbeat_check %}online{% else %}offline{% endif %}">
+                            {% if item.camera.heartbeat_check %}Online{% else %}Offline{% endif %}
+                        </span>
+                    </h5>
                     <span class="detection-badge {{ item.detection.detection_type.name }}">
                         {% if item.detection.detection_type.name == 'fire' %}
                             <i class="fas fa-fire"></i>
