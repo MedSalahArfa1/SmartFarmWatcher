@@ -141,8 +141,11 @@ class LoginView(View):
         
         return render(request, self.template_name, {'form': form})
 
-@login_required
+#@login_required
 def logout_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     user_name = request.user.get_full_name()
     logout(request)
     messages.success(request, f'Goodbye {user_name}! You have been logged out successfully.')
