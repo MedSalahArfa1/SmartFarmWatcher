@@ -677,6 +677,27 @@
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
                       document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
+    // Send heartbeat to camera endpoint
+    function sendHeartbeat() {
+        fetch('/projects/camera/heartbeat/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Heartbeat sent successfully');
+            } else {
+                console.warn('Heartbeat failed:', response.status);
+            }
+        })
+        .catch(error => {
+            console.error('Heartbeat error:', error);
+        });
+    }
+
     // Handle false positive toggle
     document.querySelectorAll('.toggle-false-positive').forEach(button => {
         button.addEventListener('click', function() {
@@ -760,13 +781,22 @@
             // Just make the icon spin, no text change
             refreshBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
             setTimeout(() => {
-                location.reload();
+                // Send heartbeat before reload
+                sendHeartbeat();
+                // Small delay to ensure heartbeat is sent
+                setTimeout(() => {
+                    location.reload();
+                }, 200);
             }, 1000);
         }
     }, 30000);
 
-    // Add animation on load - same as dashboard
+    // Send heartbeat on page load
     document.addEventListener('DOMContentLoaded', function() {
+        // Send heartbeat when page loads
+        sendHeartbeat();
+        
+        // Add animation on load - same as dashboard
         const cards = document.querySelectorAll('.stat-card, .detection-card');
         cards.forEach((card, index) => {
             setTimeout(() => {
@@ -780,6 +810,16 @@
                 }, 100);
             }, index * 100);
         });
+    });
+
+    // Send heartbeat when page is about to unload (optional)
+    window.addEventListener('beforeunload', function() {
+        // Use sendBeacon for better reliability during page unload
+        if (navigator.sendBeacon) {
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            navigator.sendBeacon('/projects/camera/heartbeat/', formData);
+        }
     });
 </script>
 {% endblock %}
