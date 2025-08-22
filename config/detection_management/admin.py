@@ -208,6 +208,4 @@ class DetectionAdmin(admin.ModelAdmin):
 
 
 # Optional: Custom admin site customization
-admin.site.site_header = "Smart Farm Watcher Detection Management"
-admin.site.site_title = "Detection Admin"
-admin.site.index_title = "Detection Management Dashboard"
+admin.site.site_header = "Smart Farm Watcher Admin"

@@ -289,24 +289,35 @@ def client_login(request):
 @permission_classes([IsAuthenticated])
 def client_logout(request):
     """
-    Client logout endpoint - blacklists the refresh token
+    Client logout endpoint - blacklists the refresh token and deactivates FCM tokens
     """
     try:
         refresh_token = request.data.get('refresh_token')
+        
         if refresh_token:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({
-                'message': 'Logout successful'
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({
-                'error': 'Refresh token required'
-            }, status=status.HTTP_400_BAD_REQUEST)
-    except TokenError:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception:
+                # Continue logout even if blacklisting fails
+                pass
+        
+        # Deactivate user's FCM tokens
+        try:
+            from notification_management.models import FCMToken
+            FCMToken.objects.filter(user=request.user).update(is_active=False)
+        except Exception:
+            pass
+        
         return Response({
-            'error': 'Invalid token'
-        }, status=status.HTTP_400_BAD_REQUEST)
+            'message': 'Logout successful'
+        }, status=status.HTTP_200_OK)
+        
+    except Exception:
+        # Always return success for logout to avoid client-side issues
+        return Response({
+            'message': 'Logout successful'
+        }, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

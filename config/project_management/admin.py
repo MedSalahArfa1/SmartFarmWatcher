@@ -326,6 +326,4 @@ class UserProjectRoleAdmin(admin.ModelAdmin):
 
 
 # Custom admin site configuration
-admin.site.site_header = "Farm Management Admin"
-admin.site.site_title = "Farm Management"
-admin.site.index_title = "Farm Management Administration"
+admin.site.site_header = "Smart Farm Watcher Admin"
