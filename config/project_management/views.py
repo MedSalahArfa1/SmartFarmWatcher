@@ -21,6 +21,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from utils.fire_risk import FireRiskPredictor
+
 # Local app imports
 from .models import Project, FarmBoundary, Camera
 from .forms import ProjectForm
@@ -509,11 +511,17 @@ def project_detail(request, slug):
                 boundaries_data.append(boundary_data)
             except Exception as e:
                 continue
+
+    fire_predictor = FireRiskPredictor()
     
     # Prepare camera data for the map
     cameras_data = []
     for camera in cameras:
         if camera.location:
+            fire_risk = fire_predictor.calculate_fire_risk(
+                    camera.location.y,  # latitude
+                    camera.location.x   # longitude
+            )
             try:
                 camera_data = {
                     'id': camera.id,
@@ -524,7 +532,8 @@ def project_detail(request, slug):
                     'longitude': camera.location.x,
                     'connection_info': camera.get_connection_string(),
                     'is_within_boundary': camera.is_within_farm_boundary(),
-                    'created_at': camera.created_at.isoformat()
+                    'created_at': camera.created_at.isoformat(),
+                    'fire_risk': fire_risk
                 }
                 cameras_data.append(camera_data)
             except Exception as e:

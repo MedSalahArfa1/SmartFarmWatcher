@@ -30,7 +30,7 @@ GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='GDAL/geos_c.dll')
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -253,3 +253,5 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+OPENWEATHER_API_KEY = config('OPENWEATHER_API_KEY')
