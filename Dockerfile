@@ -79,4 +79,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/admin/login/ || exit 1
 
 # Default command (run from config directory)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "config.wsgi:application"]
+CMD ["uvicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "config.asgi:application"]
