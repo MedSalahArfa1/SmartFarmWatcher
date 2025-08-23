@@ -30,7 +30,7 @@ GEOS_LIBRARY_PATH = config('GEOS_LIBRARY_PATH', default='GDAL/geos_c.dll')
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -232,8 +232,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Increase from default (usually minutes)
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Increase refresh token lifetime
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 } 
 
 ASGI_APPLICATION = 'config.asgi.application'
