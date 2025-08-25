@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 DYNAMIC_IP_1 = config('DYNAMIC_IP_1')
 DYNAMIC_IP_2 = config('DYNAMIC_IP_2')
-PUBLIC_DOMAIN = config('PUBLIC_DOMAIN')
+PUBLIC_DOMAINS = config('PUBLIC_DOMAIN')
 
 if DYNAMIC_IP_1:
     ALLOWED_HOSTS.append(DYNAMIC_IP_1)
@@ -44,8 +44,11 @@ if DYNAMIC_IP_1:
 if DYNAMIC_IP_2:
     ALLOWED_HOSTS.append(DYNAMIC_IP_2)
 
-if PUBLIC_DOMAIN:
-    ALLOWED_HOSTS.append(PUBLIC_DOMAIN)
+
+if PUBLIC_DOMAINS:
+    # Split by comma and strip whitespace, then extend ALLOWED_HOSTS
+    domains = [domain.strip() for domain in PUBLIC_DOMAINS.split(',') if domain.strip()]
+    ALLOWED_HOSTS.extend(domains)
 
 CORS_ALLOWED_ALL_ORIGINS = True
 
