@@ -180,7 +180,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authentication.AppUser'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'config/media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (40.0, -95.0),  # Default center of USA
